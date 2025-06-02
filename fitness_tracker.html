@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Fitness Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for multi-select dropdown */
+        select[multiple] {
+            height: auto; /* Allow height to adjust based on content */
+            min-height: 120px; /* Set a minimum height to make it visible */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Daily Fitness Tracker</h1>
+
+        <form id="trackingForm" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="trackDate" class="block text-gray-700 text-sm font-semibold mb-2">Date:</label>
+                <input type="date" id="trackDate" name="trackDate" required
+                       class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            <div>
+                <label for="weight" class="block text-gray-700 text-sm font-semibold mb-2">Weight (kg/lbs):</label>
+                <input type="number" step="0.1" id="weight" name="weight" placeholder="e.g., 75.5" required
+                       class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            <div class="md:col-span-2"> <label for="workoutSplit" class="block text-gray-700 text-sm font-semibold mb-2">Workout Split (Select multiple):</label>
+                <select id="workoutSplit" name="workoutSplit" multiple required
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="Chest">Chest</option>
+                    <option value="Biceps">Biceps</option>
+                    <option value="Back">Back</option>
+                    <option value="Triceps">Triceps</option>
+                    <option value="Shoulder">Shoulder</option>
+                    <option value="Traps">Traps</option>
+                    <option value="Forearms">Forearms</option>
+                    <option value="Abs">Abs</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Rest Day">Rest Day</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label for="painLevel" class="block text-gray-700 text-sm font-semibold mb-2">Pain Level (1-10):</label>
+                <select id="painLevel" name="painLevel" required
+                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Select Level</option>
+                    <option value="1 - None">1 - None</option>
+                    <option value="2 - Very Mild">2 - Very Mild</option>
+                    <option value="3 - Mild">3 - Mild</option>
+                    <option value="4 - Moderate">4 - Moderate</option>
+                    <option value="5 - Annoying">5 - Annoying</option>
+                    <option value="6 - Distracting">6 - Distracting</option>
+                    <option value="7 - Severe">7 - Severe</option>
+                    <option value="8 - Very Severe">8 - Very Severe</option>
+                    <option value="9 - Excruciating">9 - Excruciating</option>
+                    <option value="10 - Unbearable">10 - Unbearable</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2 grid grid-cols-3 gap-4 mb-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="tookProtein" name="tookProtein"
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="tookProtein" class="ml-2 block text-gray-700 text-sm font-semibold">Took Protein</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="tookCreatine" name="tookCreatine"
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="tookCreatine" class="ml-2 block text-gray-700 text-sm font-semibold">Took Creatine</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="tookEAA" name="tookEAA"
+                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="tookEAA" class="ml-2 block text-gray-700 text-sm font-semibold">Took EAA</label>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 flex justify-end">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Add Entry
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Progress</h2>
+            <div id="entriesList" class="space-y-4">
+                <p id="noEntriesMessage" class="text-center text-gray-500">No entries yet. Add one above!</p>
+            </div>
+            <div class="flex justify-center mt-6 space-x-4">
+                <button id="downloadCsvBtn"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Download as CSV
+                </button>
+                <button id="clearAllDataBtn"
+                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const trackingForm = document.getElementById('trackingForm');
+        const entriesList = document.getElementById('entriesList');
+        const noEntriesMessage = document.getElementById('noEntriesMessage');
+        const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+        const clearAllDataBtn = document.getElementById('clearAllDataBtn');
+        const trackDateInput = document.getElementById('trackDate');
+        const workoutSplitSelect = document.getElementById('workoutSplit'); // Reference to the multi-select
+
+        // Key for localStorage
+        const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
+
+        // Array to store fitness entries
+        let fitnessEntries = [];
+
+        // --- Data Persistence Functions ---
+
+        // Function to save data to localStorage
+        function saveEntriesToLocalStorage() {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries));
+        }
+
+        // Function to load data from localStorage
+        function loadEntriesFromLocalStorage() {
+            const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (storedEntries) {
+                try {
+                    fitnessEntries = JSON.parse(storedEntries);
+                    // Ensure entries are sorted by date in descending order (most recent first)
+                    fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                } catch (e) {
+                    console.error("Error parsing stored data from localStorage:", e);
+                    fitnessEntries = []; // Reset if parsing fails
+                }
+            }
+        }
+
+        // --- UI Rendering and Interaction Functions ---
+
+        // Function to render entries to the DOM
+        function renderEntries() {
+            entriesList.innerHTML = ''; // Clear existing entries
+
+            if (fitnessEntries.length === 0) {
+                noEntriesMessage.style.display = 'block';
+            } else {
+                noEntriesMessage.style.display = 'none';
+            }
+
+            fitnessEntries.forEach((entry, index) => {
+                const entryCard = document.createElement('div');
+                entryCard.classList.add('bg-gray-50', 'p-4', 'rounded-lg', 'shadow-sm', 'border', 'border-gray-200');
+                // Display workout split as a comma-separated string
+                const workoutSplitDisplay = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
+
+                entryCard.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">${entry.date}</h3>
+                        <span class="text-sm text-gray-500">Weight: ${entry.weight}</span>
+                    </div>
+                    <ul class="text-gray-700 text-sm space-y-1">
+                        <li><strong>Workout:</strong> ${workoutSplitDisplay}</li>
+                        <li><strong>Pain Level:</strong> ${entry.painLevel}</li>
+                        <li><strong>Protein:</strong> ${entry.tookProtein ? 'Yes' : 'No'}</li>
+                        <li><strong>Creatine:</strong> ${entry.tookCreatine ? 'Yes' : 'No'}</li>
+                        <li><strong>EAA:</strong> ${entry.tookEAA ? 'Yes' : 'No'}</li>
+                    </ul>
+                    <div class="flex justify-end mt-3">
+                        <button data-index="${index}" class="delete-btn bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1.5 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 transition duration-200 ease-in-out">Delete</button>
+                    </div>
+                `;
+                entriesList.appendChild(entryCard);
+            });
+
+            // Attach event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const indexToDelete = parseInt(event.target.dataset.index);
+                    deleteEntry(indexToDelete);
+                });
+            });
+        }
+
+        // Function to handle form submission
+        trackingForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get selected workout splits from the multi-select
+            const selectedWorkoutSplits = Array.from(workoutSplitSelect.selectedOptions).map(option => option.value);
+
+            const newEntry = {
+                date: trackDateInput.value,
+                weight: parseFloat(document.getElementById('weight').value),
+                workoutSplit: selectedWorkoutSplits, // Store as an array
+                painLevel: document.getElementById('painLevel').value,
+                tookProtein: document.getElementById('tookProtein').checked,
+                tookCreatine: document.getElementById('tookCreatine').checked,
+                tookEAA: document.getElementById('tookEAA').checked
+            };
+
+            // Check for duplicate date (optional, but good for daily tracking)
+            const existingEntryIndex = fitnessEntries.findIndex(entry => entry.date === newEntry.date);
+            if (existingEntryIndex !== -1) {
+                // If an entry for this date exists, update it
+                if (confirm(`An entry for ${newEntry.date} already exists. Do you want to update it?`)) {
+                    fitnessEntries[existingEntryIndex] = newEntry;
+                } else {
+                    return; // Do not add/update if user cancels
+                }
+            } else {
+                // Otherwise, add new entry
+                fitnessEntries.push(newEntry);
+            }
+
+            fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date
+
+            saveEntriesToLocalStorage(); // Save to localStorage
+            renderEntries();            // Render updated list
+            trackingForm.reset();       // Clear form fields
+            setDefaultDate();           // Reset date field to today
+            resetWorkoutSplitSelection(); // Reset workout split selection
+        });
+
+        // Function to delete an entry
+        function deleteEntry(index) {
+            if (confirm("Are you sure you want to delete this entry?")) {
+                fitnessEntries.splice(index, 1); // Remove from array
+                saveEntriesToLocalStorage();      // Save changes
+                renderEntries();                  // Re-render the list
+            }
+        }
+
+        // Function to clear all data
+        clearAllDataBtn.addEventListener('click', () => {
+            if (confirm("Are you sure you want to delete ALL your fitness data? This action cannot be undone.")) {
+                fitnessEntries = []; // Clear the array
+                localStorage.removeItem(LOCAL_STORAGE_KEY); // Remove from localStorage
+                renderEntries(); // Re-render the empty list
+            }
+        });
+
+        // Function to convert data to CSV and trigger download
+        function downloadCSV() {
+            if (fitnessEntries.length === 0) {
+                alert("No data to download!");
+                return;
+            }
+
+            const headers = ["Date", "Weight", "Workout Split", "Pain Level", "Took Protein", "Took Creatine", "Took EAA"];
+            let csvContent = headers.join(",") + "\n";
+
+            fitnessEntries.forEach(entry => {
+                // Join multiple workout splits with a comma and space for CSV
+                const workoutSplitCsv = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
+
+                const row = [
+                    entry.date,
+                    entry.weight,
+                    `"${workoutSplitCsv.replace(/"/g, '""')}"`, // Escape quotes and wrap in quotes for CSV
+                    `"${entry.painLevel.replace(/"/g, '""')}"`,   // Handle commas in pain level
+                    entry.tookProtein ? 'Yes' : 'No',
+                    entry.tookCreatine ? 'Yes' : 'No',
+                    entry.tookEAA ? 'Yes' : 'No'
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'fitness_tracker.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("Your browser does not support downloading files directly. Please copy the data manually.");
+            }
+        }
+
+        // Add event listener to the download button
+        downloadCsvBtn.addEventListener('click', downloadCSV);
+
+        // Function to set the default date to today's date
+        function setDefaultDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            trackDateInput.value = `${year}-${month}-${day}`;
+        }
+
+        // Function to reset workout split selection after form submission
+        function resetWorkoutSplitSelection() {
+            Array.from(workoutSplitSelect.options).forEach(option => {
+                option.selected = false;
+            });
+        }
+
+        // --- Initialization ---
+        // Load data and set default date when the page first loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEntriesFromLocalStorage();
+            renderEntries();
+            setDefaultDate();
+        });
+    </script>
+</body>
+</html>

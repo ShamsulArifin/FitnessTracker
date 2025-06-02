@@ -32,7 +32,7 @@ This is a client-side application, meaning it runs entirely in your web browser 
 2.  **Navigate to the Directory:**
 
     ```bash
-    cd daily-fitness-tracker
+    cd FitnessTracker
     ```
 
 3.  **Open the File:**

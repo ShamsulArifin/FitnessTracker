@@ -1,9 +1,3 @@
-Creating a Git repository is a great idea to keep track of your fitness tracker's development and changes\!
-
-Here's a nice `README.md` file for your Fitness Tracker repository. You can copy and paste this directly into a file named `README.md` in the root of your new Git repository.
-
------
-
 # 🏋️‍♀️ Daily Fitness Tracker
 
 A simple, client-side web application for tracking your daily fitness metrics, workout splits, pain levels, and supplement intake. This tool is designed to be straightforward to use, saving your data directly in your browser's local storage for persistence across sessions.

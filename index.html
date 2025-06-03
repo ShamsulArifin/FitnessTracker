@@ -15,53 +15,66 @@
             z-index: 0; /* Ensure body content is above pseudo-element */
         }
 
-        /* Define CSS Variables for Retro Light Mode (Default) */
+        /* Define CSS Variables for Dark Mode (Default and only theme) */
         :root {
-            --bg-primary: #e0f2f7; /* Light Cyan/Blue */
-            --bg-secondary: #f0faff; /* Very light blue */
-            --text-primary: #2c3e50; /* Dark Blue-Gray */
-            --text-secondary: #34495e; /* Slightly lighter Dark Blue-Gray */
-            --text-tertiary: #7f8c8d; /* Muted Gray */
-            --card-bg: #eaf6ff; /* Lightest blue for cards */
-            --card-border: #aed6f1; /* Pastel blue border */
-            --input-bg: #ffffff; /* White */
-            --input-text: #34495e;
-            --input-border: #aed6f1;
-            --focus-ring: #8e44ad; /* Amethyst (Purple) */
-            --shadow-color-1: rgba(0, 0, 0, 0.1);
-            --shadow-color-2: rgba(0, 0, 0, 0.05);
-            --btn-primary-bg: #3498db; /* Peter River (Blue) */
-            --btn-primary-hover-bg: #2980b9; /* Deeper Blue */
-            --btn-success-bg: #6ab04c; /* Retro Green */
-            --btn-success-hover-bg: #5a9c42; /* Darker Retro Green */
-            --btn-danger-bg: #e74c3c; /* Alizarin (Red) */
-            --btn-danger-hover-bg: #c0392b; /* Deeper Red */
-            --checkbox-accent: #3498db; /* Peter River */
-            --toggle-slider-bg: #95a5a6; /* Silver (Gray) */
-            --toggle-slider-checked-bg: #3498db; /* Peter River */
-            --toggle-slider-before-bg: white;
-            --unit-toggle-bg: #dbe4eb; /* Light gray-blue */
-            --unit-toggle-border: #aed6f1;
-            --manage-btn-bg: #6c757d; /* Gray for manage button */
-            --manage-btn-hover-bg: #5a6268;
+            /* Base background color for dark mode */
+            --bg-primary: #121212;
+            --bg-secondary: #161b22; /* Placeholder, covered by glass effect */
+            --card-bg: rgba(0, 0, 0, 0.15); /* Dark glass for cards */
+            --card-border: rgba(255, 255, 255, 0.1); /* Dark border for cards */
 
-            /* Retro Gradient Colors for Light Mode */
-            --gradient-start-light: #ffb3ba; /* Light Pink */
-            --gradient-end-light: #bae1ff; /* Light Blue */
+            /* Text Colors (Adjusted for better contrast on glass) */
+            --text-primary: #E6E6FA; /* Lavender - Brighter */
+            --text-secondary: #B0C4DE; /* LightSteelBlue - Brighter */
+            --text-tertiary: #A9A9A9; /* DarkGray - Brighter */
+
+            /* Input Field Colors (Adjusted for glass effect) */
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-text: #E6E6FA; /* Matches primary text */
+            --input-border: rgba(255, 255, 255, 0.2);
+            --focus-ring: #58a6ff;
+
+            /* Shadow Colors (Adjusted for glass effect) */
+            --shadow-color-1: rgba(0, 0, 0, 0.6);
+            --shadow-color-2: rgba(0, 0, 0, 0.3);
+
+            /* Button Colors (More vibrant and fitting for glass) */
+            --btn-primary-bg: #007bff; /* Standard Blue */
+            --btn-primary-hover-bg: #0056b3; /* Deeper Standard Blue */
+            --btn-success-bg: #28a745; /* Standard Green */
+            --btn-success-hover-bg: #1e7e34; /* Deeper Standard Green */
+            --btn-danger-bg: #dc3545; /* Standard Red */
+            --btn-danger-hover-bg: #c82333; /* Deeper Standard Red */
+            --checkbox-accent: #007bff; /* Matches primary button */
+            --toggle-slider-bg: rgba(48, 54, 61, 0.5); /* Semi-transparent dark gray */
+            --toggle-slider-checked-bg: #007bff; /* Matches primary button */
+            --toggle-slider-before-bg: #c9d1d9;
+            --unit-toggle-bg: rgba(0, 0, 0, 0.2); /* Semi-transparent for toggle */
+            --unit-toggle-border: rgba(255, 255, 255, 0.1);
+            --manage-btn-bg: rgba(106, 115, 125, 0.5); /* Semi-transparent dark gray */
+            --manage-btn-hover-bg: rgba(84, 92, 100, 0.7);
         }
 
         /* Apply Variables to Elements */
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg-primary); /* Apply base background color */
             color: var(--text-secondary);
             min-height: 100vh;
         }
+
+        /* Glassmorphism effect for main-container */
         .main-container {
-            background-color: var(--bg-secondary);
+            background-color: rgba(0, 0, 0, 0.25); /* Semi-transparent black for dark mode glass */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Soft shadow */
+            border-radius: 10px; /* Rounded corners */
             color: var(--text-primary);
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
+
         h1, h2, h3 {
             color: var(--text-primary);
         }
@@ -72,8 +85,8 @@
             color: var(--text-tertiary);
         }
         .card-entry {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
+            background-color: var(--card-bg); /* Uses new rgba var */
+            border: 1px solid var(--card-border); /* Uses new rgba var */
             color: var(--text-secondary);
         }
         .card-entry h3 {
@@ -83,9 +96,9 @@
             color: var(--text-tertiary);
         }
         input, select, textarea {
-            background-color: var(--input-bg);
+            background-color: var(--input-bg); /* Uses new rgba var */
             color: var(--input-text);
-            border: 1px solid var(--input-border);
+            border: 1px solid var(--input-border); /* Uses new rgba var */
         }
         input:focus, select:focus, textarea:focus,
         button:focus {
@@ -94,6 +107,7 @@
             outline: none;
         }
         .shadow-xl {
+            /* Adjust shadow for glass effect */
             box-shadow: 0 20px 25px -5px var(--shadow-color-1), 0 10px 10px -5px var(--shadow-color-2);
         }
         .btn-primary { background-color: var(--btn-primary-bg); }
@@ -103,18 +117,18 @@
         .btn-danger { background-color: var(--btn-danger-bg); }
         .btn-danger:hover { background-color: var(--btn-danger-hover-bg); }
         .btn-secondary {
-            background-color: var(--text-tertiary);
-            color: var(--bg-secondary);
+            background-color: rgba(48, 54, 61, 0.5); /* Semi-transparent dark gray for secondary button */
+            color: var(--text-secondary);
         }
         .btn-secondary:hover {
-            background-color: var(--text-secondary);
+            background-color: rgba(48, 54, 61, 0.7);
         }
         .btn-manage {
-            background-color: var(--manage-btn-bg);
+            background-color: rgba(106, 115, 125, 0.5); /* Semi-transparent dark gray */
             color: white;
         }
         .btn-manage:hover {
-            background-color: var(--manage-btn-hover-bg);
+            background-color: rgba(84, 92, 100, 0.7);
         }
 
         /* Checkbox styling */
@@ -138,7 +152,7 @@
         input[type="checkbox"]:checked::before {
             content: '✔';
             display: block;
-            color: var(--bg-secondary);
+            color: var(--bg-secondary); /* This will be a light color on dark glass, dark on light glass */
             font-size: 0.75rem;
             line-height: 1;
             text-align: center;
@@ -156,7 +170,7 @@
             border: 1px solid var(--unit-toggle-border);
             border-radius: 0.5rem;
             overflow: hidden;
-            background-color: var(--unit-toggle-bg);
+            background-color: var(--unit-toggle-bg); /* Uses new rgba var */
         }
         .unit-toggle-group label {
             flex: 1;
@@ -174,7 +188,7 @@
             color: white;
         }
 
-        /* Grainy Gradient Background for Light Mode */
+        /* Pattern Background for Dark Mode */
         body::before {
             content: '';
             position: fixed;
@@ -182,55 +196,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--gradient-start-light), var(--gradient-end-light));
-            filter: url(#noise);
-            opacity: 0.4; /* Make it more subtle for light mode */
-            z-index: -1;
-        }
-
-
-        /* --- Dark Mode Variable Overrides --- */
-        html.dark {
-            --bg-primary: #0d1117;
-            --bg-secondary: #161b22;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --text-tertiary: #8b949e;
-            --card-bg: #21262d;
-            --card-border: #30363d;
-            --input-bg: #0d1117;
-            --input-text: #c9d1d9;
-            --input-border: #30363d;
-            --focus-ring: #58a6ff;
-            --shadow-color-1: rgba(0, 0, 0, 0.6);
-            --shadow-color-2: rgba(0, 0, 0, 0.3);
-            --btn-primary-bg: #58a6ff;
-            --btn-primary-hover-bg: #428eff;
-            --btn-success-bg: #00e676; /* Vibrant Neon Green */
-            --btn-success-hover-bg: #00b35c; /* Darker Neon Green */
-            --btn-danger-bg: #ff007f; /* Vibrant Pink/Magenta */
-            --btn-danger-hover-bg: #cc0066; /* Darker Pink/Magenta */
-            --checkbox-accent: #58a6ff;
-            --toggle-slider-bg: #30363d;
-            --toggle-slider-checked-bg: #58a6ff;
-            --toggle-slider-before-bg: #c9d1d9;
-            --unit-toggle-bg: #21262d;
-            --unit-toggle-border: #30363d;
-            --manage-btn-bg: #6a737d; /* Darker gray for manage button */
-            --manage-btn-hover-bg: #545c64;
-        }
-
-        /* Retro Grainy Gradient Background for Dark Mode */
-        html.dark::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #8a2be2, #ff69b4); /* Retro colors directly here */
-            filter: url(#noise);
-            opacity: 0.8;
+            /* Subtle diagonal lines for dark mode - increased contrast and size */
+            background-image: repeating-linear-gradient(45deg, #4A4A4A 0, #4A4A4A 1px, transparent 1px, transparent 20px);
+            background-size: 20px 20px;
+            opacity: 1;
             z-index: -1;
         }
 
@@ -298,9 +267,6 @@
             border-color: var(--btn-primary-bg);
             font-weight: bold;
         }
-        html.dark .tab-button:hover {
-            color: var(--text-primary);
-        }
     </style>
 </head>
 <body class="p-4">
@@ -323,18 +289,11 @@
                     <label for="unitLbs">lbs</label>
                 </div>
             </div>
-            <div class="flex items-center">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="darkModeToggle">
-                    <span class="slider"></span>
-                </label>
-                <span class="ml-2 form-label text-sm font-semibold">Dark Mode</span>
             </div>
-        </div>
 
         <h1 class="text-3xl font-bold mb-6 text-center">Daily Fitness Tracker</h1>
 
-        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+        <div class="flex border-b border-gray-200 mb-6">
             <button class="tab-button py-2 px-4 text-sm font-medium" data-tab="entryFormTab">Entry Form</button>
             <button class="tab-button py-2 px-4 text-sm font-medium" data-tab="summaryStatsTab">Summary</button>
             <button class="tab-button py-2 px-4 text-sm font-medium" data-tab="filterSortTab">Filter & Sort</button>
@@ -535,10 +494,10 @@
         const workoutSplitSelect = document.getElementById('workoutSplit');
         const painLevelSelect = document.getElementById('painLevel');
         const notesInput = document.getElementById('notes');
-        const darkModeToggle = document.getElementById('darkModeToggle');
+        // const darkModeToggle = document.getElementById('darkModeToggle'); // Removed
 
         const unitKgRadio = document.getElementById('unitKg');
-        const unitLbsRadio = document.getElementById('unitLbs'); // Corrected typo here
+        const unitLbsRadio = document.getElementById('unitLbs');
         const weightUnitLabel = document.getElementById('weightUnitLabel');
 
         const addUpdateBtn = document.getElementById('addUpdateBtn');
@@ -574,7 +533,7 @@
 
         // Keys for localStorage
         const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
-        const DARK_MODE_KEY = 'darkModeEnabled';
+        // const DARK_MODE_KEY = 'darkModeEnabled'; // Removed
         const WEIGHT_UNIT_KEY = 'weightUnit';
         const CUSTOM_SUPPLEMENTS_KEY = 'customSupplements';
 
@@ -583,26 +542,10 @@
         let customSupplements = [];
         let currentEditingIndex = -1;
 
-        // --- Dark Mode Functions ---
-        function applyDarkMode(isEnabled) {
-            if (isEnabled) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+        // --- Dark Mode Functions (Simplified as it's always dark) ---
+        function applyDarkMode() {
+            document.documentElement.classList.add('dark');
         }
-
-        function loadDarkModePreference() {
-            const isDarkModeEnabled = localStorage.getItem(DARK_MODE_KEY) === null || localStorage.getItem(DARK_MODE_KEY) === 'true';
-            darkModeToggle.checked = isDarkModeEnabled;
-            applyDarkMode(isDarkModeEnabled);
-        }
-
-        darkModeToggle.addEventListener('change', () => {
-            const isEnabled = darkModeToggle.checked;
-            applyDarkMode(isEnabled);
-            localStorage.setItem(DARK_MODE_KEY, isEnabled);
-        });
 
         // --- Unit Conversion Functions ---
         const KG_TO_LBS_FACTOR = 2.20462;
@@ -805,7 +748,7 @@
             filteredEntries.sort((a, b) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
-                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB; // Corrected typo here
+                return sortOrder === 'desc' ? dateB - dateA : dateA - b.date;
             });
 
 
@@ -1163,12 +1106,11 @@
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadDarkModePreference();
+            applyDarkMode(); // Always apply dark mode
             loadUnitPreference();
             loadCustomSupplements();
             loadEntriesFromLocalStorage();
             renderDynamicSupplementsInputs();
-            // Initial tab display
             showTab('entryFormTab'); // Default to Entry Form tab
             setDefaultDate();
         });

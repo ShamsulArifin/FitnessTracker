@@ -1,325 +1,1176 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Fitness Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom styles for Inter font */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Style for multi-select dropdown */
-        select[multiple] {
-            height: auto; /* Allow height to adjust based on content */
-            min-height: 120px; /* Set a minimum height to make it visible */
-        }
+      /* Custom styles for Inter font */
+      body {
+        font-family: 'Inter', sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      /* Define CSS Variables for Light Mode (Default) */
+      :root {
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --text-primary: #1f2937;
+        --text-secondary: #374151;
+        --text-tertiary: #6b7280;
+        --card-bg: #f9fafb;
+        --card-border: #e5e7eb;
+        --input-bg: #ffffff;
+        --input-text: #374151;
+        --input-border: #d1d5db;
+        --focus-ring: #3b82f6;
+        --shadow-color-1: rgba(0, 0, 0, 0.1);
+        --shadow-color-2: rgba(0, 0, 0, 0.05);
+        --btn-primary-bg: #3b82f6;
+        --btn-primary-hover-bg: #2563eb;
+        --btn-success-bg: #16a34a;
+        --btn-success-hover-bg: #15803d;
+        --btn-danger-bg: #dc2626;
+        --btn-danger-hover-bg: #b91c1c;
+        --checkbox-accent: #3b82f6;
+        --toggle-slider-bg: #ccc;
+        --toggle-slider-checked-bg: #2196f3;
+        --toggle-slider-before-bg: white;
+        --unit-toggle-bg: #e0e0e0;
+        --unit-toggle-border: #ccc;
+      }
+
+      /* Apply Variables to Elements */
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-secondary);
+      }
+      .main-container {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+      h1,
+      h2,
+      h3 {
+        color: var(--text-primary);
+      }
+      .form-label {
+        color: var(--text-secondary);
+      }
+      .text-tertiary {
+        color: var(--text-tertiary);
+      }
+      .card-entry {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-secondary);
+      }
+      .card-entry h3 {
+        color: var(--text-primary);
+      }
+      .card-entry span.text-sm {
+        color: var(--text-tertiary);
+      }
+      input,
+      select,
+      textarea {
+        background-color: var(--input-bg);
+        color: var(--input-text);
+        border: 1px solid var(--input-border);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus,
+      button:focus {
+        border-color: var(--focus-ring);
+        box-shadow: 0 0 0 2px var(--focus-ring),
+          0 0 0 4px rgba(var(--focus-ring-rgb, 59, 130, 246), 0.5);
+        outline: none;
+      }
+      .shadow-xl {
+        box-shadow: 0 20px 25px -5px var(--shadow-color-1),
+          0 10px 10px -5px var(--shadow-color-2);
+      }
+      .btn-primary {
+        background-color: var(--btn-primary-bg);
+      }
+      .btn-primary:hover {
+        background-color: var(--btn-primary-hover-bg);
+      }
+      .btn-success {
+        background-color: var(--btn-success-bg);
+      }
+      .btn-success:hover {
+        background-color: var(--btn-success-hover-bg);
+      }
+      .btn-danger {
+        background-color: var(--btn-danger-bg);
+      }
+      .btn-danger:hover {
+        background-color: var(--btn-danger-hover-bg);
+      }
+      .btn-secondary {
+        background-color: var(
+          --text-tertiary
+        ); /* Reusing a gray for edit button */
+        color: var(--bg-secondary);
+      }
+      .btn-secondary:hover {
+        background-color: var(--text-secondary);
+      }
+
+      /* Checkbox styling */
+      input[type='checkbox'] {
+        accent-color: var(--checkbox-accent);
+        border: 1px solid var(--input-border);
+        height: 1rem;
+        width: 1rem;
+        border-radius: 0.25rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: var(--input-bg);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      input[type='checkbox']:checked {
+        background-color: var(--checkbox-accent);
+        border-color: var(--checkbox-accent);
+      }
+      input[type='checkbox']:checked::before {
+        content: '✔';
+        display: block;
+        color: var(--bg-secondary);
+        font-size: 0.75rem;
+        line-height: 1;
+        text-align: center;
+      }
+
+      /* Style for multi-select dropdown */
+      select[multiple] {
+        height: auto;
+        min-height: 120px;
+      }
+
+      /* Unit Toggle Radio Buttons */
+      .unit-toggle-group {
+        display: flex;
+        border: 1px solid var(--unit-toggle-border);
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background-color: var(--unit-toggle-bg);
+      }
+      .unit-toggle-group label {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        color: var(--text-secondary);
+      }
+      .unit-toggle-group input[type='radio'] {
+        display: none;
+      }
+      .unit-toggle-group input[type='radio']:checked + label {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      /* --- Dark Mode Variable Overrides --- */
+      html.dark {
+        --bg-primary: #0d1117;
+        --bg-secondary: #161b22;
+        --text-primary: #c9d1d9;
+        --text-secondary: #8b949e;
+        --text-tertiary: #8b949e;
+        --card-bg: #21262d;
+        --card-border: #30363d;
+        --input-bg: #0d1117;
+        --input-text: #c9d1d9;
+        --input-border: #30363d;
+        --focus-ring: #58a6ff;
+        --shadow-color-1: rgba(0, 0, 0, 0.6);
+        --shadow-color-2: rgba(0, 0, 0, 0.3);
+        --btn-primary-bg: #58a6ff;
+        --btn-primary-hover-bg: #428eff;
+        --btn-success-bg: #3fb950;
+        --btn-success-hover-bg: #2ea043;
+        --btn-danger-bg: #f85149;
+        --btn-danger-hover-bg: #da3633;
+        --checkbox-accent: #58a6ff;
+        --toggle-slider-bg: #30363d;
+        --toggle-slider-checked-bg: #58a6ff;
+        --toggle-slider-before-bg: #c9d1d9;
+        --unit-toggle-bg: #21262d;
+        --unit-toggle-border: #30363d;
+      }
+
+      /* Retro Grainy Gradient Background for Dark Mode */
+      html.dark::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          #8a2be2,
+          #ff69b4
+        ); /* Retro colors directly here */
+        filter: url(#noise);
+        opacity: 0.8;
+        z-index: -1;
+      }
+
+      /* Toggle Switch specific styles (retained) */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--toggle-slider-bg);
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 34px;
+      }
+      .slider:before {
+        position: absolute;
+        content: '';
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: var(--toggle-slider-before-bg);
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: var(--toggle-slider-checked-bg);
+      }
+      input:focus + .slider {
+        box-shadow: 0 0 1px var(--toggle-slider-checked-bg);
+      }
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
     </style>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Daily Fitness Tracker</h1>
+  </head>
+  <body class="min-h-screen flex items-center justify-center p-4">
+    <svg style="position: absolute; width: 0; height: 0">
+      <filter id="noise">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.8"
+          numOctaves="10"
+          stitchTiles="stitch"
+        />
+        <feColorMatrix type="saturate" values="0" />
+        <feBlend in="SourceGraphic" in2="BackgroundImage" mode="multiply" />
+      </filter>
+    </svg>
 
-        <form id="trackingForm" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label for="trackDate" class="block text-gray-700 text-sm font-semibold mb-2">Date:</label>
-                <input type="date" id="trackDate" name="trackDate" required
-                       class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-                <label for="weight" class="block text-gray-700 text-sm font-semibold mb-2">Weight (kg/lbs):</label>
-                <input type="number" step="0.1" id="weight" name="weight" placeholder="e.g., 75.5" required
-                       class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div class="md:col-span-2"> <label for="workoutSplit" class="block text-gray-700 text-sm font-semibold mb-2">Workout Split (Select multiple):</label>
-                <select id="workoutSplit" name="workoutSplit" multiple required
-                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <option value="Chest">Chest</option>
-                    <option value="Biceps">Biceps</option>
-                    <option value="Back">Back</option>
-                    <option value="Triceps">Triceps</option>
-                    <option value="Shoulder">Shoulder</option>
-                    <option value="Traps">Traps</option>
-                    <option value="Forearms">Forearms</option>
-                    <option value="Abs">Abs</option>
-                    <option value="Legs">Legs</option>
-                    <option value="Cardio">Cardio</option>
-                    <option value="Rest Day">Rest Day</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div>
-                <label for="painLevel" class="block text-gray-700 text-sm font-semibold mb-2">Pain Level (1-10):</label>
-                <select id="painLevel" name="painLevel" required
-                        class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <option value="">Select Level</option>
-                    <option value="1 - None">1 - None</option>
-                    <option value="2 - Very Mild">2 - Very Mild</option>
-                    <option value="3 - Mild">3 - Mild</option>
-                    <option value="4 - Moderate">4 - Moderate</option>
-                    <option value="5 - Annoying">5 - Annoying</option>
-                    <option value="6 - Distracting">6 - Distracting</option>
-                    <option value="7 - Severe">7 - Severe</option>
-                    <option value="8 - Very Severe">8 - Very Severe</option>
-                    <option value="9 - Excruciating">9 - Excruciating</option>
-                    <option value="10 - Unbearable">10 - Unbearable</option>
-                </select>
-            </div>
-
-            <div class="md:col-span-2 grid grid-cols-3 gap-4 mb-4">
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookProtein" name="tookProtein"
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="tookProtein" class="ml-2 block text-gray-700 text-sm font-semibold">Took Protein</label>
-                </div>
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookCreatine" name="tookCreatine"
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="tookCreatine" class="ml-2 block text-gray-700 text-sm font-semibold">Took Creatine</label>
-                </div>
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookEAA" name="tookEAA"
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="tookEAA" class="ml-2 block text-gray-700 text-sm font-semibold">Took EAA</label>
-                </div>
-            </div>
-
-            <div class="md:col-span-2 flex justify-end">
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 ease-in-out">
-                    Add Entry
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Progress</h2>
-            <div id="entriesList" class="space-y-4">
-                <p id="noEntriesMessage" class="text-center text-gray-500">No entries yet. Add one above!</p>
-            </div>
-            <div class="flex justify-center mt-6 space-x-4">
-                <button id="downloadCsvBtn"
-                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 ease-in-out">
-                    Download as CSV
-                </button>
-                <button id="clearAllDataBtn"
-                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 ease-in-out">
-                    Clear All Data
-                </button>
-            </div>
+    <div class="main-container p-8 rounded-lg shadow-xl w-full max-w-4xl">
+      <div class="flex justify-between mb-4 items-center">
+        <div class="flex items-center space-x-2">
+          <span class="form-label text-sm font-semibold">Units:</span>
+          <div class="unit-toggle-group rounded-lg">
+            <input
+              type="radio"
+              id="unitKg"
+              name="weightUnit"
+              value="kg"
+              checked
+            />
+            <label for="unitKg">kg</label>
+            <input type="radio" id="unitLbs" name="weightUnit" value="lbs" />
+            <label for="unitLbs">lbs</label>
+          </div>
         </div>
+        <div class="flex items-center">
+          <label class="toggle-switch">
+            <input type="checkbox" id="darkModeToggle" />
+            <span class="slider"></span>
+          </label>
+          <span class="ml-2 form-label text-sm font-semibold">Dark Mode</span>
+        </div>
+      </div>
+
+      <h1 class="text-3xl font-bold mb-6 text-center">Daily Fitness Tracker</h1>
+
+      <form
+        id="trackingForm"
+        class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div>
+          <label
+            for="trackDate"
+            class="block form-label text-sm font-semibold mb-2"
+            >Date:</label
+          >
+          <input
+            type="date"
+            id="trackDate"
+            name="trackDate"
+            required
+            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight"
+          />
+        </div>
+        <div>
+          <label
+            for="weight"
+            class="block form-label text-sm font-semibold mb-2"
+            >Weight (<span id="weightUnitLabel">kg</span>):</label
+          >
+          <input
+            type="number"
+            step="0.1"
+            id="weight"
+            name="weight"
+            placeholder="e.g., 75.5"
+            required
+            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight"
+          />
+        </div>
+        <div class="md:col-span-2">
+          <label
+            for="workoutSplit"
+            class="block form-label text-sm font-semibold mb-2"
+            >Workout Split (Select multiple):</label
+          >
+          <select
+            id="workoutSplit"
+            name="workoutSplit"
+            multiple
+            required
+            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight"
+          >
+            <option value="Chest">Chest</option>
+            <option value="Biceps">Biceps</option>
+            <option value="Back">Back</option>
+            <option value="Triceps">Triceps</option>
+            <option value="Shoulder">Shoulder</option>
+            <option value="Traps">Traps</option>
+            <option value="Forearms">Forearms</option>
+            <option value="Abs">Abs</option>
+            <option value="Legs">Legs</option>
+            <option value="Cardio">Cardio</option>
+            <option value="Rest Day">Rest Day</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label
+            for="painLevel"
+            class="block form-label text-sm font-semibold mb-2"
+            >Pain Level (1-10):</label
+          >
+          <select
+            id="painLevel"
+            name="painLevel"
+            required
+            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight"
+          >
+            <option value="">Select Level</option>
+            <option value="1 - None">1 - None</option>
+            <option value="2 - Very Mild">2 - Very Mild</option>
+            <option value="3 - Mild">3 - Mild</option>
+            <option value="4 - Moderate">4 - Moderate</option>
+            <option value="5 - Annoying">5 - Annoying</option>
+            <option value="6 - Distracting">6 - Distracting</option>
+            <option value="7 - Severe">7 - Severe</option>
+            <option value="8 - Very Severe">8 - Very Severe</option>
+            <option value="9 - Excruciating">9 - Excruciating</option>
+            <option value="10 - Unbearable">10 - Unbearable</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label for="notes" class="block form-label text-sm font-semibold mb-2"
+            >Notes:</label
+          >
+          <textarea
+            id="notes"
+            name="notes"
+            rows="3"
+            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight resize-y"
+          ></textarea>
+        </div>
+
+        <div class="md:col-span-2 grid grid-cols-3 gap-4 mb-4">
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="tookProtein"
+              name="tookProtein"
+              class="h-4 w-4 rounded"
+            />
+            <label
+              for="tookProtein"
+              class="ml-2 form-label text-sm font-semibold"
+              >Took Protein</label
+            >
+          </div>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="tookCreatine"
+              name="tookCreatine"
+              class="h-4 w-4 rounded"
+            />
+            <label
+              for="tookCreatine"
+              class="ml-2 form-label text-sm font-semibold"
+              >Took Creatine</label
+            >
+          </div>
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="tookEAA"
+              name="tookEAA"
+              class="h-4 w-4 rounded"
+            />
+            <label for="tookEAA" class="ml-2 form-label text-sm font-semibold"
+              >Took EAA</label
+            >
+          </div>
+        </div>
+
+        <div class="md:col-span-2 flex justify-end space-x-3">
+          <button
+            type="button"
+            id="cancelEditBtn"
+            class="btn-secondary text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out hidden"
+          >
+            Cancel Edit
+          </button>
+          <button
+            type="submit"
+            id="addUpdateBtn"
+            class="btn-primary text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out"
+          >
+            Add Entry
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-8 p-4 rounded-lg border card-entry">
+        <h2 class="text-xl font-bold mb-3 text-center">Summary Statistics</h2>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm"
+        >
+          <div>
+            <strong>Total Entries:</strong> <span id="statTotalEntries">0</span>
+          </div>
+          <div>
+            <strong>Average Weight:</strong> <span id="statAvgWeight">N/A</span>
+          </div>
+          <div>
+            <strong>Most Frequent Workout:</strong>
+            <span id="statMostFrequentWorkout">N/A</span>
+          </div>
+          <div>
+            <strong>Avg Pain Level:</strong>
+            <span id="statAvgPainLevel">N/A</span>
+          </div>
+          <div>
+            <strong>Protein Taken:</strong>
+            <span id="statProteinFreq">N/A</span>
+          </div>
+          <div>
+            <strong>Creatine Taken:</strong>
+            <span id="statCreatineFreq">N/A</span>
+          </div>
+          <div>
+            <strong>EAA Taken:</strong> <span id="statEAAFreq">N/A</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 p-4 rounded-lg border card-entry">
+        <h2 class="text-xl font-bold mb-3 text-center">
+          Filter & Sort Entries
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label
+              for="filterStartDate"
+              class="block form-label text-sm font-semibold mb-1"
+              >Start Date:</label
+            >
+            <input
+              type="date"
+              id="filterStartDate"
+              class="input-field w-full py-1 px-2 rounded-lg"
+            />
+          </div>
+          <div>
+            <label
+              for="filterEndDate"
+              class="block form-label text-sm font-semibold mb-1"
+              >End Date:</label
+            >
+            <input
+              type="date"
+              id="filterEndDate"
+              class="input-field w-full py-1 px-2 rounded-lg"
+            />
+          </div>
+          <div>
+            <label
+              for="filterWorkoutSplit"
+              class="block form-label text-sm font-semibold mb-1"
+              >Filter Workout:</label
+            >
+            <select
+              id="filterWorkoutSplit"
+              class="input-field w-full py-1 px-2 rounded-lg"
+            >
+              <option value="">All Workouts</option>
+              <option value="Chest">Chest</option>
+              <option value="Biceps">Biceps</option>
+              <option value="Back">Back</option>
+              <option value="Triceps">Triceps</option>
+              <option value="Shoulder">Shoulder</option>
+              <option value="Traps">Traps</option>
+              <option value="Forearms">Forearms</option>
+              <option value="Abs">Abs</option>
+              <option value="Legs">Legs</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Rest Day">Rest Day</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="md:col-span-3 flex justify-center space-x-4 mt-2">
+            <button
+              type="button"
+              id="applyFiltersBtn"
+              class="btn-primary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out"
+            >
+              Apply Filters
+            </button>
+            <button
+              type="button"
+              id="clearFiltersBtn"
+              class="btn-secondary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label
+            for="sortOrder"
+            class="block form-label text-sm font-semibold mb-1"
+            >Sort By Date:</label
+          >
+          <select
+            id="sortOrder"
+            class="input-field w-full py-1 px-2 rounded-lg"
+          >
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="text-2xl font-bold mb-4 text-center">Your Progress</h2>
+        <div id="entriesList" class="space-y-4">
+          <p id="noEntriesMessage" class="text-center text-tertiary">
+            No entries yet. Add one above!
+          </p>
+        </div>
+        <div class="flex justify-center mt-6 space-x-4">
+          <button
+            id="downloadCsvBtn"
+            class="btn-success text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out"
+          >
+            Download as CSV
+          </button>
+          <button
+            id="clearAllDataBtn"
+            class="btn-danger text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out"
+          >
+            Clear All Data
+          </button>
+        </div>
+      </div>
     </div>
 
     <script>
-        // Get references to DOM elements
-        const trackingForm = document.getElementById('trackingForm');
-        const entriesList = document.getElementById('entriesList');
-        const noEntriesMessage = document.getElementById('noEntriesMessage');
-        const downloadCsvBtn = document.getElementById('downloadCsvBtn');
-        const clearAllDataBtn = document.getElementById('clearAllDataBtn');
-        const trackDateInput = document.getElementById('trackDate');
-        const workoutSplitSelect = document.getElementById('workoutSplit'); // Reference to the multi-select
+      // Get references to DOM elements
+      const trackingForm = document.getElementById('trackingForm');
+      const entriesList = document.getElementById('entriesList');
+      const noEntriesMessage = document.getElementById('noEntriesMessage');
+      const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+      const clearAllDataBtn = document.getElementById('clearAllDataBtn');
+      const trackDateInput = document.getElementById('trackDate');
+      const weightInput = document.getElementById('weight');
+      const workoutSplitSelect = document.getElementById('workoutSplit');
+      const painLevelSelect = document.getElementById('painLevel');
+      const notesInput = document.getElementById('notes'); // New notes field
+      const tookProteinCheckbox = document.getElementById('tookProtein');
+      const tookCreatineCheckbox = document.getElementById('tookCreatine');
+      const tookEAACheckbox = document.getElementById('tookEAA');
+      const darkModeToggle = document.getElementById('darkModeToggle');
 
-        // Key for localStorage
-        const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
+      const unitKgRadio = document.getElementById('unitKg'); // Unit toggle
+      const unitLbsRadio = document.getElementById('unitLbs');
+      const weightUnitLabel = document.getElementById('weightUnitLabel');
 
-        // Array to store fitness entries
-        let fitnessEntries = [];
+      const addUpdateBtn = document.getElementById('addUpdateBtn'); // Submit button
+      const cancelEditBtn = document.getElementById('cancelEditBtn'); // Cancel edit button
 
-        // --- Data Persistence Functions ---
+      // Summary Statistics elements
+      const statTotalEntries = document.getElementById('statTotalEntries');
+      const statAvgWeight = document.getElementById('statAvgWeight');
+      const statMostFrequentWorkout = document.getElementById(
+        'statMostFrequentWorkout'
+      );
+      const statAvgPainLevel = document.getElementById('statAvgPainLevel');
+      const statProteinFreq = document.getElementById('statProteinFreq');
+      const statCreatineFreq = document.getElementById('statCreatineFreq');
+      const statEAAFreq = document.getElementById('statEAAFreq');
 
-        // Function to save data to localStorage
-        function saveEntriesToLocalStorage() {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries));
+      // Filter elements
+      const filterStartDateInput = document.getElementById('filterStartDate');
+      const filterEndDateInput = document.getElementById('filterEndDate');
+      const filterWorkoutSplitSelect =
+        document.getElementById('filterWorkoutSplit');
+      const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+      const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+      const sortOrderSelect = document.getElementById('sortOrder');
+
+      // Keys for localStorage
+      const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
+      const DARK_MODE_KEY = 'darkModeEnabled';
+      const WEIGHT_UNIT_KEY = 'weightUnit';
+
+      // Global state variables
+      let fitnessEntries = [];
+      let currentEditingIndex = -1; // -1 means no entry is being edited
+
+      // --- Dark Mode Functions ---
+      function applyDarkMode(isEnabled) {
+        if (isEnabled) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+
+      function loadDarkModePreference() {
+        const isDarkModeEnabled =
+          localStorage.getItem(DARK_MODE_KEY) === null ||
+          localStorage.getItem(DARK_MODE_KEY) === 'true';
+        darkModeToggle.checked = isDarkModeEnabled;
+        applyDarkMode(isDarkModeEnabled);
+      }
+
+      darkModeToggle.addEventListener('change', () => {
+        const isEnabled = darkModeToggle.checked;
+        applyDarkMode(isEnabled);
+        localStorage.setItem(DARK_MODE_KEY, isEnabled);
+      });
+
+      // --- Unit Conversion Functions ---
+      const KG_TO_LBS_FACTOR = 2.20462;
+
+      function convertWeight(weight, fromUnit, toUnit) {
+        if (fromUnit === toUnit) return weight;
+        if (fromUnit === 'kg' && toUnit === 'lbs') {
+          return weight * KG_TO_LBS_FACTOR;
+        }
+        if (fromUnit === 'lbs' && toUnit === 'kg') {
+          return weight / KG_TO_LBS_FACTOR;
+        }
+        return weight; // Should not happen
+      }
+
+      function updateWeightUnitDisplay(unit) {
+        weightUnitLabel.textContent = unit;
+        localStorage.setItem(WEIGHT_UNIT_KEY, unit);
+        renderEntries(); // Re-render entries to show updated units
+        renderStatistics(); // Re-render stats with updated units
+      }
+
+      unitKgRadio.addEventListener('change', () =>
+        updateWeightUnitDisplay('kg')
+      );
+      unitLbsRadio.addEventListener('change', () =>
+        updateWeightUnitDisplay('lbs')
+      );
+
+      // Load unit preference on start
+      function loadUnitPreference() {
+        const savedUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+        if (savedUnit === 'lbs') {
+          unitLbsRadio.checked = true;
+        } else {
+          unitKgRadio.checked = true;
+        }
+        weightUnitLabel.textContent = savedUnit;
+      }
+
+      // --- Data Persistence Functions ---
+      function saveEntriesToLocalStorage() {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries));
+      }
+
+      function loadEntriesFromLocalStorage() {
+        const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (storedEntries) {
+          try {
+            fitnessEntries = JSON.parse(storedEntries);
+            fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+          } catch (e) {
+            console.error('Error parsing stored data from localStorage:', e);
+            fitnessEntries = [];
+          }
+        }
+      }
+
+      // --- UI Rendering and Interaction Functions ---
+
+      function renderEntries() {
+        entriesList.innerHTML = '';
+        const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+
+        // Apply filters first
+        let filteredEntries = fitnessEntries.filter((entry) => {
+          const entryDate = new Date(entry.date);
+          const startDate = filterStartDateInput.value
+            ? new Date(filterStartDateInput.value)
+            : null;
+          const endDate = filterEndDateInput.value
+            ? new Date(filterEndDateInput.value)
+            : null;
+          const filterWorkout = filterWorkoutSplitSelect.value;
+
+          let dateMatch = true;
+          if (startDate && entryDate < startDate) dateMatch = false;
+          if (endDate && entryDate > endDate) dateMatch = false;
+
+          let workoutMatch = true;
+          if (filterWorkout && !entry.workoutSplit.includes(filterWorkout))
+            workoutMatch = false;
+
+          return dateMatch && workoutMatch;
+        });
+
+        // Apply sorting
+        const sortOrder = sortOrderSelect.value;
+        filteredEntries.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+        });
+
+        if (filteredEntries.length === 0) {
+          noEntriesMessage.style.display = 'block';
+        } else {
+          noEntriesMessage.style.display = 'none';
         }
 
-        // Function to load data from localStorage
-        function loadEntriesFromLocalStorage() {
-            const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (storedEntries) {
-                try {
-                    fitnessEntries = JSON.parse(storedEntries);
-                    // Ensure entries are sorted by date in descending order (most recent first)
-                    fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-                } catch (e) {
-                    console.error("Error parsing stored data from localStorage:", e);
-                    fitnessEntries = []; // Reset if parsing fails
-                }
-            }
-        }
+        filteredEntries.forEach((entry, index) => {
+          const displayWeight = convertWeight(
+            entry.weight,
+            entry.unit || 'kg',
+            currentUnit
+          ).toFixed(1); // Convert for display
+          const entryCard = document.createElement('div');
+          entryCard.classList.add(
+            'card-entry',
+            'p-4',
+            'rounded-lg',
+            'shadow-sm',
+            'border'
+          );
+          const workoutSplitDisplay = Array.isArray(entry.workoutSplit)
+            ? entry.workoutSplit.join(', ')
+            : entry.workoutSplit;
 
-        // --- UI Rendering and Interaction Functions ---
-
-        // Function to render entries to the DOM
-        function renderEntries() {
-            entriesList.innerHTML = ''; // Clear existing entries
-
-            if (fitnessEntries.length === 0) {
-                noEntriesMessage.style.display = 'block';
-            } else {
-                noEntriesMessage.style.display = 'none';
-            }
-
-            fitnessEntries.forEach((entry, index) => {
-                const entryCard = document.createElement('div');
-                entryCard.classList.add('bg-gray-50', 'p-4', 'rounded-lg', 'shadow-sm', 'border', 'border-gray-200');
-                // Display workout split as a comma-separated string
-                const workoutSplitDisplay = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
-
-                entryCard.innerHTML = `
+          entryCard.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-lg font-semibold text-gray-800">${entry.date}</h3>
-                        <span class="text-sm text-gray-500">Weight: ${entry.weight}</span>
+                        <h3 class="text-lg font-semibold">${entry.date}</h3>
+                        <span class="text-sm text-tertiary">Weight: ${displayWeight} ${currentUnit}</span>
                     </div>
-                    <ul class="text-gray-700 text-sm space-y-1">
+                    <ul class="text-sm space-y-1">
                         <li><strong>Workout:</strong> ${workoutSplitDisplay}</li>
                         <li><strong>Pain Level:</strong> ${entry.painLevel}</li>
-                        <li><strong>Protein:</strong> ${entry.tookProtein ? 'Yes' : 'No'}</li>
-                        <li><strong>Creatine:</strong> ${entry.tookCreatine ? 'Yes' : 'No'}</li>
-                        <li><strong>EAA:</strong> ${entry.tookEAA ? 'Yes' : 'No'}</li>
+                        <li><strong>Protein:</strong> ${
+                          entry.tookProtein ? 'Yes' : 'No'
+                        }</li>
+                        <li><strong>Creatine:</strong> ${
+                          entry.tookCreatine ? 'Yes' : 'No'
+                        }</li>
+                        <li><strong>EAA:</strong> ${
+                          entry.tookEAA ? 'Yes' : 'No'
+                        }</li>
+                        ${
+                          entry.notes
+                            ? `<li><strong>Notes:</strong> <span class="whitespace-pre-wrap">${entry.notes}</span></li>`
+                            : ''
+                        }
                     </ul>
-                    <div class="flex justify-end mt-3">
-                        <button data-index="${index}" class="delete-btn bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1.5 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 transition duration-200 ease-in-out">Delete</button>
+                    <div class="flex justify-end mt-3 space-x-2">
+                        <button data-index="${index}" class="edit-btn btn-secondary text-white text-xs font-bold py-1.5 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 ease-in-out">Edit</button>
+                        <button data-index="${index}" class="delete-btn btn-danger text-white text-xs font-bold py-1.5 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">Delete</button>
                     </div>
                 `;
-                entriesList.appendChild(entryCard);
-            });
+          entriesList.appendChild(entryCard);
+        });
 
-            // Attach event listeners to delete buttons
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const indexToDelete = parseInt(event.target.dataset.index);
-                    deleteEntry(indexToDelete);
-                });
-            });
+        document.querySelectorAll('.delete-btn').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            const indexToDelete = parseInt(event.target.dataset.index);
+            deleteEntry(indexToDelete);
+          });
+        });
+
+        document.querySelectorAll('.edit-btn').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            const indexToEdit = parseInt(event.target.dataset.index);
+            editEntry(indexToEdit);
+          });
+        });
+
+        renderStatistics(); // Update statistics after rendering entries
+      }
+
+      function renderStatistics() {
+        if (fitnessEntries.length === 0) {
+          statTotalEntries.textContent = '0';
+          statAvgWeight.textContent = 'N/A';
+          statMostFrequentWorkout.textContent = 'N/A';
+          statAvgPainLevel.textContent = 'N/A';
+          statProteinFreq.textContent = 'N/A';
+          statCreatineFreq.textContent = 'N/A';
+          statEAAFreq.textContent = 'N/A';
+          return;
         }
 
-        // Function to handle form submission
-        trackingForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Prevent default form submission
+        const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
 
-            // Get selected workout splits from the multi-select
-            const selectedWorkoutSplits = Array.from(workoutSplitSelect.selectedOptions).map(option => option.value);
+        // Total Entries
+        statTotalEntries.textContent = fitnessEntries.length;
 
-            const newEntry = {
-                date: trackDateInput.value,
-                weight: parseFloat(document.getElementById('weight').value),
-                workoutSplit: selectedWorkoutSplits, // Store as an array
-                painLevel: document.getElementById('painLevel').value,
-                tookProtein: document.getElementById('tookProtein').checked,
-                tookCreatine: document.getElementById('tookCreatine').checked,
-                tookEAA: document.getElementById('tookEAA').checked
-            };
+        // Average Weight
+        const totalWeight = fitnessEntries.reduce((sum, entry) => {
+          // Convert all weights to the current display unit before summing
+          return (
+            sum + convertWeight(entry.weight, entry.unit || 'kg', currentUnit)
+          );
+        }, 0);
+        statAvgWeight.textContent = `${(
+          totalWeight / fitnessEntries.length
+        ).toFixed(1)} ${currentUnit}`;
 
-            // Check for duplicate date (optional, but good for daily tracking)
-            const existingEntryIndex = fitnessEntries.findIndex(entry => entry.date === newEntry.date);
-            if (existingEntryIndex !== -1) {
-                // If an entry for this date exists, update it
-                if (confirm(`An entry for ${newEntry.date} already exists. Do you want to update it?`)) {
-                    fitnessEntries[existingEntryIndex] = newEntry;
-                } else {
-                    return; // Do not add/update if user cancels
-                }
+        // Most Frequent Workout
+        const workoutCounts = {};
+        fitnessEntries.forEach((entry) => {
+          entry.workoutSplit.forEach((split) => {
+            workoutCounts[split] = (workoutCounts[split] || 0) + 1;
+          });
+        });
+        let mostFrequentWorkout = 'N/A';
+        let maxCount = 0;
+        for (const split in workoutCounts) {
+          if (workoutCounts[split] > maxCount) {
+            maxCount = workoutCounts[split];
+            mostFrequentWorkout = split;
+          }
+        }
+        statMostFrequentWorkout.textContent = mostFrequentWorkout;
+
+        // Average Pain Level
+        const totalPain = fitnessEntries.reduce((sum, entry) => {
+          // Extract numerical part from "X - Description"
+          const painValue = parseInt(entry.painLevel.split(' ')[0]);
+          return sum + (isNaN(painValue) ? 0 : painValue);
+        }, 0);
+        statAvgPainLevel.textContent = `${(
+          totalPain / fitnessEntries.length
+        ).toFixed(1)}`;
+
+        // Supplement Frequencies
+        const proteinCount = fitnessEntries.filter(
+          (entry) => entry.tookProtein
+        ).length;
+        const creatineCount = fitnessEntries.filter(
+          (entry) => entry.tookCreatine
+        ).length;
+        const eaaCount = fitnessEntries.filter((entry) => entry.tookEAA).length;
+
+        statProteinFreq.textContent = `${(
+          (proteinCount / fitnessEntries.length) *
+          100
+        ).toFixed(0)}%`;
+        statCreatineFreq.textContent = `${(
+          (creatineCount / fitnessEntries.length) *
+          100
+        ).toFixed(0)}%`;
+        statEAAFreq.textContent = `${(
+          (eaaCount / fitnessEntries.length) *
+          100
+        ).toFixed(0)}%`;
+      }
+
+      trackingForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const selectedWorkoutSplits = Array.from(
+          workoutSplitSelect.selectedOptions
+        ).map((option) => option.value);
+        const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+
+        const newEntryData = {
+          date: trackDateInput.value,
+          weight: parseFloat(weightInput.value),
+          unit: currentUnit, // Store the unit the weight was entered in
+          workoutSplit: selectedWorkoutSplits,
+          painLevel: painLevelSelect.value,
+          notes: notesInput.value.trim(), // Trim whitespace
+          tookProtein: tookProteinCheckbox.checked,
+          tookCreatine: tookCreatineCheckbox.checked,
+          tookEAA: tookEAACheckbox.checked,
+        };
+
+        if (currentEditingIndex > -1) {
+          // Editing existing entry
+          // Ensure we convert the weight back to the original stored unit if the unit was changed during edit
+          newEntryData.weight = convertWeight(
+            newEntryData.weight,
+            currentUnit,
+            fitnessEntries[currentEditingIndex].unit || 'kg'
+          );
+          newEntryData.unit = fitnessEntries[currentEditingIndex].unit || 'kg'; // Keep original stored unit
+
+          fitnessEntries[currentEditingIndex] = newEntryData;
+          currentEditingIndex = -1; // Reset edit state
+          addUpdateBtn.textContent = 'Add Entry';
+          cancelEditBtn.classList.add('hidden');
+        } else {
+          // Adding new entry
+          // Check for duplicate date (optional, but good for daily tracking)
+          const existingEntryIndex = fitnessEntries.findIndex(
+            (entry) => entry.date === newEntryData.date
+          );
+          if (existingEntryIndex !== -1) {
+            if (
+              confirm(
+                `An entry for ${newEntryData.date} already exists. Do you want to update it?`
+              )
+            ) {
+              newEntryData.weight = convertWeight(
+                newEntryData.weight,
+                currentUnit,
+                fitnessEntries[existingEntryIndex].unit || 'kg'
+              );
+              newEntryData.unit =
+                fitnessEntries[existingEntryIndex].unit || 'kg';
+              fitnessEntries[existingEntryIndex] = newEntryData;
             } else {
-                // Otherwise, add new entry
-                fitnessEntries.push(newEntry);
+              return;
             }
+          } else {
+            fitnessEntries.push(newEntryData);
+          }
+        }
 
-            fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date
+        fitnessEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+        saveEntriesToLocalStorage();
+        renderEntries();
+        trackingForm.reset();
+        setDefaultDate();
+        resetWorkoutSplitSelection();
+      });
 
-            saveEntriesToLocalStorage(); // Save to localStorage
-            renderEntries();            // Render updated list
-            trackingForm.reset();       // Clear form fields
-            setDefaultDate();           // Reset date field to today
-            resetWorkoutSplitSelection(); // Reset workout split selection
+      function editEntry(index) {
+        currentEditingIndex = index;
+        const entry = fitnessEntries[index];
+
+        trackDateInput.value = entry.date;
+        // Convert weight to currently selected display unit for editing
+        const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+        weightInput.value = convertWeight(
+          entry.weight,
+          entry.unit || 'kg',
+          currentUnit
+        ).toFixed(1);
+
+        // Select multiple options for workout split
+        Array.from(workoutSplitSelect.options).forEach((option) => {
+          option.selected = entry.workoutSplit.includes(option.value);
         });
 
-        // Function to delete an entry
-        function deleteEntry(index) {
-            if (confirm("Are you sure you want to delete this entry?")) {
-                fitnessEntries.splice(index, 1); // Remove from array
-                saveEntriesToLocalStorage();      // Save changes
-                renderEntries();                  // Re-render the list
-            }
+        painLevelSelect.value = entry.painLevel;
+        notesInput.value = entry.notes || '';
+        tookProteinCheckbox.checked = entry.tookProtein;
+        tookCreatineCheckbox.checked = entry.tookCreatine;
+        tookEAACheckbox.checked = entry.tookEAA;
+
+        addUpdateBtn.textContent = 'Update Entry';
+        cancelEditBtn.classList.remove('hidden');
+      }
+
+      cancelEditBtn.addEventListener('click', () => {
+        currentEditingIndex = -1;
+        trackingForm.reset();
+        setDefaultDate();
+        resetWorkoutSplitSelection();
+        addUpdateBtn.textContent = 'Add Entry';
+        cancelEditBtn.classList.add('hidden');
+      });
+
+      function deleteEntry(index) {
+        if (confirm('Are you sure you want to delete this entry?')) {
+          fitnessEntries.splice(index, 1);
+          saveEntriesToLocalStorage();
+          renderEntries();
+          if (currentEditingIndex === index) {
+            // If deleting the one being edited
+            cancelEditBtn.click(); // Reset form
+          } else if (currentEditingIndex > index) {
+            // Adjust index if an earlier entry was deleted
+            currentEditingIndex--;
+          }
+        }
+      }
+
+      clearAllDataBtn.addEventListener('click', () => {
+        if (
+          confirm(
+            'Are you sure you want to delete ALL your fitness data? This action cannot be undone.'
+          )
+        ) {
+          fitnessEntries = [];
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+          renderEntries();
+          cancelEditBtn.click(); // Reset form
+        }
+      });
+
+      function downloadCSV() {
+        if (fitnessEntries.length === 0) {
+          alert('No data to download!');
+          return;
         }
 
-        // Function to clear all data
-        clearAllDataBtn.addEventListener('click', () => {
-            if (confirm("Are you sure you want to delete ALL your fitness data? This action cannot be undone.")) {
-                fitnessEntries = []; // Clear the array
-                localStorage.removeItem(LOCAL_STORAGE_KEY); // Remove from localStorage
-                renderEntries(); // Re-render the empty list
-            }
+        const headers = [
+          'Date',
+          'Weight (kg)',
+          'Workout Split',
+          'Pain Level',
+          'Took Protein',
+          'Took Creatine',
+          'Took EAA',
+          'Notes',
+        ];
+        let csvContent = headers.join(',') + '\n';
+
+        fitnessEntries.forEach((entry) => {
+          // Ensure weight is in KG for CSV export, regardless of display unit
+          const weightInKg = convertWeight(
+            entry.weight,
+            entry.unit || 'kg',
+            'kg'
+          ).toFixed(1);
+          const workoutSplitCsv = Array.isArray(entry.workoutSplit)
+            ? entry.workoutSplit.map((s) => s.replace(/"/g, '""')).join(', ')
+            : entry.workoutSplit.replace(/"/g, '""');
+          const painLevelCsv = entry.painLevel.replace(/"/g, '""');
+          const notesCsv = entry.notes
+            ? `"${entry.notes.replace(/"/g, '""')}"`
+            : ''; // Wrap notes in quotes and escape internal quotes
+
+          const row = [
+            entry.date,
+            weightInKg,
+            `"${workoutSplitCsv}"`,
+            `"${painLevelCsv}"`,
+            entry.tookProtein ? 'Yes' : 'No',
+            entry.tookCreatine ? 'Yes' : 'No',
+            entry.tookEAA ? 'Yes' : 'No',
+            notesCsv,
+          ];
+          csvContent += row.join(',') + '\n';
         });
 
-        // Function to convert data to CSV and trigger download
-        function downloadCSV() {
-            if (fitnessEntries.length === 0) {
-                alert("No data to download!");
-                return;
-            }
-
-            const headers = ["Date", "Weight", "Workout Split", "Pain Level", "Took Protein", "Took Creatine", "Took EAA"];
-            let csvContent = headers.join(",") + "\n";
-
-            fitnessEntries.forEach(entry => {
-                // Join multiple workout splits with a comma and space for CSV
-                const workoutSplitCsv = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
-
-                const row = [
-                    entry.date,
-                    entry.weight,
-                    `"${workoutSplitCsv.replace(/"/g, '""')}"`, // Escape quotes and wrap in quotes for CSV
-                    `"${entry.painLevel.replace(/"/g, '""')}"`,   // Handle commas in pain level
-                    entry.tookProtein ? 'Yes' : 'No',
-                    entry.tookCreatine ? 'Yes' : 'No',
-                    entry.tookEAA ? 'Yes' : 'No'
-                ];
-                csvContent += row.join(",") + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'fitness_tracker.csv');
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                alert("Your browser does not support downloading files directly. Please copy the data manually.");
-            }
-        }
-
-        // Add event listener to the download button
-        downloadCsvBtn.addEventListener('click', downloadCSV);
-
-        // Function to set the default date to today's date
-        function setDefaultDate() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            trackDateInput.value = `${year}-${month}-${day}`;
-        }
-
-        // Function to reset workout split selection after form submission
-        function resetWorkoutSplitSelection() {
-            Array.from(workoutSplitSelect.options).forEach(option => {
-                option.selected = false;
-            });
-        }
-
-        // --- Initialization ---
-        // Load data and set default date when the page first loads
-        document.addEventListener('DOMContentLoaded', () => {
-            loadEntriesFromLocalStorage();
-            renderEntries();
-            setDefaultDate();
+        const blob = new Blob([csvContent], {
+          type: 'text/csv;charset=utf-8;',
         });
+        const link = document.createElement('a');
+        if (link.download !== undefined) {
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'fitness_tracker.csv');
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          alert(
+            'Your browser does not support downloading files directly. Please copy the data manually.'
+          );
+        }
+      }
+
+      downloadCsvBtn.addEventListener('click', downloadCSV);
+
+      function setDefaultDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        trackDateInput.value = `${year}-${month}-${day}`;
+      }
+
+      function resetWorkoutSplitSelection() {
+        Array.from(workoutSplitSelect.options).forEach((option) => {
+          option.selected = false;
+        });
+      }
+
+      // Event listeners for filters and sorting
+      applyFiltersBtn.addEventListener('click', renderEntries);
+      clearFiltersBtn.addEventListener('click', () => {
+        filterStartDateInput.value = '';
+        filterEndDateInput.value = '';
+        filterWorkoutSplitSelect.value = '';
+        renderEntries(); // Re-render to clear filters
+      });
+      sortOrderSelect.addEventListener('change', renderEntries); // Re-render on sort change
+
+      // --- Initialization ---
+      document.addEventListener('DOMContentLoaded', () => {
+        loadDarkModePreference();
+        loadUnitPreference(); // Load unit preference before loading entries
+        loadEntriesFromLocalStorage();
+        renderEntries(); // Renders entries and statistics
+        setDefaultDate();
+      });
     </script>
-</body>
+  </body>
 </html>

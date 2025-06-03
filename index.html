@@ -42,6 +42,8 @@
             --toggle-slider-before-bg: white;
             --unit-toggle-bg: #dbe4eb; /* Light gray-blue */
             --unit-toggle-border: #aed6f1;
+            --manage-btn-bg: #6c757d; /* Gray for manage button */
+            --manage-btn-hover-bg: #5a6268;
 
             /* Retro Gradient Colors for Light Mode */
             --gradient-start-light: #a8dadc; /* Soft Teal */
@@ -88,7 +90,7 @@
         input:focus, select:focus, textarea:focus,
         button:focus {
             border-color: var(--focus-ring);
-            box-shadow: 0 0 0 2px var(--focus-ring), 0 0 0 4px rgba(var(--focus-ring-rgb, 59, 130, 246), 0.5); /* Note: focus-ring-rgb is not defined, will default to 59,130,246 */
+            box-shadow: 0 0 0 2px var(--focus-ring), 0 0 0 4px rgba(var(--focus-ring-rgb, 59, 130, 246), 0.5);
             outline: none;
         }
         .shadow-xl {
@@ -106,6 +108,13 @@
         }
         .btn-secondary:hover {
             background-color: var(--text-secondary);
+        }
+        .btn-manage {
+            background-color: var(--manage-btn-bg);
+            color: white;
+        }
+        .btn-manage:hover {
+            background-color: var(--manage-btn-hover-bg);
         }
 
         /* Checkbox styling */
@@ -207,6 +216,8 @@
             --toggle-slider-before-bg: #c9d1d9;
             --unit-toggle-bg: #21262d;
             --unit-toggle-border: #30363d;
+            --manage-btn-bg: #6a737d; /* Darker gray for manage button */
+            --manage-btn-hover-bg: #545c64;
         }
 
         /* Retro Grainy Gradient Background for Dark Mode */
@@ -355,22 +366,16 @@
                           class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight resize-y"></textarea>
             </div>
 
-            <div class="md:col-span-2 grid grid-cols-3 gap-4 mb-4">
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookProtein" name="tookProtein"
-                           class="h-4 w-4 rounded">
-                    <label for="tookProtein" class="ml-2 form-label text-sm font-semibold">Took Protein</label>
+            <div class="md:col-span-2">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block form-label text-sm font-semibold">Supplements:</label>
+                    <button type="button" id="manageSupplementsBtn"
+                            class="btn-manage text-white text-xs font-bold py-1.5 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
+                        Manage Supplements
+                    </button>
                 </div>
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookCreatine" name="tookCreatine"
-                           class="h-4 w-4 rounded">
-                    <label for="tookCreatine" class="ml-2 form-label text-sm font-semibold">Took Creatine</label>
-                </div>
-                <div class="flex items-center">
-                    <input type="checkbox" id="tookEAA" name="tookEAA"
-                           class="h-4 w-4 rounded">
-                    <label for="tookEAA" class="ml-2 form-label text-sm font-semibold">Took EAA</label>
-                </div>
+                <div id="dynamicSupplements" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    </div>
             </div>
 
             <div class="md:col-span-2 flex justify-end space-x-3">
@@ -385,17 +390,34 @@
             </div>
         </form>
 
+        <div id="supplementManagementSection" class="hidden mt-8 p-4 rounded-lg border card-entry">
+            <h2 class="text-xl font-bold mb-3 text-center">Manage Custom Supplements</h2>
+            <div class="flex mb-4 space-x-2">
+                <input type="text" id="newSupplementName" placeholder="New supplement name"
+                       class="input-field flex-grow shadow-sm appearance-none border rounded-lg py-2 px-3 leading-tight">
+                <button type="button" id="addSupplementBtn"
+                        class="btn-primary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Add
+                </button>
+            </div>
+            <div id="customSupplementsList" class="space-y-2">
+                </div>
+            <div class="flex justify-end mt-4">
+                <button type="button" id="closeManageSupplementsBtn"
+                        class="btn-secondary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
+                    Close
+                </button>
+            </div>
+        </div>
+
         <div class="mt-8 p-4 rounded-lg border card-entry">
             <h2 class="text-xl font-bold mb-3 text-center">Summary Statistics</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm" id="statsGrid">
                 <div><strong>Total Entries:</strong> <span id="statTotalEntries">0</span></div>
                 <div><strong>Average Weight:</strong> <span id="statAvgWeight">N/A</span></div>
                 <div><strong>Most Frequent Workout:</strong> <span id="statMostFrequentWorkout">N/A</span></div>
                 <div><strong>Avg Pain Level:</strong> <span id="statAvgPainLevel">N/A</span></div>
-                <div><strong>Protein Taken:</strong> <span id="statProteinFreq">N/A</span></div>
-                <div><strong>Creatine Taken:</strong> <span id="statCreatineFreq">N/A</span></div>
-                <div><strong>EAA Taken:</strong> <span id="statEAAFreq">N/A</span></div>
-            </div>
+                </div>
         </div>
 
         <div class="mt-8 p-4 rounded-lg border card-entry">
@@ -477,27 +499,22 @@
         const weightInput = document.getElementById('weight');
         const workoutSplitSelect = document.getElementById('workoutSplit');
         const painLevelSelect = document.getElementById('painLevel');
-        const notesInput = document.getElementById('notes'); // New notes field
-        const tookProteinCheckbox = document.getElementById('tookProtein');
-        const tookCreatineCheckbox = document.getElementById('tookCreatine');
-        const tookEAACheckbox = document.getElementById('tookEAA');
+        const notesInput = document.getElementById('notes');
         const darkModeToggle = document.getElementById('darkModeToggle');
 
-        const unitKgRadio = document.getElementById('unitKg'); // Unit toggle
+        const unitKgRadio = document.getElementById('unitKg');
         const unitLbsRadio = document.getElementById('unitLbs');
         const weightUnitLabel = document.getElementById('weightUnitLabel');
 
-        const addUpdateBtn = document.getElementById('addUpdateBtn'); // Submit button
-        const cancelEditBtn = document.getElementById('cancelEditBtn'); // Cancel edit button
+        const addUpdateBtn = document.getElementById('addUpdateBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
 
         // Summary Statistics elements
         const statTotalEntries = document.getElementById('statTotalEntries');
         const statAvgWeight = document.getElementById('statAvgWeight');
         const statMostFrequentWorkout = document.getElementById('statMostFrequentWorkout');
         const statAvgPainLevel = document.getElementById('statAvgPainLevel');
-        const statProteinFreq = document.getElementById('statProteinFreq');
-        const statCreatineFreq = document.getElementById('statCreatineFreq');
-        const statEAAFreq = document.getElementById('statEAAFreq');
+        const statsGrid = document.getElementById('statsGrid'); // Parent for dynamic supplement stats
 
         // Filter elements
         const filterStartDateInput = document.getElementById('filterStartDate');
@@ -507,14 +524,25 @@
         const clearFiltersBtn = document.getElementById('clearFiltersBtn');
         const sortOrderSelect = document.getElementById('sortOrder');
 
+        // Supplement Management elements
+        const manageSupplementsBtn = document.getElementById('manageSupplementsBtn');
+        const supplementManagementSection = document.getElementById('supplementManagementSection');
+        const newSupplementNameInput = document.getElementById('newSupplementName');
+        const addSupplementBtn = document.getElementById('addSupplementBtn');
+        const customSupplementsList = document.getElementById('customSupplementsList');
+        const closeManageSupplementsBtn = document.getElementById('closeManageSupplementsBtn');
+        const dynamicSupplementsContainer = document.getElementById('dynamicSupplements');
+
         // Keys for localStorage
         const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
         const DARK_MODE_KEY = 'darkModeEnabled';
         const WEIGHT_UNIT_KEY = 'weightUnit';
+        const CUSTOM_SUPPLEMENTS_KEY = 'customSupplements'; // New key for custom supplement names
 
         // Global state variables
         let fitnessEntries = [];
-        let currentEditingIndex = -1; // -1 means no entry is being edited
+        let customSupplements = []; // Array to store custom supplement names
+        let currentEditingIndex = -1;
 
         // --- Dark Mode Functions ---
         function applyDarkMode(isEnabled) {
@@ -548,20 +576,19 @@
             if (fromUnit === 'lbs' && toUnit === 'kg') {
                 return weight / KG_TO_LBS_FACTOR;
             }
-            return weight; // Should not happen
+            return weight;
         }
 
         function updateWeightUnitDisplay(unit) {
             weightUnitLabel.textContent = unit;
             localStorage.setItem(WEIGHT_UNIT_KEY, unit);
-            renderEntries(); // Re-render entries to show updated units
-            renderStatistics(); // Re-render stats with updated units
+            renderEntries();
+            renderStatistics();
         }
 
         unitKgRadio.addEventListener('change', () => updateWeightUnitDisplay('kg'));
         unitLbsRadio.addEventListener('change', () => updateWeightUnitDisplay('lbs'));
 
-        // Load unit preference on start
         function loadUnitPreference() {
             const savedUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
             if (savedUnit === 'lbs') {
@@ -590,13 +617,129 @@
             }
         }
 
+        function saveCustomSupplements() {
+            localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(customSupplements));
+        }
+
+        function loadCustomSupplements() {
+            const storedSupplements = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY);
+            if (storedSupplements) {
+                try {
+                    customSupplements = JSON.parse(storedSupplements);
+                } catch (e) {
+                    console.error("Error parsing custom supplements from localStorage:", e);
+                    customSupplements = [];
+                }
+            } else {
+                // Default supplements if none are saved
+                customSupplements = ['Protein', 'Creatine', 'EAA'];
+                saveCustomSupplements(); // Save defaults
+            }
+        }
+
+        // --- Supplement Management Functions ---
+        manageSupplementsBtn.addEventListener('click', () => {
+            supplementManagementSection.classList.remove('hidden');
+            renderCustomSupplementsList();
+        });
+
+        closeManageSupplementsBtn.addEventListener('click', () => {
+            supplementManagementSection.classList.add('hidden');
+        });
+
+        addSupplementBtn.addEventListener('click', () => {
+            const newName = newSupplementNameInput.value.trim();
+            if (newName && !customSupplements.includes(newName)) {
+                customSupplements.push(newName);
+                saveCustomSupplements();
+                renderCustomSupplementsList();
+                renderDynamicSupplementsInputs(); // Update main form
+                renderStatistics(); // Update stats if new supplement added
+                newSupplementNameInput.value = '';
+            } else if (newName) {
+                alert('This supplement name already exists!');
+            }
+        });
+
+        function deleteCustomSupplement(nameToDelete) {
+            if (confirm(`Are you sure you want to remove "${nameToDelete}" from your custom supplements? This will not remove it from existing entries.`)) {
+                customSupplements = customSupplements.filter(name => name !== nameToDelete);
+                saveCustomSupplements();
+                renderCustomSupplementsList();
+                renderDynamicSupplementsInputs(); // Update main form
+                renderStatistics(); // Update stats
+            }
+        }
+
+        function renderCustomSupplementsList() {
+            customSupplementsList.innerHTML = '';
+            if (customSupplements.length === 0) {
+                customSupplementsList.innerHTML = '<p class="text-tertiary text-center">No custom supplements added yet.</p>';
+                return;
+            }
+            customSupplements.forEach(name => {
+                const li = document.createElement('div');
+                li.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'bg-gray-100', 'dark:bg-gray-700', 'rounded-md');
+                li.innerHTML = `
+                    <span>${name}</span>
+                    <button data-name="${name}" class="delete-custom-supplement-btn btn-danger text-white text-xs font-bold py-1 px-2 rounded-md">Remove</button>
+                `;
+                customSupplementsList.appendChild(li);
+            });
+
+            document.querySelectorAll('.delete-custom-supplement-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const nameToDelete = event.target.dataset.name;
+                    deleteCustomSupplement(nameToDelete);
+                });
+            });
+        }
+
+        function renderDynamicSupplementsInputs(entrySupplements = []) {
+            dynamicSupplementsContainer.innerHTML = '';
+            customSupplements.forEach(name => {
+                const entrySup = entrySupplements.find(s => s.name === name) || { taken: false, quantity: '' };
+                const div = document.createElement('div');
+                div.classList.add('flex', 'items-center', 'space-x-2');
+                div.innerHTML = `
+                    <input type="checkbox" id="sup-${name}" name="supplement-${name}" class="h-4 w-4 rounded" ${entrySup.taken ? 'checked' : ''}>
+                    <label for="sup-${name}" class="form-label text-sm font-semibold flex-shrink-0">${name}</label>
+                    <input type="text" id="sup-qty-${name}" name="supplement-qty-${name}" placeholder="Quantity"
+                           class="input-field w-full py-1 px-2 rounded-lg text-xs" value="${entrySup.quantity || ''}">
+                `;
+                dynamicSupplementsContainer.appendChild(div);
+            });
+        }
+
+        function getSupplementsFromForm() {
+            const supplements = [];
+            customSupplements.forEach(name => {
+                const checkbox = document.getElementById(`sup-${name}`);
+                const quantityInput = document.getElementById(`sup-qty-${name}`);
+                if (checkbox && checkbox.checked) {
+                    supplements.push({
+                        name: name,
+                        taken: true,
+                        quantity: quantityInput ? quantityInput.value.trim() : ''
+                    });
+                } else if (checkbox) {
+                    // Even if not taken, store it with taken: false and empty quantity for consistency in data structure
+                    supplements.push({
+                        name: name,
+                        taken: false,
+                        quantity: ''
+                    });
+                }
+            });
+            return supplements;
+        }
+
         // --- UI Rendering and Interaction Functions ---
 
         function renderEntries() {
             entriesList.innerHTML = '';
             const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
 
-            // Apply filters first
             let filteredEntries = fitnessEntries.filter(entry => {
                 const entryDate = new Date(entry.date);
                 const startDate = filterStartDateInput.value ? new Date(filterStartDateInput.value) : null;
@@ -613,7 +756,6 @@
                 return dateMatch && workoutMatch;
             });
 
-            // Apply sorting
             const sortOrder = sortOrderSelect.value;
             filteredEntries.sort((a, b) => {
                 const dateA = new Date(a.date);
@@ -629,10 +771,22 @@
             }
 
             filteredEntries.forEach((entry, index) => {
-                const displayWeight = convertWeight(entry.weight, entry.unit || 'kg', currentUnit).toFixed(1); // Convert for display
+                const displayWeight = convertWeight(entry.weight, entry.unit || 'kg', currentUnit).toFixed(1);
                 const entryCard = document.createElement('div');
                 entryCard.classList.add('card-entry', 'p-4', 'rounded-lg', 'shadow-sm', 'border');
                 const workoutSplitDisplay = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
+
+                // Build supplements display string
+                let supplementsDisplay = 'None';
+                if (entry.supplements && entry.supplements.length > 0) {
+                    const takenSupplements = entry.supplements.filter(s => s.taken);
+                    if (takenSupplements.length > 0) {
+                        supplementsDisplay = takenSupplements.map(s => {
+                            return s.quantity ? `${s.name} (${s.quantity})` : s.name;
+                        }).join(', ');
+                    }
+                }
+
 
                 entryCard.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
@@ -642,9 +796,7 @@
                     <ul class="text-sm space-y-1">
                         <li><strong>Workout:</strong> ${workoutSplitDisplay}</li>
                         <li><strong>Pain Level:</strong> ${entry.painLevel}</li>
-                        <li><strong>Protein:</strong> ${entry.tookProtein ? 'Yes' : 'No'}</li>
-                        <li><strong>Creatine:</strong> ${entry.tookCreatine ? 'Yes' : 'No'}</li>
-                        <li><strong>EAA:</strong> ${entry.tookEAA ? 'Yes' : 'No'}</li>
+                        <li><strong>Supplements:</strong> ${supplementsDisplay}</li>
                         ${entry.notes ? `<li><strong>Notes:</strong> <span class="whitespace-pre-wrap">${entry.notes}</span></li>` : ''}
                     </ul>
                     <div class="flex justify-end mt-3 space-x-2">
@@ -669,34 +821,34 @@
                 });
             });
 
-            renderStatistics(); // Update statistics after rendering entries
+            renderStatistics();
         }
 
         function renderStatistics() {
+            statsGrid.innerHTML = `
+                <div><strong>Total Entries:</strong> <span id="statTotalEntries">0</span></div>
+                <div><strong>Average Weight:</strong> <span id="statAvgWeight">N/A</span></div>
+                <div><strong>Most Frequent Workout:</strong> <span id="statMostFrequentWorkout">N/A</span></div>
+                <div><strong>Avg Pain Level:</strong> <span id="statAvgPainLevel">N/A</span></div>
+            `; // Reset stats grid
+
             if (fitnessEntries.length === 0) {
-                statTotalEntries.textContent = '0';
-                statAvgWeight.textContent = 'N/A';
-                statMostFrequentWorkout.textContent = 'N/A';
-                statAvgPainLevel.textContent = 'N/A';
-                statProteinFreq.textContent = 'N/A';
-                statCreatineFreq.textContent = 'N/A';
-                statEAAFreq.textContent = 'N/A';
+                document.getElementById('statTotalEntries').textContent = '0';
+                document.getElementById('statAvgWeight').textContent = 'N/A';
+                document.getElementById('statMostFrequentWorkout').textContent = 'N/A';
+                document.getElementById('statAvgPainLevel').textContent = 'N/A';
                 return;
             }
 
             const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
 
-            // Total Entries
-            statTotalEntries.textContent = fitnessEntries.length;
+            document.getElementById('statTotalEntries').textContent = fitnessEntries.length;
 
-            // Average Weight
             const totalWeight = fitnessEntries.reduce((sum, entry) => {
-                // Convert all weights to the current display unit before summing
                 return sum + convertWeight(entry.weight, entry.unit || 'kg', currentUnit);
             }, 0);
-            statAvgWeight.textContent = `${(totalWeight / fitnessEntries.length).toFixed(1)} ${currentUnit}`;
+            document.getElementById('statAvgWeight').textContent = `${(totalWeight / fitnessEntries.length).toFixed(1)} ${currentUnit}`;
 
-            // Most Frequent Workout
             const workoutCounts = {};
             fitnessEntries.forEach(entry => {
                 entry.workoutSplit.forEach(split => {
@@ -711,24 +863,34 @@
                     mostFrequentWorkout = split;
                 }
             }
-            statMostFrequentWorkout.textContent = mostFrequentWorkout;
+            document.getElementById('statMostFrequentWorkout').textContent = mostFrequentWorkout;
 
-            // Average Pain Level
             const totalPain = fitnessEntries.reduce((sum, entry) => {
-                // Extract numerical part from "X - Description"
                 const painValue = parseInt(entry.painLevel.split(' ')[0]);
                 return sum + (isNaN(painValue) ? 0 : painValue);
             }, 0);
-            statAvgPainLevel.textContent = `${(totalPain / fitnessEntries.length).toFixed(1)}`;
+            document.getElementById('statAvgPainLevel').textContent = `${(totalPain / fitnessEntries.length).toFixed(1)}`;
 
-            // Supplement Frequencies
-            const proteinCount = fitnessEntries.filter(entry => entry.tookProtein).length;
-            const creatineCount = fitnessEntries.filter(entry => entry.tookCreatine).length;
-            const eaaCount = fitnessEntries.filter(entry => entry.tookEAA).length;
+            // Dynamic Supplement Frequencies
+            const supplementCounts = {};
+            customSupplements.forEach(supName => supplementCounts[supName] = 0); // Initialize counts for all custom supplements
 
-            statProteinFreq.textContent = `${((proteinCount / fitnessEntries.length) * 100).toFixed(0)}%`;
-            statCreatineFreq.textContent = `${((creatineCount / fitnessEntries.length) * 100).toFixed(0)}%`;
-            statEAAFreq.textContent = `${((eaaCount / fitnessEntries.length) * 100).toFixed(0)}%`;
+            fitnessEntries.forEach(entry => {
+                if (entry.supplements) {
+                    entry.supplements.forEach(sup => {
+                        if (sup.taken && supplementCounts.hasOwnProperty(sup.name)) {
+                            supplementCounts[sup.name]++;
+                        }
+                    });
+                }
+            });
+
+            for (const supName in supplementCounts) {
+                const freq = ((supplementCounts[supName] / fitnessEntries.length) * 100).toFixed(0);
+                const div = document.createElement('div');
+                div.innerHTML = `<strong>${supName} Taken:</strong> <span>${freq}%</span>`;
+                statsGrid.appendChild(div);
+            }
         }
 
         trackingForm.addEventListener('submit', (event) => {
@@ -736,32 +898,27 @@
 
             const selectedWorkoutSplits = Array.from(workoutSplitSelect.selectedOptions).map(option => option.value);
             const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+            const supplementsTaken = getSupplementsFromForm(); // Get dynamic supplements
 
             const newEntryData = {
                 date: trackDateInput.value,
                 weight: parseFloat(weightInput.value),
-                unit: currentUnit, // Store the unit the weight was entered in
+                unit: currentUnit,
                 workoutSplit: selectedWorkoutSplits,
                 painLevel: painLevelSelect.value,
-                notes: notesInput.value.trim(), // Trim whitespace
-                tookProtein: tookProteinCheckbox.checked,
-                tookCreatine: tookCreatineCheckbox.checked,
-                tookEAA: tookEAACheckbox.checked
+                notes: notesInput.value.trim(),
+                supplements: supplementsTaken // Store supplements array
             };
 
             if (currentEditingIndex > -1) {
-                // Editing existing entry
-                // Ensure we convert the weight back to the original stored unit if the unit was changed during edit
                 newEntryData.weight = convertWeight(newEntryData.weight, currentUnit, fitnessEntries[currentEditingIndex].unit || 'kg');
-                newEntryData.unit = fitnessEntries[currentEditingIndex].unit || 'kg'; // Keep original stored unit
+                newEntryData.unit = fitnessEntries[currentEditingIndex].unit || 'kg';
 
                 fitnessEntries[currentEditingIndex] = newEntryData;
-                currentEditingIndex = -1; // Reset edit state
+                currentEditingIndex = -1;
                 addUpdateBtn.textContent = 'Add Entry';
                 cancelEditBtn.classList.add('hidden');
             } else {
-                // Adding new entry
-                // Check for duplicate date (optional, but good for daily tracking)
                 const existingEntryIndex = fitnessEntries.findIndex(entry => entry.date === newEntryData.date);
                 if (existingEntryIndex !== -1) {
                     if (confirm(`An entry for ${newEntryData.date} already exists. Do you want to update it?`)) {
@@ -782,6 +939,7 @@
             trackingForm.reset();
             setDefaultDate();
             resetWorkoutSplitSelection();
+            renderDynamicSupplementsInputs(); // Reset supplement inputs
         });
 
         function editEntry(index) {
@@ -789,20 +947,18 @@
             const entry = fitnessEntries[index];
 
             trackDateInput.value = entry.date;
-            // Convert weight to currently selected display unit for editing
             const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
             weightInput.value = convertWeight(entry.weight, entry.unit || 'kg', currentUnit).toFixed(1);
 
-            // Select multiple options for workout split
             Array.from(workoutSplitSelect.options).forEach(option => {
                 option.selected = entry.workoutSplit.includes(option.value);
             });
 
             painLevelSelect.value = entry.painLevel;
             notesInput.value = entry.notes || '';
-            tookProteinCheckbox.checked = entry.tookProtein;
-            tookCreatineCheckbox.checked = entry.tookCreatine;
-            tookEAACheckbox.checked = entry.tookEAA;
+
+            // Populate dynamic supplements for editing
+            renderDynamicSupplementsInputs(entry.supplements || []);
 
             addUpdateBtn.textContent = 'Update Entry';
             cancelEditBtn.classList.remove('hidden');
@@ -813,6 +969,7 @@
             trackingForm.reset();
             setDefaultDate();
             resetWorkoutSplitSelection();
+            renderDynamicSupplementsInputs(); // Reset supplement inputs
             addUpdateBtn.textContent = 'Add Entry';
             cancelEditBtn.classList.add('hidden');
         });
@@ -822,9 +979,9 @@
                 fitnessEntries.splice(index, 1);
                 saveEntriesToLocalStorage();
                 renderEntries();
-                if (currentEditingIndex === index) { // If deleting the one being edited
-                    cancelEditBtn.click(); // Reset form
-                } else if (currentEditingIndex > index) { // Adjust index if an earlier entry was deleted
+                if (currentEditingIndex === index) {
+                    cancelEditBtn.click();
+                } else if (currentEditingIndex > index) {
                     currentEditingIndex--;
                 }
             }
@@ -835,7 +992,7 @@
                 fitnessEntries = [];
                 localStorage.removeItem(LOCAL_STORAGE_KEY);
                 renderEntries();
-                cancelEditBtn.click(); // Reset form
+                cancelEditBtn.click();
             }
         });
 
@@ -845,27 +1002,36 @@
                 return;
             }
 
-            const headers = ["Date", "Weight (kg)", "Workout Split", "Pain Level", "Took Protein", "Took Creatine", "Took EAA", "Notes"];
-            let csvContent = headers.join(",") + "\n";
+            // Dynamically create headers including custom supplements
+            const baseHeaders = ["Date", "Weight (kg)", "Workout Split", "Pain Level", "Notes"];
+            const supplementHeaders = customSupplements.map(name => `${name} (Taken)`).concat(customSupplements.map(name => `${name} (Quantity)`));
+            let csvContent = [...baseHeaders, ...supplementHeaders].join(",") + "\n";
 
             fitnessEntries.forEach(entry => {
-                // Ensure weight is in KG for CSV export, regardless of display unit
                 const weightInKg = convertWeight(entry.weight, entry.unit || 'kg', 'kg').toFixed(1);
                 const workoutSplitCsv = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.map(s => s.replace(/"/g, '""')).join(', ') : entry.workoutSplit.replace(/"/g, '""');
                 const painLevelCsv = entry.painLevel.replace(/"/g, '""');
-                const notesCsv = entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : ''; // Wrap notes in quotes and escape internal quotes
+                const notesCsv = entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : '';
 
                 const row = [
                     entry.date,
                     weightInKg,
                     `"${workoutSplitCsv}"`,
                     `"${painLevelCsv}"`,
-                    entry.tookProtein ? 'Yes' : 'No',
-                    entry.tookCreatine ? 'Yes' : 'No',
-                    entry.tookEAA ? 'Yes' : 'No',
                     notesCsv
                 ];
-                csvContent += row.join(",") + "\n";
+
+                // Add supplement data to the row
+                const supplementTakenValues = customSupplements.map(supName => {
+                    const sup = (entry.supplements || []).find(s => s.name === supName);
+                    return sup && sup.taken ? 'Yes' : 'No';
+                });
+                const supplementQuantityValues = customSupplements.map(supName => {
+                    const sup = (entry.supplements || []).find(s => s.name === supName);
+                    return sup && sup.taken && sup.quantity ? `"${sup.quantity.replace(/"/g, '""')}"` : '';
+                });
+
+                csvContent += [...row, ...supplementTakenValues, ...supplementQuantityValues].join(",") + "\n";
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -905,16 +1071,18 @@
             filterStartDateInput.value = '';
             filterEndDateInput.value = '';
             filterWorkoutSplitSelect.value = '';
-            renderEntries(); // Re-render to clear filters
+            renderEntries();
         });
-        sortOrderSelect.addEventListener('change', renderEntries); // Re-render on sort change
+        sortOrderSelect.addEventListener('change', renderEntries);
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             loadDarkModePreference();
-            loadUnitPreference(); // Load unit preference before loading entries
+            loadUnitPreference();
+            loadCustomSupplements(); // Load custom supplement names
             loadEntriesFromLocalStorage();
-            renderEntries(); // Renders entries and statistics
+            renderDynamicSupplementsInputs(); // Render initial supplement inputs
+            renderEntries();
             setDefaultDate();
         });
     </script>

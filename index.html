@@ -164,15 +164,26 @@
             min-height: 120px;
         }
 
-        /* Unit Toggle Radio Buttons */
-        .unit-toggle-group {
+        /* Dropdown options styling */
+        select option {
+            background-color: #30363d; /* Darker background for options */
+            color: var(--text-primary); /* Ensure text is bright */
+        }
+        select option:checked {
+            background-color: var(--btn-primary-bg); /* Highlight selected option */
+            color: white;
+        }
+
+
+        /* Unit Toggle Radio Buttons (now System Toggle) */
+        .system-toggle-group {
             display: flex;
             border: 1px solid var(--unit-toggle-border);
             border-radius: 0.5rem;
             overflow: hidden;
             background-color: var(--unit-toggle-bg); /* Uses new rgba var */
         }
-        .unit-toggle-group label {
+        .system-toggle-group label {
             flex: 1;
             text-align: center;
             padding: 0.5rem 1rem;
@@ -180,10 +191,10 @@
             transition: background-color 0.2s ease, color 0.2s ease;
             color: var(--text-secondary);
         }
-        .unit-toggle-group input[type="radio"] {
+        .system-toggle-group input[type="radio"] {
             display: none;
         }
-        .unit-toggle-group input[type="radio"]:checked + label {
+        .system-toggle-group input[type="radio"]:checked + label {
             background-color: var(--btn-primary-bg); /* Use primary button color for active toggle */
             color: white;
         }
@@ -203,70 +214,7 @@
             z-index: -1;
         }
 
-        /* Toggle Switch specific styles (retained) */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--toggle-slider-bg);
-            -webkit-transition: .4s;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: var(--toggle-slider-before-bg);
-            -webkit-transition: .4s;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: var(--toggle-slider-checked-bg);
-        }
-        input:focus + .slider {
-            box-shadow: 0 0 1px var(--toggle-slider-checked-bg);
-        }
-        input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-        }
-
-        /* Tab specific styles */
-        .tab-button {
-            background-color: transparent;
-            color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: color 0.2s ease, border-color 0.2s ease;
-        }
-        .tab-button:hover {
-            color: var(--text-primary);
-        }
-        .tab-button.active {
-            color: var(--btn-primary-bg);
-            border-color: var(--btn-primary-bg);
-            font-weight: bold;
-        }
+        /* Toggle Switch specific styles (removed as dark mode is fixed) */
     </style>
 </head>
 <body class="p-4">
@@ -281,15 +229,15 @@
     <div class="main-container mx-auto p-8 rounded-lg shadow-xl w-full max-w-4xl">
         <div class="flex justify-between mb-4 items-center">
             <div class="flex items-center space-x-2">
-                <span class="form-label text-sm font-semibold">Units:</span>
-                <div class="unit-toggle-group rounded-lg">
-                    <input type="radio" id="unitKg" name="weightUnit" value="kg" checked>
-                    <label for="unitKg">kg</label>
-                    <input type="radio" id="unitLbs" name="weightUnit" value="lbs">
-                    <label for="unitLbs">lbs</label>
+                <span class="form-label text-sm font-semibold">System:</span>
+                <div class="system-toggle-group rounded-lg">
+                    <input type="radio" id="systemMetric" name="unitSystem" value="metric" checked>
+                    <label for="systemMetric">Metric</label>
+                    <input type="radio" id="systemImperial" name="unitSystem" value="imperial">
+                    <label for="systemImperial">Imperial</label>
                 </div>
             </div>
-            </div>
+        </div>
 
         <h1 class="text-3xl font-bold mb-6 text-center">Daily Fitness Tracker</h1>
 
@@ -311,6 +259,25 @@
                     <label for="weight" class="block form-label text-sm font-semibold mb-2">Weight (<span id="weightUnitLabel">kg</span>):</label>
                     <input type="number" step="0.1" id="weight" name="weight" placeholder="e.g., 75.5" required
                            class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight">
+                </div>
+                <div id="heightInputContainer">
+                    <div id="heightMetricInput">
+                        <label for="heightCm" class="block form-label text-sm font-semibold mb-2">Height (<span id="heightUnitLabel">cm</span>):</label>
+                        <input type="number" step="0.1" id="heightCm" name="heightCm" placeholder="e.g., 175.0" required
+                               class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight">
+                    </div>
+                    <div id="heightImperialInput" class="hidden grid grid-cols-2 gap-2">
+                        <div>
+                            <label for="heightFeet" class="block form-label text-sm font-semibold mb-2">Height (ft):</label>
+                            <input type="number" step="1" id="heightFeet" name="heightFeet" placeholder="e.g., 5"
+                                   class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight">
+                        </div>
+                        <div>
+                            <label for="heightInches" class="block form-label text-sm font-semibold mb-2">Height (in):</label>
+                            <input type="number" step="0.1" id="heightInches" name="heightInches" placeholder="e.g., 9.5"
+                                   class="input-field shadow-sm appearance-none border rounded-lg w-full py-2 px-3 leading-tight">
+                        </div>
+                    </div>
                 </div>
                 <div class="md:col-span-2">
                     <label for="workoutSplit" class="block form-label text-sm font-semibold mb-2">Workout Split (Select multiple):</label>
@@ -404,6 +371,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm" id="statsGrid">
                     <div><strong>Total Entries:</strong> <span id="statTotalEntries">0</span></div>
                     <div><strong>Average Weight:</strong> <span id="statAvgWeight">N/A</span></div>
+                    <div><strong>Average BMI:</strong> <span id="statAvgBMI">N/A</span></div>
                     <div><strong>Most Frequent Workout:</strong> <span id="statMostFrequentWorkout">N/A</span></div>
                     <div><strong>Avg Pain Level:</strong> <span id="statAvgPainLevel">N/A</span></div>
                     </div>
@@ -491,14 +459,20 @@
         const clearAllDataBtn = document.getElementById('clearAllDataBtn');
         const trackDateInput = document.getElementById('trackDate');
         const weightInput = document.getElementById('weight');
+        const heightInputContainer = document.getElementById('heightInputContainer'); // Container for height inputs
+        const heightMetricInput = document.getElementById('heightMetricInput'); // Metric height input div
+        const heightCmInput = document.getElementById('heightCm'); // Metric height input field
+        const heightImperialInput = document.getElementById('heightImperialInput'); // Imperial height input div
+        const heightFeetInput = document.getElementById('heightFeet'); // Imperial feet input field
+        const heightInchesInput = document.getElementById('heightInches'); // Imperial inches input field
         const workoutSplitSelect = document.getElementById('workoutSplit');
         const painLevelSelect = document.getElementById('painLevel');
         const notesInput = document.getElementById('notes');
-        // const darkModeToggle = document.getElementById('darkModeToggle'); // Removed
 
-        const unitKgRadio = document.getElementById('unitKg');
-        const unitLbsRadio = document.getElementById('unitLbs');
+        const systemMetricRadio = document.getElementById('systemMetric');
+        const systemImperialRadio = document.getElementById('systemImperial');
         const weightUnitLabel = document.getElementById('weightUnitLabel');
+        const heightUnitLabel = document.getElementById('heightUnitLabel');
 
         const addUpdateBtn = document.getElementById('addUpdateBtn');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -506,6 +480,7 @@
         // Summary Statistics elements
         const statTotalEntries = document.getElementById('statTotalEntries');
         const statAvgWeight = document.getElementById('statAvgWeight');
+        const statAvgBMI = document.getElementById('statAvgBMI');
         const statMostFrequentWorkout = document.getElementById('statMostFrequentWorkout');
         const statAvgPainLevel = document.getElementById('statAvgPainLevel');
         const statsGrid = document.getElementById('statsGrid');
@@ -533,8 +508,7 @@
 
         // Keys for localStorage
         const LOCAL_STORAGE_KEY = 'dailyFitnessTrackerData';
-        // const DARK_MODE_KEY = 'darkModeEnabled'; // Removed
-        const WEIGHT_UNIT_KEY = 'weightUnit';
+        const SYSTEM_UNIT_KEY = 'unitSystem';
         const CUSTOM_SUPPLEMENTS_KEY = 'customSupplements';
 
         // Global state variables
@@ -547,24 +521,37 @@
             document.documentElement.classList.add('dark');
         }
 
-        // --- Unit Conversion Functions ---
+        // --- Unit Conversion Constants ---
         const KG_TO_LBS_FACTOR = 2.20462;
+        const CM_TO_INCHES_FACTOR = 0.393701;
+        const INCHES_TO_CM_FACTOR = 2.54;
+        const FEET_TO_CM_FACTOR = 30.48; // 1 foot = 30.48 cm
 
-        function convertWeight(weight, fromUnit, toUnit) {
-            if (fromUnit === toUnit) return weight;
-            if (fromUnit === 'kg' && toUnit === 'lbs') {
-                return weight * KG_TO_LBS_FACTOR;
+        // --- Unit System Management Functions ---
+        function updateSystemUnitDisplay(system) {
+            let weightUnit, heightUnit;
+            if (system === 'metric') {
+                weightUnit = 'kg';
+                heightUnit = 'cm';
+                heightMetricInput.classList.remove('hidden');
+                heightImperialInput.classList.add('hidden');
+                heightCmInput.setAttribute('required', 'true'); // Make metric height required
+                heightFeetInput.removeAttribute('required');
+                heightInchesInput.removeAttribute('required');
+            } else { // imperial
+                weightUnit = 'lbs';
+                heightUnit = 'ft/in'; // Display as feet/inches
+                heightMetricInput.classList.add('hidden');
+                heightImperialInput.classList.remove('hidden');
+                heightCmInput.removeAttribute('required');
+                heightFeetInput.setAttribute('required', 'true'); // Make imperial feet required
+                heightInchesInput.setAttribute('required', 'true'); // Make imperial inches required
             }
-            if (fromUnit === 'lbs' && toUnit === 'kg') {
-                return weight / KG_TO_LBS_FACTOR;
-            }
-            return weight;
-        }
+            weightUnitLabel.textContent = weightUnit;
+            heightUnitLabel.textContent = heightUnit;
+            localStorage.setItem(SYSTEM_UNIT_KEY, system);
 
-        function updateWeightUnitDisplay(unit) {
-            weightUnitLabel.textContent = unit;
-            localStorage.setItem(WEIGHT_UNIT_KEY, unit);
-            // Only re-render entries/stats if their respective tabs are active
+            // Re-render data to reflect new units if visible
             if (!document.getElementById('progressListTab').classList.contains('hidden')) {
                 renderEntries();
             }
@@ -573,17 +560,59 @@
             }
         }
 
-        unitKgRadio.addEventListener('change', () => updateWeightUnitDisplay('kg'));
-        unitLbsRadio.addEventListener('change', () => updateWeightUnitDisplay('lbs'));
+        systemMetricRadio.addEventListener('change', () => updateSystemUnitDisplay('metric'));
+        systemImperialRadio.addEventListener('change', () => updateSystemUnitDisplay('imperial'));
 
-        function loadUnitPreference() {
-            const savedUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
-            if (savedUnit === 'lbs') {
-                unitLbsRadio.checked = true;
+        function loadSystemPreference() {
+            const savedSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric';
+            if (savedSystem === 'imperial') {
+                systemImperialRadio.checked = true;
             } else {
-                unitKgRadio.checked = true;
+                systemMetricRadio.checked = true;
             }
-            weightUnitLabel.textContent = savedUnit;
+            updateSystemUnitDisplay(savedSystem); // Apply initial display
+        }
+
+        // --- Data Conversion Functions ---
+        function convertWeight(weight, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return weight;
+            if (fromUnit === 'kg' && toUnit === 'lbs') return weight * KG_TO_LBS_FACTOR;
+            if (fromUnit === 'lbs' && toUnit === 'kg') return weight / KG_TO_LBS_FACTOR;
+            return weight;
+        }
+
+        // This function will always convert to CM for internal storage/calculation
+        function convertHeightToCm(heightValue, fromUnit, fromInches = 0) {
+            if (fromUnit === 'cm') return heightValue;
+            if (fromUnit === 'inches') return heightValue * INCHES_TO_CM_FACTOR;
+            if (fromUnit === 'ft/in') { // heightValue is feet, fromInches is inches
+                return (heightValue * FEET_TO_CM_FACTOR) + (fromInches * INCHES_TO_CM_FACTOR);
+            }
+            return heightValue; // Should not happen
+        }
+
+        // This function converts CM to the specified display unit
+        function convertCmToDisplayHeight(heightCm, toUnit) {
+            if (toUnit === 'cm') return heightCm;
+            if (toUnit === 'inches') return heightCm * CM_TO_INCHES_FACTOR;
+            if (toUnit === 'ft/in') {
+                const totalInches = heightCm * CM_TO_INCHES_FACTOR;
+                const feet = Math.floor(totalInches / 12);
+                const inches = (totalInches % 12);
+                return { feet: feet, inches: inches };
+            }
+            return heightCm;
+        }
+
+
+        function calculateBMI(weightKg, heightCm) { // weight is always in KG, height in CM
+            if (weightKg === null || weightKg === undefined || isNaN(weightKg) ||
+                heightCm === null || heightCm === undefined || isNaN(heightCm) || heightCm <= 0) {
+                return null;
+            }
+
+            const heightM = heightCm / 100; // Convert cm to meters
+            return (weightKg / (heightM * heightM)).toFixed(2);
         }
 
         // --- Data Persistence Functions ---
@@ -726,7 +755,9 @@
 
         function renderEntries() {
             entriesList.innerHTML = '';
-            const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+            const currentSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric';
+            const currentWeightUnit = currentSystem === 'metric' ? 'kg' : 'lbs';
+            const currentHeightDisplayUnit = currentSystem === 'metric' ? 'cm' : 'ft/in';
 
             let filteredEntries = fitnessEntries.filter(entry => {
                 const entryDate = new Date(entry.date);
@@ -759,7 +790,21 @@
             }
 
             filteredEntries.forEach((entry, index) => {
-                const displayWeight = convertWeight(entry.weight, entry.unit || 'kg', currentUnit).toFixed(1);
+                // Weight is always stored in KG, convert to display unit
+                const displayWeight = convertWeight(entry.weight, 'kg', currentWeightUnit).toFixed(1);
+                
+                let displayHeight = 'N/A';
+                if (entry.height) { // height is always stored in CM
+                    if (currentHeightDisplayUnit === 'cm') {
+                        displayHeight = `${entry.height.toFixed(1)} cm`;
+                    } else { // ft/in
+                        const convertedHeight = convertCmToDisplayHeight(entry.height, 'ft/in');
+                        displayHeight = `${convertedHeight.feet}' ${convertedHeight.inches.toFixed(1)}''`;
+                    }
+                }
+
+                const bmi = calculateBMI(entry.weight, entry.height); // Uses stored KG and CM
+
                 const entryCard = document.createElement('div');
                 entryCard.classList.add('card-entry', 'p-4', 'rounded-lg', 'shadow-sm', 'border');
                 const workoutSplitDisplay = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.join(', ') : entry.workoutSplit;
@@ -778,9 +823,11 @@
                 entryCard.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-lg font-semibold">${entry.date}</h3>
-                        <span class="text-sm text-tertiary">Weight: ${displayWeight} ${currentUnit}</span>
+                        <span class="text-sm text-tertiary">Weight: ${displayWeight} ${currentWeightUnit}</span>
                     </div>
                     <ul class="text-sm space-y-1">
+                        <li><strong>Height:</strong> ${displayHeight}</li>
+                        <li><strong>BMI:</strong> ${bmi !== null ? bmi : 'N/A'}</li>
                         <li><strong>Workout:</strong> ${workoutSplitDisplay}</li>
                         <li><strong>Pain Level:</strong> ${entry.painLevel}</li>
                         <li><strong>Supplements:</strong> ${supplementsDisplay}</li>
@@ -815,6 +862,7 @@
             statsGrid.innerHTML = `
                 <div><strong>Total Entries:</strong> <span id="statTotalEntries">0</span></div>
                 <div><strong>Average Weight:</strong> <span id="statAvgWeight">N/A</span></div>
+                <div><strong>Average BMI:</strong> <span id="statAvgBMI">N/A</span></div>
                 <div><strong>Most Frequent Workout:</strong> <span id="statMostFrequentWorkout">N/A</span></div>
                 <div><strong>Avg Pain Level:</strong> <span id="statAvgPainLevel">N/A</span></div>
             `;
@@ -822,19 +870,34 @@
             if (fitnessEntries.length === 0) {
                 document.getElementById('statTotalEntries').textContent = '0';
                 document.getElementById('statAvgWeight').textContent = 'N/A';
+                document.getElementById('statAvgBMI').textContent = 'N/A';
                 document.getElementById('statMostFrequentWorkout').textContent = 'N/A';
                 document.getElementById('statAvgPainLevel').textContent = 'N/A';
                 return;
             }
 
-            const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+            const currentSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric';
+            const currentWeightUnit = currentSystem === 'metric' ? 'kg' : 'lbs';
 
             document.getElementById('statTotalEntries').textContent = fitnessEntries.length;
 
             const totalWeight = fitnessEntries.reduce((sum, entry) => {
-                return sum + convertWeight(entry.weight, entry.unit || 'kg', currentUnit);
+                // entry.weight is always in KG internally
+                return sum + convertWeight(entry.weight, 'kg', currentWeightUnit);
             }, 0);
-            document.getElementById('statAvgWeight').textContent = `${(totalWeight / fitnessEntries.length).toFixed(1)} ${currentUnit}`;
+            document.getElementById('statAvgWeight').textContent = `${(totalWeight / fitnessEntries.length).toFixed(1)} ${currentWeightUnit}`;
+
+            let totalBMI = 0;
+            let bmiCount = 0;
+            fitnessEntries.forEach(entry => {
+                const bmi = calculateBMI(entry.weight, entry.height); // height is always in CM for calculation
+                if (bmi !== null) {
+                    totalBMI += parseFloat(bmi);
+                    bmiCount++;
+                }
+            });
+            document.getElementById('statAvgBMI').textContent = bmiCount > 0 ? (totalBMI / bmiCount).toFixed(2) : 'N/A';
+
 
             const workoutCounts = {};
             fitnessEntries.forEach(entry => {
@@ -883,13 +946,50 @@
             event.preventDefault();
 
             const selectedWorkoutSplits = Array.from(workoutSplitSelect.selectedOptions).map(option => option.value);
-            const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
+            const currentSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric';
             const supplementsTaken = getSupplementsFromForm();
+
+            let weightValue = parseFloat(weightInput.value);
+            if (isNaN(weightValue)) {
+                alert('Please enter a valid weight.');
+                return;
+            }
+
+            // Convert input weight to KG for consistent storage
+            if (currentSystem === 'imperial') {
+                weightValue = convertWeight(weightValue, 'lbs', 'kg');
+            }
+
+            let heightValue;
+            let heightUnitForStorage = 'cm'; // Always store height in CM for consistency
+
+            if (currentSystem === 'metric') {
+                heightValue = parseFloat(heightCmInput.value);
+                if (isNaN(heightValue) || heightValue <= 0) {
+                    alert('Please enter a valid height in centimeters.');
+                    return;
+                }
+            } else { // imperial
+                const feet = parseFloat(heightFeetInput.value);
+                const inches = parseFloat(heightInchesInput.value);
+
+                if (isNaN(feet) || isNaN(inches)) {
+                    alert('Please enter valid values for both feet and inches.');
+                    return;
+                }
+                if ((feet === 0 && inches === 0) || (feet < 0 || inches < 0)) {
+                    alert('Height must be a positive value.');
+                    return;
+                }
+                heightValue = convertHeightToCm(feet, 'ft/in', inches);
+            }
 
             const newEntryData = {
                 date: trackDateInput.value,
-                weight: parseFloat(weightInput.value),
-                unit: currentUnit,
+                weight: weightValue, // Weight is now always in KG
+                weightUnit: 'kg', // Stored unit is always kg
+                height: heightValue, // Height is now always in CM
+                heightUnit: heightUnitForStorage, // Stored unit is always cm
                 workoutSplit: selectedWorkoutSplits,
                 painLevel: painLevelSelect.value,
                 notes: notesInput.value.trim(),
@@ -897,9 +997,6 @@
             };
 
             if (currentEditingIndex > -1) {
-                newEntryData.weight = convertWeight(newEntryData.weight, currentUnit, fitnessEntries[currentEditingIndex].unit || 'kg');
-                newEntryData.unit = fitnessEntries[currentEditingIndex].unit || 'kg';
-
                 fitnessEntries[currentEditingIndex] = newEntryData;
                 currentEditingIndex = -1;
                 addUpdateBtn.textContent = 'Add Entry';
@@ -908,8 +1005,6 @@
                 const existingEntryIndex = fitnessEntries.findIndex(entry => entry.date === newEntryData.date);
                 if (existingEntryIndex !== -1) {
                     if (confirm(`An entry for ${newEntryData.date} already exists. Do you want to update it?`)) {
-                        newEntryData.weight = convertWeight(newEntryData.weight, currentUnit, fitnessEntries[existingEntryIndex].unit || 'kg');
-                        newEntryData.unit = fitnessEntries[existingEntryIndex].unit || 'kg';
                         fitnessEntries[existingEntryIndex] = newEntryData;
                     } else {
                         return;
@@ -932,6 +1027,7 @@
             setDefaultDate();
             resetWorkoutSplitSelection();
             renderDynamicSupplementsInputs();
+            updateSystemUnitDisplay(currentSystem); // Re-apply unit display after reset
         });
 
         function editEntry(index) {
@@ -939,8 +1035,23 @@
             const entry = fitnessEntries[index];
 
             trackDateInput.value = entry.date;
-            const currentUnit = localStorage.getItem(WEIGHT_UNIT_KEY) || 'kg';
-            weightInput.value = convertWeight(entry.weight, entry.unit || 'kg', currentUnit).toFixed(1);
+            const currentSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric';
+
+            // Convert stored weight (always kg) to current display unit for editing
+            weightInput.value = convertWeight(entry.weight, 'kg', currentSystem === 'metric' ? 'kg' : 'lbs').toFixed(1);
+
+            // Height is always stored in CM, convert to display unit for editing
+            if (currentSystem === 'metric') {
+                heightCmInput.value = entry.height ? entry.height.toFixed(1) : '';
+                heightMetricInput.classList.remove('hidden');
+                heightImperialInput.classList.add('hidden');
+            } else { // imperial
+                const convertedHeight = entry.height ? convertCmToDisplayHeight(entry.height, 'ft/in') : { feet: '', inches: '' };
+                heightFeetInput.value = convertedHeight.feet;
+                heightInchesInput.value = convertedHeight.inches.toFixed(1);
+                heightMetricInput.classList.add('hidden');
+                heightImperialInput.classList.remove('hidden');
+            }
 
             Array.from(workoutSplitSelect.options).forEach(option => {
                 option.selected = entry.workoutSplit.includes(option.value);
@@ -965,6 +1076,7 @@
             renderDynamicSupplementsInputs();
             addUpdateBtn.textContent = 'Add Entry';
             cancelEditBtn.classList.add('hidden');
+            updateSystemUnitDisplay(localStorage.getItem(SYSTEM_UNIT_KEY) || 'metric'); // Re-apply unit display after reset
         });
 
         function deleteEntry(index) {
@@ -1007,12 +1119,17 @@
                 return;
             }
 
-            const baseHeaders = ["Date", "Weight (kg)", "Workout Split", "Pain Level", "Notes"];
+            // Headers will now include both weight and height in their base units (kg and cm)
+            const baseHeaders = ["Date", "Weight (kg)", "Height (cm)", "BMI", "Workout Split", "Pain Level", "Notes"];
             const supplementHeaders = customSupplements.map(name => `${name} (Taken)`).concat(customSupplements.map(name => `${name} (Quantity)`));
             let csvContent = [...baseHeaders, ...supplementHeaders].join(",") + "\n";
 
             fitnessEntries.forEach(entry => {
-                const weightInKg = convertWeight(entry.weight, entry.unit || 'kg', 'kg').toFixed(1);
+                // Weight is already stored in KG
+                const weightInKg = entry.weight.toFixed(1);
+                // Height is already stored in CM
+                const heightInCm = entry.height ? entry.height.toFixed(1) : '';
+                const bmi = calculateBMI(entry.weight, entry.height);
                 const workoutSplitCsv = Array.isArray(entry.workoutSplit) ? entry.workoutSplit.map(s => s.replace(/"/g, '""')).join(', ') : entry.workoutSplit.replace(/"/g, '""');
                 const painLevelCsv = entry.painLevel.replace(/"/g, '""');
                 const notesCsv = entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : '';
@@ -1020,6 +1137,8 @@
                 const row = [
                     entry.date,
                     weightInKg,
+                    heightInCm,
+                    bmi !== null ? bmi : '',
                     `"${workoutSplitCsv}"`,
                     `"${painLevelCsv}"`,
                     notesCsv
@@ -1107,7 +1226,7 @@
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             applyDarkMode(); // Always apply dark mode
-            loadUnitPreference();
+            loadSystemPreference(); // Load system preference (metric/imperial)
             loadCustomSupplements();
             loadEntriesFromLocalStorage();
             renderDynamicSupplementsInputs();

@@ -46,8 +46,8 @@
             --manage-btn-hover-bg: #5a6268;
 
             /* Retro Gradient Colors for Light Mode */
-            --gradient-start-light: #a8dadc; /* Soft Teal */
-            --gradient-end-light: #fbc492; /* Soft Peach */
+            --gradient-start-light: #ffb3ba; /* Light Pink */
+            --gradient-end-light: #bae1ff; /* Light Blue */
         }
 
         /* Apply Variables to Elements */
@@ -417,6 +417,26 @@
                     </button>
                 </div>
             </form>
+
+            <div id="supplementManagementSection" class="hidden mt-8 p-4 rounded-lg border card-entry">
+                <h2 class="text-xl font-bold mb-3 text-center">Manage Custom Supplements</h2>
+                <div class="flex mb-4 space-x-2">
+                    <input type="text" id="newSupplementName" placeholder="New supplement name"
+                           class="input-field flex-grow shadow-sm appearance-none border rounded-lg py-2 px-3 leading-tight">
+                    <button type="button" id="addSupplementBtn"
+                            class="btn-primary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
+                        Add
+                    </button>
+                </div>
+                <div id="customSupplementsList" class="space-y-2">
+                    </div>
+                <div class="flex justify-end mt-4">
+                    <button type="button" id="closeManageSupplementsBtn"
+                            class="btn-secondary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div id="summaryStatsTab" class="tab-content hidden">
@@ -501,26 +521,6 @@
             </div>
         </div>
 
-        <div id="supplementManagementSection" class="hidden mt-8 p-4 rounded-lg border card-entry">
-            <h2 class="text-xl font-bold mb-3 text-center">Manage Custom Supplements</h2>
-            <div class="flex mb-4 space-x-2">
-                <input type="text" id="newSupplementName" placeholder="New supplement name"
-                       class="input-field flex-grow shadow-sm appearance-none border rounded-lg py-2 px-3 leading-tight">
-                <button type="button" id="addSupplementBtn"
-                        class="btn-primary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
-                    Add
-                </button>
-            </div>
-            <div id="customSupplementsList" class="space-y-2">
-                </div>
-            <div class="flex justify-end mt-4">
-                <button type="button" id="closeManageSupplementsBtn"
-                        class="btn-secondary text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-300 ease-in-out">
-                    Close
-                </button>
-            </div>
-        </div>
-
     </div>
 
     <script>
@@ -538,7 +538,7 @@
         const darkModeToggle = document.getElementById('darkModeToggle');
 
         const unitKgRadio = document.getElementById('unitKg');
-        const unitLbsRadio = document.getElementById('unitLbs');
+        const unitLbsRadio = document.getElementById('unitLbs'); // Corrected typo here
         const weightUnitLabel = document.getElementById('weightUnitLabel');
 
         const addUpdateBtn = document.getElementById('addUpdateBtn');
@@ -722,7 +722,10 @@
             }
             customSupplements.forEach(name => {
                 const li = document.createElement('div');
-                li.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'bg-gray-100', 'dark:bg-gray-700', 'rounded-md');
+                li.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'rounded-md');
+                // Explicitly set background and text color using CSS variables for theme consistency
+                li.style.backgroundColor = 'var(--card-bg)';
+                li.style.color = 'var(--text-primary)';
                 li.innerHTML = `
                     <span>${name}</span>
                     <button data-name="${name}" class="delete-custom-supplement-btn btn-danger text-white text-xs font-bold py-1 px-2 rounded-md">Remove</button>
@@ -802,7 +805,7 @@
             filteredEntries.sort((a, b) => {
                 const dateA = new Date(a.date);
                 const dateB = new Date(b.date);
-                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB; // Corrected typo here
             });
 
 

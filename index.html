@@ -13,51 +13,52 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             position: relative; /* Needed for pseudo-element positioning */
             z-index: 0; /* Ensure body content is above pseudo-element */
-            /* Removed: min-h-screen, items-center, justify-center to fix scrolling */
         }
 
-        /* Define CSS Variables for Light Mode (Default) */
+        /* Define CSS Variables for Retro Light Mode (Default) */
         :root {
-            --bg-primary: #f8fafc; /* body background */
-            --bg-secondary: #ffffff; /* main container background */
-            --text-primary: #1f2937; /* headings, primary text */
-            --text-secondary: #374151; /* labels, general text */
-            --text-tertiary: #6b7280; /* secondary text, no updates message */
-            --card-bg: #f9fafb; /* entry card background */
-            --card-border: #e5e7eb; /* entry card border */
-            --input-bg: #ffffff; /* input background */
-            --input-text: #374151; /* input text */
-            --input-border: #d1d5db; /* input border */
-            --focus-ring: #3b82f6; /* blue-500 */
+            --bg-primary: #e0f2f7; /* Light Cyan/Blue */
+            --bg-secondary: #f0faff; /* Very light blue */
+            --text-primary: #2c3e50; /* Dark Blue-Gray */
+            --text-secondary: #34495e; /* Slightly lighter Dark Blue-Gray */
+            --text-tertiary: #7f8c8d; /* Muted Gray */
+            --card-bg: #eaf6ff; /* Lightest blue for cards */
+            --card-border: #aed6f1; /* Pastel blue border */
+            --input-bg: #ffffff; /* White */
+            --input-text: #34495e;
+            --input-border: #aed6f1;
+            --focus-ring: #8e44ad; /* Amethyst (Purple) */
             --shadow-color-1: rgba(0, 0, 0, 0.1);
             --shadow-color-2: rgba(0, 0, 0, 0.05);
-            --btn-primary-bg: #3b82f6; /* blue-600 */
-            --btn-primary-hover-bg: #2563eb; /* blue-700 */
-            --btn-success-bg: #16a34a; /* green-600 */
-            --btn-success-hover-bg: #15803d; /* green-700 */
-            --btn-danger-bg: #dc2626; /* red-600 */
-            --btn-danger-hover-bg: #b91c1c; /* red-700 */
-            --checkbox-accent: #3b82f6; /* blue-600 */
-            --toggle-slider-bg: #ccc;
-            --toggle-slider-checked-bg: #2196F3;
+            --btn-primary-bg: #3498db; /* Peter River (Blue) */
+            --btn-primary-hover-bg: #2980b9; /* Deeper Blue */
+            --btn-success-bg: #2ecc71; /* Emerald (Green) */
+            --btn-success-hover-bg: #27ae60; /* Deeper Green */
+            --btn-danger-bg: #e74c3c; /* Alizarin (Red) */
+            --btn-danger-hover-bg: #c0392b; /* Deeper Red */
+            --checkbox-accent: #3498db; /* Peter River */
+            --toggle-slider-bg: #95a5a6; /* Silver (Gray) */
+            --toggle-slider-checked-bg: #3498db; /* Peter River */
             --toggle-slider-before-bg: white;
-            --unit-toggle-bg: #e0e0e0;
-            --unit-toggle-border: #ccc;
+            --unit-toggle-bg: #dbe4eb; /* Light gray-blue */
+            --unit-toggle-border: #aed6f1;
+
+            /* Retro Gradient Colors for Light Mode */
+            --gradient-start-light: #a8dadc; /* Soft Teal */
+            --gradient-end-light: #fbc492; /* Soft Peach */
         }
 
         /* Apply Variables to Elements */
         body {
             background-color: var(--bg-primary);
             color: var(--text-secondary);
-            /* Ensure body takes full height for background */
             min-height: 100vh;
         }
         .main-container {
             background-color: var(--bg-secondary);
             color: var(--text-primary);
-            /* Added margin-top and margin-bottom for spacing */
-            margin-top: 1rem; /* p-4 equivalent */
-            margin-bottom: 1rem; /* p-4 equivalent */
+            margin-top: 1rem;
+            margin-bottom: 1rem;
         }
         h1, h2, h3 {
             color: var(--text-primary);
@@ -87,7 +88,7 @@
         input:focus, select:focus, textarea:focus,
         button:focus {
             border-color: var(--focus-ring);
-            box-shadow: 0 0 0 2px var(--focus-ring), 0 0 0 4px rgba(var(--focus-ring-rgb, 59, 130, 246), 0.5);
+            box-shadow: 0 0 0 2px var(--focus-ring), 0 0 0 4px rgba(var(--focus-ring-rgb, 59, 130, 246), 0.5); /* Note: focus-ring-rgb is not defined, will default to 59,130,246 */
             outline: none;
         }
         .shadow-xl {
@@ -100,7 +101,7 @@
         .btn-danger { background-color: var(--btn-danger-bg); }
         .btn-danger:hover { background-color: var(--btn-danger-hover-bg); }
         .btn-secondary {
-            background-color: var(--text-tertiary); /* Reusing a gray for edit button */
+            background-color: var(--text-tertiary);
             color: var(--bg-secondary);
         }
         .btn-secondary:hover {
@@ -160,9 +161,24 @@
             display: none;
         }
         .unit-toggle-group input[type="radio"]:checked + label {
-            background-color: var(--accent-color);
+            background-color: var(--btn-primary-bg); /* Use primary button color for active toggle */
             color: white;
         }
+
+        /* Grainy Gradient Background for Light Mode */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gradient-start-light), var(--gradient-end-light));
+            filter: url(#noise);
+            opacity: 0.4; /* Make it more subtle for light mode */
+            z-index: -1;
+        }
+
 
         /* --- Dark Mode Variable Overrides --- */
         html.dark {

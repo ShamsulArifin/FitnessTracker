@@ -728,7 +728,7 @@ function App() {
     return [...entriesToRender].sort((a, b) => {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
-      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB; // Use b.date for consistency
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
   }, [fitnessEntries, isFilteredViewActive, filterStartDate, filterEndDate, filterWorkout, sortOrder]);
 
@@ -881,192 +881,200 @@ function App() {
         {/* Tab Content */}
         {currentTab === 0 && (
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} direction="column"> {/* Explicitly set direction to column */}
               {/* Section 1: Date, Weight, Height */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>Date, Weight & Height</Typography>
-                <Grid container spacing={2}> {/* Inner grid for this section */}
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Date"
-                      type="date"
-                      fullWidth
-                      required
-                      value={trackDate}
-                      onChange={(e) => setTrackDate(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label={`Weight (${unitSystem === 'metric' ? 'kg' : 'lbs'})`}
-                      type="number"
-                      step="0.1"
-                      fullWidth
-                      required
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                      placeholder={unitSystem === 'metric' ? 'e.g., 75.5' : 'e.g., 165.0'}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  <Grid item xs={12}> {/* Always full width for height */}
-                    {unitSystem === 'metric' ? (
+                <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
+                  <Grid container spacing={2}> {/* Inner grid for this section */}
+                    <Grid item xs={12} sm={6}>
                       <TextField
-                        label={`Height (cm)`}
+                        label="Date"
+                        type="date"
+                        fullWidth
+                        required
+                        value={trackDate}
+                        onChange={(e) => setTrackDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label={`Weight (${unitSystem === 'metric' ? 'kg' : 'lbs'})`}
                         type="number"
                         step="0.1"
                         fullWidth
                         required
-                        value={heightCm}
-                        onChange={(e) => setHeightCm(e.target.value)}
-                        placeholder="e.g., 175.0"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                        placeholder={unitSystem === 'metric' ? 'e.g., 75.5' : 'e.g., 165.0'}
                         InputLabelProps={{ shrink: true }}
                       />
-                    ) : (
-                      <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                          <TextField
-                            label="Height (ft)"
-                            type="number"
-                            step="1"
-                            fullWidth
-                            required
-                            value={heightFeet}
-                            onChange={(e) => setHeightFeet(e.target.value)}
-                            placeholder="e.g., 5"
-                            InputLabelProps={{ shrink: true }}
-                          />
+                    </Grid>
+                    <Grid item xs={12}> {/* Always full width for height */}
+                      {unitSystem === 'metric' ? (
+                        <TextField
+                          label={`Height (cm)`}
+                          type="number"
+                          step="0.1"
+                          fullWidth
+                          required
+                          value={heightCm}
+                          onChange={(e) => setHeightCm(e.target.value)}
+                          placeholder="e.g., 175.0"
+                          InputLabelProps={{ shrink: true }}
+                        />
+                      ) : (
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <TextField
+                              label="Height (ft)"
+                              type="number"
+                              step="1"
+                              fullWidth
+                              required
+                              value={heightFeet}
+                              onChange={(e) => setHeightFeet(e.target.value)}
+                              placeholder="e.g., 5"
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
+                          <Grid item xs={6}>
+                            <TextField
+                              label="Height (in)"
+                              type="number"
+                              step="0.1"
+                              fullWidth
+                              required
+                              value={heightInches}
+                              onChange={(e) => setHeightInches(e.target.value)}
+                              placeholder="e.g., 9"
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            label="Height (in)"
-                            type="number"
-                            step="0.1"
-                            fullWidth
-                            required
-                            value={heightInches}
-                            onChange={(e) => setHeightInches(e.target.value)}
-                            placeholder="e.g., 9"
-                            InputLabelProps={{ shrink: true }}
-                          />
-                        </Grid>
-                      </Grid>
-                    )}
+                      )}
+                    </Grid>
                   </Grid>
-                </Grid>
+                </Paper>
               </Grid>
 
               {/* Section 2: Workout Split and Pain Level */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>Workout & Pain</Typography>
-                <Grid container spacing={2}> {/* Inner grid for this section */}
-                    <Grid item xs={12}> {/* This makes both take full width */}
-                      <FormControl fullWidth required>
-                        <InputLabel id="workout-split-label">Workout Split (Select multiple)</InputLabel>
-                        <Select
-                          labelId="workout-split-label"
-                          multiple
-                          value={workoutSplit}
-                          onChange={(e) => setWorkoutSplit(e.target.value)}
-                          renderValue={(selected) => selected.join(', ')}
-                          label="Workout Split (Select multiple)"
-                          sx={{
-                              minHeight: '56px',
-                              '.MuiSelect-select': {
-                                  paddingTop: '16.5px',
-                                  paddingBottom: '16.5px',
-                              }
-                          }}
-                        >
-                          {workoutSplits.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              <Checkbox checked={workoutSplit.indexOf(option) > -1} />
-                              <ListItemText primary={option} />
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12}> {/* This makes both take full width */}
-                      <FormControl fullWidth required>
-                        <InputLabel id="pain-level-label">Pain Level (1-10)</InputLabel>
-                        <Select
-                          labelId="pain-level-label"
-                          value={painLevel}
-                          onChange={(e) => setPainLevel(e.target.value)}
-                          label="Pain Level (1-10)"
-                          sx={{
-                              minHeight: '56px',
-                              '.MuiSelect-select': {
-                                  paddingTop: '16.5px',
-                                  paddingBottom: '16.5px',
-                              }
-                          }}
-                        >
-                          <MenuItem value="">Select Level</MenuItem>
-                          {painLevels.map((level) => (
-                            <MenuItem key={level} value={level}>{level}</MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                </Grid>
+                <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
+                  <Grid container spacing={2}> {/* Inner grid for this section */}
+                      <Grid item xs={12}> {/* This makes both take full width */}
+                        <FormControl fullWidth required>
+                          <InputLabel id="workout-split-label">Workout Split (Select multiple)</InputLabel>
+                          <Select
+                            labelId="workout-split-label"
+                            multiple
+                            value={workoutSplit}
+                            onChange={(e) => setWorkoutSplit(e.target.value)}
+                            renderValue={(selected) => selected.join(', ')}
+                            label="Workout Split (Select multiple)"
+                            sx={{
+                                minHeight: '56px',
+                                '.MuiSelect-select': {
+                                    paddingTop: '16.5px',
+                                    paddingBottom: '16.5px',
+                                }
+                            }}
+                          >
+                            {workoutSplits.map((option) => (
+                              <MenuItem key={option} value={option}>
+                                <Checkbox checked={workoutSplit.indexOf(option) > -1} />
+                                <ListItemText primary={option} />
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12}> {/* This makes both take full width */}
+                        <FormControl fullWidth required>
+                          <InputLabel id="pain-level-label">Pain Level (1-10)</InputLabel>
+                          <Select
+                            labelId="pain-level-label"
+                            value={painLevel}
+                            onChange={(e) => setPainLevel(e.target.value)}
+                            label="Pain Level (1-10)"
+                            sx={{
+                                minHeight: '56px',
+                                '.MuiSelect-select': {
+                                    paddingTop: '16.5px',
+                                    paddingBottom: '16.5px',
+                                }
+                            }}
+                          >
+                            <MenuItem value="">Select Level</MenuItem>
+                            {painLevels.map((level) => (
+                              <MenuItem key={level} value={level}>{level}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                  </Grid>
+                </Paper>
               </Grid>
 
               {/* Section 3: Supplements Options */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>Supplements</Typography>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                  <Typography variant="subtitle1" sx={{ color: 'text.secondary', flexGrow: 1 }}>Supplements:</Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: 'rgba(106, 115, 125, 0.5)', '&:hover': { backgroundColor: 'rgba(84, 92, 100, 0.7)' } }}
-                    onClick={() => setIsManageSupplementsOpen(true)}
-                  >
-                    Manage Supplements
-                  </Button>
-                </Box>
-                <Grid container spacing={1}>
-                  {formSupplements.map((sup, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box display="flex" alignItems="center">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={sup.taken}
-                              onChange={(e) => handleSupplementCheckboxChange(sup.name, e.target.checked)}
-                            />
-                          }
-                          label={<Typography sx={{ color: 'text.secondary' }}>{sup.name}</Typography>}
-                        />
-                        {sup.taken && (
-                          <TextField
-                            size="small"
-                            placeholder="Quantity"
-                            value={sup.quantity}
-                            onChange={(e) => handleSupplementQuantityChange(sup.name, e.target.value)}
-                            sx={{ ml: 1, flexGrow: 1 }}
+                <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                    <Typography variant="subtitle1" sx={{ color: 'text.secondary', flexGrow: 1 }}>Supplements:</Typography>
+                    <Button
+                      variant="contained"
+                      sx={{ backgroundColor: 'rgba(106, 115, 125, 0.5)', '&:hover': { backgroundColor: 'rgba(84, 92, 100, 0.7)' } }}
+                      onClick={() => setIsManageSupplementsOpen(true)}
+                    >
+                      Manage Supplements
+                    </Button>
+                  </Box>
+                  <Grid container spacing={1}>
+                    {formSupplements.map((sup, index) => (
+                      <Grid item xs={12} sm={6} key={index}>
+                        <Box display="flex" alignItems="center">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={sup.taken}
+                                onChange={(e) => handleSupplementCheckboxChange(sup.name, e.target.checked)}
+                              />
+                            }
+                            label={<Typography sx={{ color: 'text.secondary' }}>{sup.name}</Typography>}
                           />
-                        )}
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
+                          {sup.taken && (
+                            <TextField
+                              size="small"
+                              placeholder="Quantity"
+                              value={sup.quantity}
+                              onChange={(e) => handleSupplementQuantityChange(sup.name, e.target.value)}
+                              sx={{ ml: 1, flexGrow: 1 }}
+                            />
+                          )}
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Paper>
               </Grid>
 
               {/* Section 4: Notes Field and Add Entry Button */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>Notes</Typography>
-                <TextField
-                  label="Notes"
-                  multiline
-                  rows={3}
-                  fullWidth
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                />
+                <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
+                  <TextField
+                    label="Notes"
+                    multiline
+                    rows={3}
+                    fullWidth
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Paper>
               </Grid>
 
               {/* Form Action Buttons (now part of Section 4's grid item) */}

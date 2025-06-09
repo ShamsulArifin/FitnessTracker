@@ -1370,7 +1370,7 @@ function App() {
                               {entry.notes && (
                                 <Typography component="span" variant="body2" color="text.secondary" display="block" sx={{ whiteSpace: 'pre-wrap' }}>
                                   <strong>Notes:</strong> {entry.notes}
-                                </Typography>
+                                                            </Typography>
                               )}
                             </React.Fragment>
                           }
@@ -1520,6 +1520,29 @@ function App() {
         </Dialog>
 
       </Container>
+      {/* Footer added at the bottom */}
+      <Box sx={{
+        mt: 4,
+        py: 2,
+        backgroundColor: 'rgba(26, 32, 44, 0.7)',
+        textAlign: 'center',
+        borderRadius: '10px',
+        maxWidth: 'md',
+        mx: 'auto',
+        color: 'text.secondary',
+      }}>
+        <Typography variant="body2">
+          Made with ❤️ by{' '}
+          <a
+            href="https://portfolio-eta-seven-57.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: darkTheme.palette.primary.main, textDecoration: 'none', fontWeight: 'bold' }}
+          >
+            Shamsul Arifin
+          </a>
+        </Typography>
+      </Box>
     </ThemeProvider>
   );
 }

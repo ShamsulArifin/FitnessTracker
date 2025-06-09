@@ -1233,13 +1233,30 @@ function App() {
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: 200 }}> {/* Applied minWidth here */}
                   <InputLabel id="filter-workout-label">Filter Workout</InputLabel>
                   <Select
                     labelId="filter-workout-label"
                     value={filterWorkout}
                     onChange={(e) => setFilterWorkout(e.target.value)}
                     label="Filter Workout"
+                    renderValue={(selected) => (
+                        selected ? (
+                            <Chip
+                                label={selected}
+                                sx={{ backgroundColor: getWorkoutColor(selected) }} // Apply dynamic color
+                            />
+                        ) : (
+                            'All Workouts' // Return a string directly instead of Typography
+                        )
+                    )}
+                    sx={{
+                        minHeight: '56px',
+                        '.MuiSelect-select': {
+                            paddingTop: '16.5px',
+                            paddingBottom: '16.5px',
+                        }
+                    }}
                   >
                     <MenuItem value="">All Workouts</MenuItem>
                     {workoutSplits.map((option) => (
@@ -1264,13 +1281,20 @@ function App() {
                 </Button>
               </Grid>
               <Grid item xs={12} sx={{ mt: 2 }}>
-                <FormControl fullWidth>
+                <FormControl fullWidth sx={{ minWidth: 200 }}> {/* Applied minWidth here */}
                   <InputLabel id="sort-order-label">Sort By Date</InputLabel>
                   <Select
                     labelId="sort-order-label"
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
                     label="Sort By Date"
+                    sx={{
+                        minHeight: '56px',
+                        '.MuiSelect-select': {
+                            paddingTop: '16.5px',
+                            paddingBottom: '16.5px',
+                        }
+                    }}
                   >
                     <MenuItem value="desc">Newest First</MenuItem>
                     <MenuItem value="asc">Oldest First</MenuItem>
@@ -1457,7 +1481,7 @@ function App() {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={cancelDeleteEntry} color="secondary" autoFocus>
+            <Button onClick={cancelDeleteEntry} color="secondary" autoFocus> {/* Corrected function call */}
               Cancel
             </Button>
             <Button onClick={confirmDeleteEntry} color="error">

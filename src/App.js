@@ -32,6 +32,7 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
+  Chip, // Import Chip component
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -220,6 +221,23 @@ const darkTheme = createTheme({
             },
         },
     },
+    MuiChip: { // Styles for the Chip component
+        styleOverrides: {
+            root: {
+                // backgroundColor will be set dynamically
+                color: '#FFFFFF', // White text
+                margin: '2px',
+                borderRadius: '8px', // Rounded corners for chips
+                fontWeight: 'bold',
+            },
+            deleteIcon: {
+                color: 'rgba(255, 255, 255, 0.8)', // Lighter delete icon
+                '&:hover': {
+                    color: 'rgba(255, 255, 255, 1)',
+                },
+            },
+        },
+    },
   },
 });
 
@@ -287,6 +305,36 @@ const painLevels = [
   '1 - None', '2 - Very Mild', '3 - Mild', '4 - Moderate', '5 - Annoying',
   '6 - Distracting', '7 - Severe', '8 - Very Severe', '9 - Excruciating', '10 - Unbearable'
 ];
+
+// Utility function to get color for workout chips
+const getWorkoutColor = (workoutName) => {
+    switch (workoutName) {
+        case 'Chest': return '#FF6347'; // Tomato
+        case 'Biceps': return '#4682B4'; // SteelBlue
+        case 'Back': return '#8A2BE2'; // BlueViolet
+        case 'Triceps': return '#20B2AA'; // LightSeaGreen
+        case 'Shoulder': return '#DAA520'; // Goldenrod
+        case 'Traps': return '#DC143C'; // Crimson
+        case 'Forearms': return '#8B4513'; // SaddleBrown
+        case 'Abs': return '#32CD32'; // LimeGreen
+        case 'Legs': return '#FFD700'; // Gold
+        case 'Cardio': return '#1E90FF'; // DodgerBlue
+        case 'Rest Day': return '#A9A9A9'; // DarkGray
+        case 'Other': return '#6A5ACD'; // SlateBlue
+        default: return '#007bff'; // Default primary color
+    }
+};
+
+// Utility function to get color for pain level chips
+const getPainLevelColor = (painLevel) => {
+    const level = parseInt(painLevel.split(' ')[0]);
+    if (isNaN(level)) return '#A9A9A9'; // Default for invalid
+    if (level <= 3) return '#28a745'; // Green for low pain
+    if (level <= 6) return '#ffc107'; // Yellow for moderate pain
+    if (level <= 8) return '#fd7e14'; // Orange for higher pain
+    return '#dc3545'; // Red for severe pain
+};
+
 
 function App() {
   const [currentTab, setCurrentTab] = useState(0); // 0: Entry Form, 1: Summary, 2: Filter, 3: Progress
@@ -965,14 +1013,29 @@ function App() {
                 <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
                   <Grid container spacing={2}> {/* Inner grid for this section */}
                       <Grid item xs={12}> {/* This makes both take full width */}
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required sx={{ minWidth: 250 }}> {/* Added minWidth */}
                           <InputLabel id="workout-split-label">Workout Split (Select multiple)</InputLabel>
                           <Select
                             labelId="workout-split-label"
                             multiple
                             value={workoutSplit}
                             onChange={(e) => setWorkoutSplit(e.target.value)}
-                            renderValue={(selected) => selected.join(', ')}
+                            renderValue={(selected) => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => (
+                                  <Chip
+                                    key={value}
+                                    label={value}
+                                    onDelete={() => setWorkoutSplit(workoutSplit.filter((item) => item !== value))}
+                                    onMouseDown={(event) => {
+                                        // Prevent opening the dropdown when clicking the delete icon
+                                        event.stopPropagation();
+                                    }}
+                                    sx={{ backgroundColor: getWorkoutColor(value) }} // Apply dynamic color
+                                  />
+                                ))}
+                              </Box>
+                            )}
                             label="Workout Split (Select multiple)"
                             sx={{
                                 minHeight: '56px',
@@ -992,12 +1055,26 @@ function App() {
                         </FormControl>
                       </Grid>
                       <Grid item xs={12}> {/* This makes both take full width */}
-                        <FormControl fullWidth required>
+                        <FormControl fullWidth required sx={{ minWidth: 250 }}> {/* Added minWidth */}
                           <InputLabel id="pain-level-label">Pain Level (1-10)</InputLabel>
                           <Select
                             labelId="pain-level-label"
                             value={painLevel}
                             onChange={(e) => setPainLevel(e.target.value)}
+                            renderValue={(selected) => (
+                                selected ? (
+                                    <Chip
+                                        label={selected}
+                                        onDelete={() => setPainLevel('')} // Clear selection when chip is deleted
+                                        onMouseDown={(event) => {
+                                            event.stopPropagation();
+                                        }}
+                                        sx={{ backgroundColor: getPainLevelColor(selected) }} // Apply dynamic color
+                                    />
+                                ) : (
+                                    <Typography variant="body1" sx={{ color: 'text.disabled' }}>Select Level</Typography>
+                                )
+                            )}
                             label="Pain Level (1-10)"
                             sx={{
                                 minHeight: '56px',

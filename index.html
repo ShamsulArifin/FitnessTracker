@@ -109,10 +109,24 @@
         }
         /* Specific styling for date inputs to ensure calendar icon visibility */
         input[type="date"] {
-            background-color: #F8F8F8; /* Very light gray/almost white background */
-            color: #333; /* Dark text color for contrast */
-            border-color: rgba(255, 255, 255, 0.4); /* Make border more visible */
+            background-color: var(--input-bg); /* Use the standard dark input background */
+            color: var(--input-text); /* Ensure text is light */
+            border-color: var(--input-border); /* Standard border */
         }
+
+        /* Attempt to force the calendar icon itself to be light */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1); /* Invert colors (black to white, white to black) */
+            opacity: 1; /* Ensure it's not transparent */
+            cursor: pointer; /* Ensure it's clickable */
+        }
+
+        input[type="date"]::-moz-calendar-picker-indicator {
+            filter: invert(1); /* For Firefox */
+            opacity: 1;
+            cursor: pointer;
+        }
+
         .shadow-xl {
             /* Adjust shadow for glass effect */
             box-shadow: 0 20px 25px -5px var(--shadow-color-1), 0 10px 10px -5px var(--shadow-color-2);
@@ -148,7 +162,7 @@
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            background-color: #30363d; /* Darker, more visible background for unchecked state */
+            background-color: #A9A9A9; /* Light gray for unchecked state for better visibility */
             cursor: pointer;
             flex-shrink: 0;
         }
@@ -159,7 +173,7 @@
         input[type="checkbox"]:checked::before {
             content: '✔';
             display: block;
-            color: white; /* Changed to white for better contrast on the accent color */
+            color: white; /* Ensures the checkmark is always white */
             font-size: 0.75rem;
             line-height: 1;
             text-align: center;

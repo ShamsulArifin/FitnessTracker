@@ -205,7 +205,7 @@ const darkTheme = createTheme({
           borderRadius: '20px', // M3 button shape (pill-like)
           textTransform: 'none', // M3 buttons use Title Case, not all caps
           fontWeight: 500, // M3 Label Large font weight
-          padding: '10px 24px', // M3 button padding
+          padding: '8px 20px', // Adjusted M3 button padding
           boxShadow: 'none', // M3 elevated buttons have subtle shadow handled by paper/container
           '&:hover': {
             boxShadow: 'none',
@@ -811,7 +811,7 @@ function App() {
       `${name} (Taken)`,
       `${name} (Quantity)`,
     ]);
-    let csvContent = headers.join(',') + '\n'; // Corrected variable name
+    let csvContent = [...baseHeaders, ...supplementHeaders].join(',') + '\n'; // Corrected: Joined baseHeaders and supplementHeaders
 
     fitnessEntries.forEach((entry) => {
       const weightInKg = entry.weight.toFixed(1);

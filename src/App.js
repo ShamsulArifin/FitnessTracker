@@ -45,7 +45,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import PsychologyIcon from '@mui/icons-material/Psychology'; // For the Gemini API button
-import SettingsIcon from '@mui/icons-material/Settings'; // For settings button
+import BrushIcon from '@mui/icons-material/Brush'; // Changed from SettingsIcon
 
 // --- THEME DEFINITIONS ---
 // Define multiple themes
@@ -1749,7 +1749,7 @@ function AppContent() {
             </RadioGroup>
           </FormControl>
           <IconButton color='primary' onClick={() => setIsSettingsOpen(true)}>
-            <SettingsIcon />
+            <BrushIcon /> {/* Changed icon to BrushIcon */}
           </IconButton>
         </Box>
         <Typography
@@ -2804,9 +2804,12 @@ function AppContent() {
         <Dialog
           open={isSettingsOpen}
           onClose={() => setIsSettingsOpen(false)}
-          aria-labelledby='settings-dialog-title'
+          aria-labelledby='theme-dialog-title' // Changed ID to match new title
+          maxWidth='sm'
+          fullWidth
         >
-          <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
+          <DialogTitle id='theme-dialog-title'>Theme</DialogTitle>{' '}
+          {/* Changed title to "Theme" */}
           <DialogContent>
             <FormControl fullWidth margin='dense'>
               <InputLabel id='theme-select-label'>Choose Theme</InputLabel>

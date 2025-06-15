@@ -43,9 +43,22 @@ import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
+// Changed import for CloseIcon
+import { Close as CloseIcon } from '@mui/icons-material';
 import PsychologyIcon from '@mui/icons-material/Psychology'; // For the Gemini API button
 import BrushIcon from '@mui/icons-material/Brush'; // Changed from SettingsIcon
+
+// Recharts imports for the graph
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 // --- THEME DEFINITIONS ---
 // Define multiple themes
@@ -960,7 +973,7 @@ function AppContent() {
         case 'Rest Day':
           return theme.palette.text.disabled;
         case 'Other':
-          return theme.palette.mode === 'dark' ? '#B9B6FF' : '#7E57C2';
+          return theme.palette.primary.main; // Fallback for 'Other' or any new types
         default:
           return theme.palette.primary.main;
       }
@@ -1491,6 +1504,29 @@ function AppContent() {
 
   const stats = calculateStatistics();
 
+  // --- Data for Chart ---
+  const getChartData = useCallback(() => {
+    return fitnessEntries
+      .map((entry) => {
+        const displayWeight = parseFloat(
+          convertWeight(
+            entry.weight,
+            'kg',
+            unitSystem === 'metric' ? 'kg' : 'lbs'
+          ).toFixed(1)
+        );
+        const bmi = parseFloat(calculateBMI(entry.weight, entry.height));
+        return {
+          date: entry.date,
+          weight: displayWeight,
+          bmi: bmi,
+        };
+      })
+      .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date for chronological chart
+  }, [fitnessEntries, unitSystem]);
+
+  const chartData = getChartData();
+
   // --- Filtered and Sorted Entries for Progress Tab ---
   const filteredAndSortedEntries = useCallback(() => {
     let entriesToRender = fitnessEntries;
@@ -1696,6 +1732,7 @@ function AppContent() {
   return (
     <>
       <CssBaseline />
+      {/* Ensure the body has a minimum height to allow for vertical centering of fixed elements */}
       <Box
         sx={{
           position: 'fixed',
@@ -1713,6 +1750,9 @@ function AppContent() {
           backgroundColor: theme.palette.background.default,
         }}
       />
+
+      {/* Removed ad banners */}
+
       <Container
         maxWidth='md'
         sx={{
@@ -1720,7 +1760,11 @@ function AppContent() {
           p: 4,
           borderRadius: '28px',
           backgroundColor: theme.palette.background.paper,
-          pb: '100px',
+          pb: '100px', // Adjusted padding-bottom to account for footer
+          // No top padding adjustment needed as banners are removed
+          // Use auto margins to center the container for desktop view
+          ml: { md: 'auto' },
+          mr: { md: 'auto' },
         }}
         component={Paper}
       >
@@ -2090,7 +2134,7 @@ function AppContent() {
                           {sup.taken && (
                             <TextField
                               size='small'
-                              placeholder='Quantity'
+                              placeholder='Quantity (grams)'
                               value={sup.quantity}
                               onChange={(e) =>
                                 handleSupplementQuantityChange(
@@ -2220,6 +2264,113 @@ function AppContent() {
                 )}
               </Button>
             </Box>
+
+            {/* Fitness Progress Chart */}
+            <Typography
+              variant='h6'
+              align='center'
+              gutterBottom
+              sx={{ mt: 5, mb: 3 }}
+            >
+              Weight & BMI Progress
+            </Typography>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width='100%' height={300}>
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray='3 3'
+                    stroke={theme.palette.text.disabled}
+                  />
+                  <XAxis
+                    dataKey='date'
+                    minTickGap={30} // Adjust as needed for date density
+                    tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+                    axisLine={{ stroke: theme.palette.text.secondary }}
+                    tickLine={{ stroke: theme.palette.text.secondary }}
+                  />
+                  <YAxis
+                    yAxisId='left'
+                    label={{
+                      value: `Weight (${
+                        unitSystem === 'metric' ? 'kg' : 'lbs'
+                      })`,
+                      angle: -90,
+                      position: 'insideLeft',
+                      fill: theme.palette.text.primary,
+                    }}
+                    tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+                    axisLine={{ stroke: theme.palette.text.secondary }}
+                    tickLine={{ stroke: theme.palette.text.secondary }}
+                  />
+                  <YAxis
+                    yAxisId='right'
+                    orientation='right'
+                    label={{
+                      value: 'BMI',
+                      angle: 90,
+                      position: 'insideRight',
+                      fill: theme.palette.text.primary,
+                    }}
+                    tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+                    axisLine={{ stroke: theme.palette.text.secondary }}
+                    tickLine={{ stroke: theme.palette.text.secondary }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: theme.palette.background.paper,
+                      border: `1px solid ${theme.palette.text.disabled}`,
+                      borderRadius: '8px',
+                    }}
+                    labelStyle={{ color: theme.palette.text.primary }}
+                    itemStyle={{ color: theme.palette.text.secondary }}
+                    formatter={(value, name, props) => {
+                      if (
+                        name ===
+                        `Weight (${unitSystem === 'metric' ? 'kg' : 'lbs'})`
+                      ) {
+                        return [
+                          `${value.toFixed(1)} ${
+                            unitSystem === 'metric' ? 'kg' : 'lbs'
+                          }`,
+                          'Weight',
+                        ];
+                      }
+                      return [`${value.toFixed(2)}`, name];
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{ color: theme.palette.text.primary }}
+                  />
+                  <Line
+                    yAxisId='left'
+                    type='monotone'
+                    dataKey='weight'
+                    name={`Weight (${unitSystem === 'metric' ? 'kg' : 'lbs'})`}
+                    stroke={theme.palette.primary.main}
+                    activeDot={{ r: 8 }}
+                  />
+                  <Line
+                    yAxisId='right'
+                    type='monotone'
+                    dataKey='bmi'
+                    name='BMI'
+                    stroke={theme.palette.secondary.main}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <Typography
+                variant='body1'
+                align='center'
+                sx={{ color: 'text.disabled', mt: 3 }}
+              >
+                Add entries to see your progress chart!
+              </Typography>
+            )}
           </Box>
         )}
 
@@ -2833,6 +2984,24 @@ function AppContent() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Ad message */}
+        <Box
+          sx={{
+            mt: 4,
+            textAlign: 'center',
+            color: theme.palette.text.secondary,
+            fontSize: '0.9rem',
+            p: 2,
+            borderRadius: '8px',
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? 'rgba(255, 255, 255, 0.05)'
+                : 'rgba(0, 0, 0, 0.05)',
+          }}
+        >
+          For posting your ad here, contact developer.
+        </Box>
       </Container>
       {/* Footer added at the bottom */}
       <Box

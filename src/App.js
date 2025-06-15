@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  createContext,
+  useContext,
+} from 'react';
 import {
   CssBaseline,
   AppBar,
@@ -32,281 +38,804 @@ import {
   DialogTitle,
   CircularProgress,
   Chip,
-  // Link from Material-UI is imported but <a> tag is used for external link in footer
 } from '@mui/material';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles'; // Import useTheme
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import PsychologyIcon from '@mui/icons-material/Psychology'; // For the Gemini API button
+import SettingsIcon from '@mui/icons-material/Settings'; // For settings button
 
-// Define a dark theme inspired by Material Design 3
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    // M3-inspired color palette
-    primary: {
-      main: '#9CE0FF', // Light blue, reminiscent of M3 primary
-      light: '#C7EEFF',
-      dark: '#006494',
-      contrastText: '#000000', // Black text on light primary for contrast
-    },
-    secondary: {
-      main: '#B0C4DE', // LightSteelBlue, a softer secondary
-      light: '#DAE2F0',
-      dark: '#4A5C6F',
-      contrastText: '#000000', // Black text on light secondary for contrast
-    },
-    error: {
-      main: '#CF6679', // M3 error color
-      light: '#FF8A80',
-      dark: '#B00020',
-      contrastText: '#FFFFFF', // White text on error for contrast
-    },
-    success: {
-      main: '#80E280', // M3-like green
-      light: '#A7F2A7',
-      dark: '#008000',
-      contrastText: '#000000', // Black text on success for contrast
-    },
-    background: {
-      default: '#000000', // Changed to black
-      paper: '#2F2E31', // M3 dark surface color
-    },
-    text: {
-      primary: '#E6E1E5', // High-emphasis text on dark background
-      secondary: '#C9C5CD', // Medium-emphasis text
-      disabled: '#938F99', // Disabled text
-    },
-  },
-  typography: {
-    // M3-inspired typography scale (simplified)
-    fontFamily: 'Inter, sans-serif',
-    h4: {
-      fontWeight: 700, // Display Large/Medium
-      fontSize: '2.5rem',
-      lineHeight: 1.2,
-      letterSpacing: '0.005em',
-    },
-    h5: {
-      fontWeight: 600, // Headline Large
-      fontSize: '2rem',
-      lineHeight: 1.25,
-      letterSpacing: '0em',
-    },
-    h6: {
-      fontWeight: 600, // Headline Medium
-      fontSize: '1.5rem',
-      lineHeight: 1.33,
-      letterSpacing: '0em',
-    },
-    body1: {
-      fontWeight: 400, // Body Large
-      fontSize: '1rem',
-      lineHeight: 1.5,
-      letterSpacing: '0.00937em',
-    },
-    body2: {
-      fontWeight: 400, // Body Medium
-      fontSize: '0.875rem',
-      lineHeight: 1.43,
-      letterSpacing: '0.01786em',
-    },
-    button: {
-      fontWeight: 500, // Label Large
-      fontSize: '0.875rem',
-      textTransform: 'none', // M3 buttons are usually not all caps
-      letterSpacing: '0.01786em',
-    },
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.12)', // Slightly more visible border
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4)', // M3-inspired shadow for elevation 1
-          borderRadius: '28px', // M3 standard for large containers
-          backgroundColor: 'rgba(47, 46, 49, 0.7)', // Ensure paper uses consistent transparent dark background
-        },
+// --- THEME DEFINITIONS ---
+// Define multiple themes
+const themes = {
+  dark: createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#9CE0FF',
+        light: '#C7EEFF',
+        dark: '#006494',
+        contrastText: '#000000',
       },
+      secondary: {
+        main: '#B0C4DE',
+        light: '#DAE2F0',
+        dark: '#4A5C6F',
+        contrastText: '#000000',
+      },
+      error: {
+        main: '#CF6679',
+        light: '#FF8A80',
+        dark: '#B00020',
+        contrastText: '#FFFFFF',
+      },
+      success: {
+        main: '#80E280',
+        light: '#A7F2A7',
+        dark: '#008000',
+        contrastText: '#000000',
+      },
+      background: { default: '#000000', paper: '#2F2E31' }, // Main container background
+      text: { primary: '#E6E1E5', secondary: '#A8A3AB', disabled: '#938F99' },
     },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'rgba(60, 60, 65, 0.6)', // M3 text field fill color with transparency
-          color: '#E6E1E5', // High-emphasis text color
-          borderRadius: '16px', // M3 text field shape
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(197, 198, 201, 0.3)', // Outline color
-          },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'rgba(197, 198, 201, 0.5)', // Hover outline color
-          },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#9CE0FF', // Primary color on focus
-          },
-          '& input[type="date"]': {
-            colorScheme: 'dark', // Hint to the browser for dark mode calendar
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+      h4: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 700,
+        fontSize: '2.5rem',
+      },
+      h5: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '2rem',
+      },
+      h6: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '1.5rem',
+      },
+      body1: { fontWeight: 400, fontSize: '1rem' },
+      body2: { fontWeight: 400, fontSize: '0.875rem' },
+      button: { fontWeight: 500, fontSize: '0.875rem', textTransform: 'none' },
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4)',
+            borderRadius: '28px',
+            backgroundColor: '#3A3740', // Adjusted to a more opaque, slightly different dark background for sections
           },
         },
       },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          color: '#C9C5CD', // Secondary text color for labels
-          '&.Mui-focused': {
-            color: '#9CE0FF', // Primary color on focus
-          },
-          '&.Mui-disabled': {
-            color: '#938F99', // Disabled text
-          },
-        },
-      },
-    },
-    MuiSelect: {
-      styleOverrides: {
-        select: {
-          backgroundColor: 'rgba(60, 60, 65, 0.6)', // Consistent input background
-          color: '#E6E1E5',
-          borderRadius: '16px', // M3 select shape
-        },
-        icon: {
-          color: '#E6E1E5', // Ensure dropdown arrow is visible
-        },
-      },
-    },
-    MuiCheckbox: {
-      styleOverrides: {
-        root: {
-          color: '#938F99', // Disabled text for unchecked state
-          '&.Mui-checked': {
-            color: '#9CE0FF', // M3 primary color when checked
-          },
-        },
-      },
-    },
-    MuiRadio: {
-      styleOverrides: {
-        root: {
-          color: '#938F99',
-          '&.Mui-checked': {
-            color: '#9CE0FF',
-          },
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '20px', // M3 button shape (pill-like)
-          textTransform: 'none', // M3 buttons use Title Case, not all caps
-          fontWeight: 500, // M3 Label Large font weight
-          padding: '8px 20px', // Adjusted M3 button padding
-          boxShadow: 'none', // M3 elevated buttons have subtle shadow handled by paper/container
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-        containedPrimary: {
-          backgroundColor: '#9CE0FF', // M3 primary color
-          color: '#000000', // Hardcoded contrastText
-          '&:hover': {
-            backgroundColor: '#C7EEFF', // Slightly lighter on hover
-          },
-        },
-        containedSuccess: {
-          backgroundColor: '#80E280', // M3-like green
-          color: '#000000', // Hardcoded contrastText
-          '&:hover': {
-            backgroundColor: '#A7F2A7',
-          },
-        },
-        containedError: {
-          backgroundColor: '#CF6679', // M3 error color
-          color: '#FFFFFF', // Hardcoded contrastText
-          '&:hover': {
-            backgroundColor: '#FF8A80',
-          },
-        },
-        containedSecondary: {
-          backgroundColor: '#B0C4DE', // M3 secondary color
-          color: '#000000', // Hardcoded contrastText
-          '&:hover': {
-            backgroundColor: '#DAE2F0',
-          },
-        },
-        outlined: {
-          // For outlined buttons (like Close in dialogs)
-          borderColor: '#C9C5CD', // M3 secondary text color for outline
-          color: '#C9C5CD',
-          '&:hover': {
-            borderColor: '#E6E1E5',
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#4C4952',
             color: '#E6E1E5',
-            backgroundColor: 'rgba(230, 225, 229, 0.08)', // OnSurface variant
+            borderRadius: '16px',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(197, 198, 201, 0.3)',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(197, 198, 201, 0.5)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#9CE0FF',
+            },
+            '& input[type="date"]': { colorScheme: 'dark' },
+          },
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            color: '#C9C5CD',
+            '&.Mui-focused': { color: '#9CE0FF' },
+            '&.Mui-disabled': { color: '#938F99' },
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            backgroundColor: '#4C4952',
+            color: '#E6E1E5',
+            borderRadius: '16px',
+          },
+          icon: { color: '#E6E1E5' },
+        },
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: { color: '#938F99', '&.Mui-checked': { color: '#9CE0FF' } },
+        },
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: { color: '#938F99', '&.Mui-checked': { color: '#9CE0FF' } },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '20px',
+            textTransform: 'none',
+            fontWeight: 500,
+            padding: '3px 10px',
+            boxShadow: 'none',
+            '&:hover': { boxShadow: 'none' },
+          },
+          containedPrimary: {
+            backgroundColor: '#9CE0FF',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#C7EEFF' },
+          },
+          containedSuccess: {
+            backgroundColor: '#80E280',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#A7F2A7' },
+          },
+          containedError: {
+            backgroundColor: '#CF6679',
+            color: '#FFFFFF',
+            '&:hover': { backgroundColor: '#FF8A80' },
+          },
+          containedSecondary: {
+            backgroundColor: '#B0C4DE',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#DAE2F0' },
+          },
+          outlined: {
+            borderColor: '#C9C5CD',
+            color: '#C9C5CD',
+            '&:hover': {
+              borderColor: '#E6E1E5',
+              color: '#E6E1E5',
+              backgroundColor: 'rgba(230, 225, 229, 0.08)',
+            },
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            color: '#C9C5CD',
+            '&.Mui-selected': { color: '#9CE0FF', fontWeight: 500 },
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: '#36343B',
+            backgroundImage: 'none',
+            borderRadius: '28px',
+            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.4)',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: { root: { color: '#E6E1E5', fontWeight: 600 } },
+      },
+      MuiDialogContentText: { styleOverrides: { root: { color: '#C9C5CD' } } },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            color: '#FFFFFF',
+            margin: '2px',
+            borderRadius: '8px',
+            fontWeight: 500,
+            backgroundColor: 'rgba(156, 224, 255, 0.1)',
+          },
+          deleteIcon: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': { color: 'rgba(255, 255, 255, 0.9)' },
           },
         },
       },
     },
-    MuiTab: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none', // M3 tabs use Title Case
-          color: '#C9C5CD', // Inactive tab text color (M3 on-surface-variant)
-          '&.Mui-selected': {
-            color: '#9CE0FF', // Active tab text color (M3 primary)
-            fontWeight: 500, // M3 tab text weight
+  }),
+
+  light: createTheme({
+    palette: {
+      mode: 'light',
+      primary: {
+        main: '#6200EE',
+        light: '#9D46FF',
+        dark: '#0057B7',
+        contrastText: '#FFFFFF',
+      },
+      secondary: {
+        main: '#03DAC6',
+        light: '#66FFF9',
+        dark: '#00A89A',
+        contrastText: '#000000',
+      },
+      error: {
+        main: '#B00020',
+        light: '#E57373',
+        dark: '#7F0000',
+        contrastText: '#FFFFFF',
+      },
+      success: {
+        main: '#4CAF50',
+        light: '#81C784',
+        dark: '#388E3C',
+        contrastText: '#FFFFFF',
+      },
+      background: { default: '#F5F5F5', paper: '#FFFFFF' },
+      text: { primary: '#212121', secondary: '#757575', disabled: '#BDBDBD' },
+    },
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+      h4: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 700,
+        fontSize: '2.5rem',
+      },
+      h5: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '2rem',
+      },
+      h6: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '1.5rem',
+      },
+      body1: { fontWeight: 400, fontSize: '1rem' },
+      body2: { fontWeight: 400, fontSize: '0.875rem' },
+      button: { fontWeight: 500, fontSize: '0.875rem', textTransform: 'none' },
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            borderRadius: '28px',
+            backgroundColor: '#FFFFFF',
+          },
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#F5F5F5',
+            color: '#212121',
+            borderRadius: '16px',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(0, 0, 0, 0.23)',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(0, 0, 0, 0.87)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#6200EE',
+            },
+            '& input[type="date"]': { colorScheme: 'light' },
+          },
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: { color: '#757575', '&.Mui-focused': { color: '#6200EE' } },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            backgroundColor: '#F5F5F5',
+            color: '#212121',
+            borderRadius: '16px',
+          },
+          icon: { color: '#757575' },
+        },
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: { color: '#757575', '&.Mui-checked': { color: '#6200EE' } },
+        },
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: { color: '#757575', '&.Mui-checked': { color: '#6200EE' } },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '20px',
+            textTransform: 'none',
+            fontWeight: 500,
+            padding: '3px 10px',
+            boxShadow: 'none',
+            '&:hover': { boxShadow: 'none' },
+          },
+          containedPrimary: {
+            backgroundColor: '#6200EE',
+            color: '#FFFFFF',
+            '&:hover': { backgroundColor: '#7F39FB' },
+          },
+          containedSuccess: {
+            backgroundColor: '#4CAF50',
+            color: '#FFFFFF',
+            '&:hover': { backgroundColor: '#66BB6A' },
+          },
+          containedError: {
+            backgroundColor: '#B00020',
+            color: '#FFFFFF',
+            '&:hover': { backgroundColor: '#D32F2F' },
+          },
+          containedSecondary: {
+            backgroundColor: '#03DAC6',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#00C8AF' },
+          },
+          outlined: {
+            borderColor: '#757575',
+            color: '#757575',
+            '&:hover': {
+              borderColor: '#212121',
+              color: '#212121',
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            },
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            color: '#757575',
+            '&.Mui-selected': { color: '#6200EE', fontWeight: 500 },
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: '#FFFFFF',
+            backgroundImage: 'none',
+            borderRadius: '28px',
+            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.2)',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: { root: { color: '#212121', fontWeight: 600 } },
+      },
+      MuiDialogContentText: { styleOverrides: { root: { color: '#757575' } } },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            color: '#212121',
+            margin: '2px',
+            borderRadius: '8px',
+            fontWeight: 500,
+            backgroundColor: 'rgba(98, 0, 238, 0.1)',
+          },
+          deleteIcon: {
+            color: 'rgba(0, 0, 0, 0.54)',
+            '&:hover': { color: 'rgba(0, 0, 0, 0.87)' },
           },
         },
       },
     },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          backgroundColor: '#36343B', // M3 surface color for dialogs
-          backgroundImage: 'none',
-          borderRadius: '28px', // M3 dialog shape
-          boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.4)', // Deeper shadow for dialogs
+  }),
+
+  ocean: createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#81D4FA',
+        light: '#B2EBF2',
+        dark: '#00A1C1',
+        contrastText: '#000000',
+      },
+      secondary: {
+        main: '#B39DDB',
+        light: '#D1C4E9',
+        dark: '#6D4C41',
+        contrastText: '#000000',
+      },
+      error: {
+        main: '#EF9A9A',
+        light: '#FFCDD2',
+        dark: '#D32F2F',
+        contrastText: '#000000',
+      },
+      success: {
+        main: '#A5D6A7',
+        light: '#C8E6C9',
+        dark: '#66BB6A',
+        contrastText: '#000000',
+      },
+      background: { default: '#0D47A1', paper: '#1976D2' }, // Deeper blues
+      text: { primary: '#E0F2F7', secondary: '#BBDEFB', disabled: '#90CAF9' },
+    },
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+      h4: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 700,
+        fontSize: '2.5rem',
+      },
+      h5: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '2rem',
+      },
+      h6: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '1.5rem',
+      },
+      body1: { fontWeight: 400, fontSize: '1rem' },
+      body2: { fontWeight: 400, fontSize: '0.875rem' },
+      button: { fontWeight: 500, fontSize: '0.875rem', textTransform: 'none' },
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.6)',
+            borderRadius: '20px',
+            backgroundColor: 'rgba(25, 118, 210, 0.7)', // Primary dark blue with transparency
+          },
         },
       },
-    },
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          color: '#E6E1E5', // Consistent title color
-          fontWeight: 600,
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'rgba(30, 136, 229, 0.6)', // Slightly lighter primary blue with transparency
+            color: '#E0F2F7',
+            borderRadius: '12px',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(255, 255, 255, 0.4)',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(255, 255, 255, 0.7)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#81D4FA',
+            },
+          },
         },
       },
-    },
-    MuiDialogContentText: {
-      styleOverrides: {
-        root: {
-          color: '#C9C5CD', // Consistent text color
+      MuiInputLabel: {
+        styleOverrides: {
+          root: { color: '#BBDEFB', '&.Mui-focused': { color: '#81D4FA' } },
         },
       },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          color: '#FFFFFF', // White text on chips
-          margin: '2px',
-          borderRadius: '8px', // Slightly rounded chips
-          fontWeight: 500,
-          backgroundColor: 'rgba(156, 224, 255, 0.1)', // Example base for chips (will be overridden)
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            backgroundColor: 'rgba(30, 136, 229, 0.6)',
+            color: '#E0F2F7',
+            borderRadius: '12px',
+          },
+          icon: { color: '#E0F2F7' },
         },
-        deleteIcon: {
-          color: 'rgba(255, 255, 255, 0.7)',
-          '&:hover': {
-            color: 'rgba(255, 255, 255, 0.9)',
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: { color: '#90CAF9', '&.Mui-checked': { color: '#81D4FA' } },
+        },
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: { color: '#90CAF9', '&.Mui-checked': { color: '#81D4FA' } },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '16px',
+            textTransform: 'none',
+            fontWeight: 500,
+            padding: '3px 10px',
+            boxShadow: 'none',
+            '&:hover': { boxShadow: 'none' },
+          },
+          containedPrimary: {
+            backgroundColor: '#81D4FA',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#B2EBF2' },
+          },
+          containedSuccess: {
+            backgroundColor: '#A5D6A7',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#C8E6C9' },
+          },
+          containedError: {
+            backgroundColor: '#EF9A9A',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#FFCDD2' },
+          },
+          containedSecondary: {
+            backgroundColor: '#B39DDB',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#D1C4E9' },
+          },
+          outlined: {
+            borderColor: '#BBDEFB',
+            color: '#BBDEFB',
+            '&:hover': {
+              borderColor: '#E0F2F7',
+              color: '#E0F2F7',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            },
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            color: '#BBDEFB',
+            '&.Mui-selected': { color: '#81D4FA', fontWeight: 500 },
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: '#1565C0',
+            backgroundImage: 'none',
+            borderRadius: '20px',
+            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.5)',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: { root: { color: '#E0F2F7', fontWeight: 600 } },
+      },
+      MuiDialogContentText: { styleOverrides: { root: { color: '#BBDEFB' } } },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            color: '#FFFFFF',
+            margin: '2px',
+            borderRadius: '6px',
+            fontWeight: 500,
+            backgroundColor: 'rgba(129, 212, 250, 0.2)',
+          },
+          deleteIcon: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': { color: 'rgba(255, 255, 255, 0.9)' },
           },
         },
       },
     },
-  },
-});
+  }),
+
+  forest: createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#A8E6CF',
+        light: '#D2F8D2',
+        dark: '#70C09E',
+        contrastText: '#000000',
+      },
+      secondary: {
+        main: '#DCDCDC',
+        light: '#EDEDED',
+        dark: '#A9A9A9',
+        contrastText: '#000000',
+      },
+      error: {
+        main: '#F48FB1',
+        light: '#FFCDD2',
+        dark: '#C2185B',
+        contrastText: '#000000',
+      },
+      success: {
+        main: '#8BC34A',
+        light: '#C5E1A5',
+        dark: '#689F38',
+        contrastText: '#000000',
+      },
+      background: { default: '#2E4057', paper: '#4F6C7B' }, // Muted forest tones
+      text: { primary: '#F0F5F0', secondary: '#D3DBE2', disabled: '#B0B5BB' },
+    },
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+      h4: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 700,
+        fontSize: '2.5rem',
+      },
+      h5: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '2rem',
+      },
+      h6: {
+        fontFamily: 'Montserrat, sans-serif',
+        fontWeight: 600,
+        fontSize: '1.5rem',
+      },
+      body1: { fontWeight: 400, fontSize: '1rem' },
+      body2: { fontWeight: 400, fontSize: '0.875rem' },
+      button: { fontWeight: 500, fontSize: '0.875rem', textTransform: 'none' },
+    },
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)',
+            borderRadius: '24px',
+            backgroundColor: 'rgba(79, 108, 123, 0.8)', // Paper color with transparency
+          },
+        },
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            backgroundColor: 'rgba(95, 129, 142, 0.7)', // Input field with transparency
+            color: '#F0F5F0',
+            borderRadius: '14px',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'rgba(255, 255, 255, 0.4)',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#A8E6CF',
+            },
+          },
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: { color: '#D3DBE2', '&.Mui-focused': { color: '#A8E6CF' } },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            backgroundColor: 'rgba(95, 129, 142, 0.7)',
+            color: '#F0F5F0',
+            borderRadius: '14px',
+          },
+          icon: { color: '#F0F5F0' },
+        },
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: { color: '#B0B5BB', '&.Mui-checked': { color: '#A8E6CF' } },
+        },
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: { color: '#B0B5BB', '&.Mui-checked': { color: '#A8E6CF' } },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: '18px',
+            textTransform: 'none',
+            fontWeight: 500,
+            padding: '3px 10px',
+            boxShadow: 'none',
+            '&:hover': { boxShadow: 'none' },
+          },
+          containedPrimary: {
+            backgroundColor: '#A8E6CF',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#D2F8D2' },
+          },
+          containedSuccess: {
+            backgroundColor: '#8BC34A',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#C5E1A5' },
+          },
+          containedError: {
+            backgroundColor: '#F48FB1',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#FFCDD2' },
+          },
+          containedSecondary: {
+            backgroundColor: '#DCDCDC',
+            color: '#000000',
+            '&:hover': { backgroundColor: '#EDEDED' },
+          },
+          outlined: {
+            borderColor: '#D3DBE2',
+            color: '#D3DBE2',
+            '&:hover': {
+              borderColor: '#F0F5F0',
+              color: '#F0F5F0',
+              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+            },
+          },
+        },
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            color: '#D3DBE2',
+            '&.Mui-selected': { color: '#A8E6CF', fontWeight: 500 },
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: '#394A5D',
+            backgroundImage: 'none',
+            borderRadius: '24px',
+            boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.4)',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: { root: { color: '#F0F5F0', fontWeight: 600 } },
+      },
+      MuiDialogContentText: { styleOverrides: { root: { color: '#D3DBE2' } } },
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            color: '#FFFFFF',
+            margin: '2px',
+            borderRadius: '7px',
+            fontWeight: 500,
+            backgroundColor: 'rgba(168, 230, 207, 0.2)',
+          },
+          deleteIcon: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            '&:hover': { color: 'rgba(255, 255, 255, 0.9)' },
+          },
+        },
+      },
+    },
+  }),
+};
+
+// Create a ThemeContext to manage the current theme state
+const ThemeContext = createContext();
+
+// ThemeProviderWrapper component to provide theme switching capability
+const ThemeProviderWrapper = ({ children }) => {
+  const [currentThemeName, setCurrentThemeName] = useState(() => {
+    // Load theme preference from localStorage, default to 'dark'
+    return localStorage.getItem('appTheme') || 'dark';
+  });
+
+  const selectedTheme = themes[currentThemeName] || themes.dark; // Fallback to dark if invalid
+
+  // Save theme preference to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('appTheme', currentThemeName);
+  }, [currentThemeName]);
+
+  return (
+    <ThemeContext.Provider value={{ currentThemeName, setCurrentThemeName }}>
+      <ThemeProvider theme={selectedTheme}>{children}</ThemeProvider>
+    </ThemeContext.Provider>
+  );
+};
 
 // Unit Conversion Constants
 const KG_TO_LBS_FACTOR = 2.20462;
@@ -398,9 +927,11 @@ const painLevels = [
   '10 - Unbearable',
 ];
 
-function App() {
+function AppContent() {
+  // Renamed App to AppContent
   // Use useTheme hook to access the theme object
   const theme = useTheme();
+  const { currentThemeName, setCurrentThemeName } = useContext(ThemeContext);
 
   // Utility function to get color for workout chips
   const getWorkoutColor = useCallback(
@@ -411,25 +942,25 @@ function App() {
         case 'Biceps':
           return theme.palette.secondary.light;
         case 'Back':
-          return '#D0BCFF'; // Example of a custom M3-like color not directly from palette
+          return theme.palette.mode === 'dark' ? '#D0BCFF' : '#424242'; // Adjust for light mode visibility
         case 'Triceps':
-          return '#B3F0E6';
+          return theme.palette.mode === 'dark' ? '#B3F0E6' : '#26A69A';
         case 'Shoulder':
-          return '#FFE082';
+          return theme.palette.mode === 'dark' ? '#FFE082' : '#FFB300';
         case 'Traps':
           return theme.palette.error.light;
         case 'Forearms':
-          return '#D7C7A2';
+          return theme.palette.mode === 'dark' ? '#D7C7A2' : '#795548';
         case 'Abs':
           return theme.palette.success.light;
         case 'Legs':
-          return '#FFEB99';
+          return theme.palette.mode === 'dark' ? '#FFEB99' : '#FBC02D';
         case 'Cardio':
-          return '#A6E4FF';
+          return theme.palette.mode === 'dark' ? '#A6E4FF' : '#0288D1';
         case 'Rest Day':
           return theme.palette.text.disabled;
         case 'Other':
-          return '#B9B6FF';
+          return theme.palette.mode === 'dark' ? '#B9B6FF' : '#7E57C2';
         default:
           return theme.palette.primary.main;
       }
@@ -443,7 +974,8 @@ function App() {
       const level = parseInt(painLevel.split(' ')[0]);
       if (isNaN(level)) return theme.palette.text.disabled;
       if (level <= 3) return theme.palette.success.main;
-      if (level <= 6) return '#FFD180';
+      if (level <= 6)
+        return theme.palette.mode === 'dark' ? '#FFD180' : '#FFAB40'; // Adjust for light mode visibility
       if (level <= 8) return theme.palette.error.light;
       return theme.palette.error.main;
     },
@@ -495,6 +1027,9 @@ function App() {
   const [llmInsight, setLlmInsight] = useState('');
   const [isLlmLoading, setIsLlmLoading] = useState(false);
   const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false);
+
+  // Settings Dialog State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -811,7 +1346,7 @@ function App() {
       `${name} (Taken)`,
       `${name} (Quantity)`,
     ]);
-    let csvContent = [...baseHeaders, ...supplementHeaders].join(',') + '\n'; // Corrected: Joined baseHeaders and supplementHeaders
+    let csvContent = [...baseHeaders, ...supplementHeaders].join(',') + '\n';
 
     fitnessEntries.forEach((entry) => {
       const weightInKg = entry.weight.toFixed(1);
@@ -1159,7 +1694,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <>
       <CssBaseline />
       <Box
         sx={{
@@ -1169,20 +1704,26 @@ function App() {
           width: '100%',
           height: '100%',
           backgroundImage:
-            'repeating-linear-gradient(45deg, #1a1a1a 0, #1a1a1a 1px, transparent 1px, transparent 20px)', // Darker background pattern
+            theme.palette.mode === 'dark'
+              ? 'repeating-linear-gradient(45deg, #1a1a1a 0, #1a1a1a 1px, transparent 1px, transparent 20px)'
+              : 'repeating-linear-gradient(45deg, #E0E0E0 0, #E0E0E0 1px, transparent 1px, transparent 20px)',
           backgroundSize: '20px 20px',
           opacity: 1,
           zIndex: -1,
-          backgroundColor: '#000000', // Ensuring solid black background behind the pattern
+          backgroundColor: theme.palette.background.default,
         }}
       />
       <Container
         maxWidth='md'
-        sx={{ my: 4, p: 4, borderRadius: '28px' }}
+        sx={{
+          my: 4,
+          p: 4,
+          borderRadius: '28px',
+          backgroundColor: theme.palette.background.paper,
+          pb: '100px',
+        }}
         component={Paper}
       >
-        {' '}
-        {/* M3 border radius */}
         <Box
           display='flex'
           justifyContent='space-between'
@@ -1207,6 +1748,9 @@ function App() {
               />
             </RadioGroup>
           </FormControl>
+          <IconButton color='primary' onClick={() => setIsSettingsOpen(true)}>
+            <SettingsIcon />
+          </IconButton>
         </Box>
         <Typography
           variant='h4'
@@ -1215,8 +1759,9 @@ function App() {
           gutterBottom
           sx={{ fontWeight: 'bold' }}
         >
-          Daily Fitness Tracker
+          Gainss
         </Typography>
+
         <AppBar
           position='static'
           color='transparent'
@@ -1238,12 +1783,11 @@ function App() {
             <Tab label='Progress' />
           </Tabs>
         </AppBar>
+
         {/* Tab Content */}
         {currentTab === 0 && (
           <Box component='form' onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <Grid container spacing={3} direction='column'>
-              {' '}
-              {/* Explicitly set direction to column */}
               {/* Section 1: Date, Weight, Height */}
               <Grid item xs={12}>
                 <Typography
@@ -1257,15 +1801,12 @@ function App() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: 'rgba(60, 60, 65, 0.6)',
+                    backgroundColor:
+                      theme.palette.mode === 'dark' ? '#3A3740' : '#E0E0E0',
                     borderRadius: '16px',
                   }}
                 >
-                  {' '}
-                  {/* M3 surface variant */}
                   <Grid container spacing={2}>
-                    {' '}
-                    {/* Inner grid for this section */}
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label='Date'
@@ -1295,8 +1836,6 @@ function App() {
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      {' '}
-                      {/* Always full width for height */}
                       {unitSystem === 'metric' ? (
                         <TextField
                           label={`Height (cm)`}
@@ -1343,6 +1882,7 @@ function App() {
                   </Grid>
                 </Paper>
               </Grid>
+
               {/* Section 2: Workout Split and Pain Level */}
               <Grid item xs={12}>
                 <Typography
@@ -1356,21 +1896,14 @@ function App() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: 'rgba(60, 60, 65, 0.6)',
+                    backgroundColor:
+                      theme.palette.mode === 'dark' ? '#3A3740' : '#E0E0E0',
                     borderRadius: '16px',
                   }}
                 >
-                  {' '}
-                  {/* M3 surface variant */}
                   <Grid container spacing={2}>
-                    {' '}
-                    {/* Inner grid for this section */}
                     <Grid item xs={12}>
-                      {' '}
-                      {/* This makes both take full width */}
                       <FormControl fullWidth required sx={{ minWidth: 250 }}>
-                        {' '}
-                        {/* Added minWidth */}
                         <InputLabel id='workout-split-label'>
                           Workout Split (Select multiple)
                         </InputLabel>
@@ -1399,11 +1932,14 @@ function App() {
                                     )
                                   }
                                   onMouseDown={(event) => {
-                                    // Prevent opening the dropdown when clicking the delete icon
                                     event.stopPropagation();
                                   }}
                                   sx={{
                                     backgroundColor: getWorkoutColor(value),
+                                    color:
+                                      theme.palette.mode === 'dark'
+                                        ? 'white'
+                                        : 'black',
                                   }}
                                 />
                               ))}
@@ -1430,11 +1966,7 @@ function App() {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                      {' '}
-                      {/* This makes both take full width */}
                       <FormControl fullWidth required sx={{ minWidth: 250 }}>
-                        {' '}
-                        {/* Added minWidth */}
                         <InputLabel id='pain-level-label'>
                           Pain Level (1-10)
                         </InputLabel>
@@ -1446,12 +1978,16 @@ function App() {
                             selected ? (
                               <Chip
                                 label={selected}
-                                onDelete={() => setPainLevel('')} // Clear selection when chip is deleted
+                                onDelete={() => setPainLevel('')}
                                 onMouseDown={(event) => {
                                   event.stopPropagation();
                                 }}
                                 sx={{
                                   backgroundColor: getPainLevelColor(selected),
+                                  color:
+                                    theme.palette.mode === 'dark'
+                                      ? 'white'
+                                      : 'black',
                                 }}
                               />
                             ) : (
@@ -1484,6 +2020,7 @@ function App() {
                   </Grid>
                 </Paper>
               </Grid>
+
               {/* Section 3: Supplements Options */}
               <Grid item xs={12}>
                 <Typography
@@ -1497,12 +2034,11 @@ function App() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: 'rgba(60, 60, 65, 0.6)',
+                    backgroundColor:
+                      theme.palette.mode === 'dark' ? '#3A3740' : '#E0E0E0',
                     borderRadius: '16px',
                   }}
                 >
-                  {' '}
-                  {/* M3 surface variant */}
                   <Box
                     display='flex'
                     justifyContent='space-between'
@@ -1518,7 +2054,7 @@ function App() {
                     <Button
                       variant='contained'
                       sx={{
-                        backgroundColor: theme.palette.secondary.main, // M3 secondary color for this button
+                        backgroundColor: theme.palette.secondary.main,
                         color: theme.palette.secondary.contrastText,
                         '&:hover': {
                           backgroundColor: theme.palette.secondary.light,
@@ -1571,6 +2107,7 @@ function App() {
                   </Grid>
                 </Paper>
               </Grid>
+
               {/* Section 4: Notes Field and Add Entry Button */}
               <Grid item xs={12}>
                 <Typography
@@ -1584,12 +2121,11 @@ function App() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: 'rgba(60, 60, 65, 0.6)',
+                    backgroundColor:
+                      theme.palette.mode === 'dark' ? '#3A3740' : '#E0E0E0',
                     borderRadius: '16px',
                   }}
                 >
-                  {' '}
-                  {/* M3 surface variant */}
                   <TextField
                     label='Notes'
                     multiline
@@ -1601,6 +2137,7 @@ function App() {
                   />
                 </Paper>
               </Grid>
+
               {/* Form Action Buttons (now part of Section 4's grid item) */}
               <Grid
                 item
@@ -1625,10 +2162,9 @@ function App() {
             </Grid>
           </Box>
         )}
+
         {currentTab === 1 && (
           <Box sx={{ mt: 2, p: 4 }} component={Paper} elevation={0}>
-            {' '}
-            {/* Paper elevation 0 for content area */}
             <Typography variant='h5' align='center' gutterBottom>
               Summary Statistics
             </Typography>
@@ -1686,10 +2222,9 @@ function App() {
             </Box>
           </Box>
         )}
+
         {currentTab === 2 && (
           <Box sx={{ mt: 2, p: 4 }} component={Paper} elevation={0}>
-            {' '}
-            {/* Paper elevation 0 for content area */}
             <Typography variant='h5' align='center' gutterBottom>
               Filter & Sort Entries
             </Typography>
@@ -1728,10 +2263,19 @@ function App() {
                       selected ? (
                         <Chip
                           label={selected}
-                          sx={{ backgroundColor: getWorkoutColor(selected) }}
+                          sx={{
+                            backgroundColor: getWorkoutColor(selected),
+                            color:
+                              theme.palette.mode === 'dark' ? 'white' : 'black',
+                          }}
                         />
                       ) : (
-                        'All Workouts'
+                        <Typography
+                          variant='body1'
+                          sx={{ color: 'text.disabled' }}
+                        >
+                          All Workouts
+                        </Typography>
                       )
                     }
                     sx={{
@@ -1801,6 +2345,7 @@ function App() {
             </Grid>
           </Box>
         )}
+
         {currentTab === 3 && (
           <Box sx={{ mt: 2 }}>
             <Typography variant='h5' align='center' gutterBottom>
@@ -1821,13 +2366,12 @@ function App() {
                     mb: 2,
                     p: 2,
                     borderRadius: '16px',
-                    backgroundColor: 'rgba(60, 60, 65, 0.6)',
+                    backgroundColor:
+                      theme.palette.mode === 'dark' ? '#3A3740' : '#E0E0E0',
                   },
                   mt: 3,
                 }}
               >
-                {' '}
-                {/* M3 surface variant */}
                 {entriesToDisplay.map((entry, index) => {
                   const displayWeight = convertWeight(
                     entry.weight,
@@ -2003,6 +2547,7 @@ function App() {
             </Box>
           </Box>
         )}
+
         {/* Supplement Management Dialog */}
         <Dialog
           open={isManageSupplementsOpen}
@@ -2053,8 +2598,6 @@ function App() {
                       borderRadius: '12px',
                     }}
                   >
-                    {' '}
-                    {/* M3 surface shape */}
                     <ListItemText
                       primary={name}
                       sx={{ color: 'text.primary' }}
@@ -2083,6 +2626,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Confirmation Dialog for Clear All Data */}
         <Dialog
           open={isConfirmClearOpen}
@@ -2108,6 +2652,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Confirmation Dialog for Delete Single Entry */}
         <Dialog
           open={isConfirmDeleteEntryOpen}
@@ -2133,6 +2678,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Confirmation Dialog for Delete Custom Supplement */}
         <Dialog
           open={isConfirmDeleteCustomSupplementOpen}
@@ -2162,6 +2708,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Dialog for existing entry (new for M3) */}
         <Dialog
           open={isEntryExistsDialogOpen}
@@ -2191,6 +2738,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Simple Alert Dialog (new for M3) */}
         <Dialog
           open={isSimpleAlertDialogOpen}
@@ -2210,6 +2758,7 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
         {/* Dialog for Fitness Insights */}
         <Dialog
           open={isInsightDialogOpen}
@@ -2250,37 +2799,80 @@ function App() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Settings Dialog */}
+        <Dialog
+          open={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          aria-labelledby='settings-dialog-title'
+        >
+          <DialogTitle id='settings-dialog-title'>Settings</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth margin='dense'>
+              <InputLabel id='theme-select-label'>Choose Theme</InputLabel>
+              <Select
+                labelId='theme-select-label'
+                value={currentThemeName}
+                label='Choose Theme'
+                onChange={(e) => setCurrentThemeName(e.target.value)}
+              >
+                {Object.keys(themes).map((themeName) => (
+                  <MenuItem key={themeName} value={themeName}>
+                    {themeName.charAt(0).toUpperCase() + themeName.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsSettingsOpen(false)} color='primary'>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
       {/* Footer added at the bottom */}
       <Box
         sx={{
-          mt: 4,
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          width: '100%',
           py: 2,
-          backgroundColor: 'rgba(26, 32, 44, 0.7)',
+          backgroundColor: 'rgba(26, 32, 44, 0.9)',
           textAlign: 'center',
-          borderRadius: '10px', // Smaller radius for footer
-          maxWidth: 'md',
-          mx: 'auto',
           color: 'text.secondary',
+          zIndex: 1200,
         }}
       >
-        <Typography variant='body2'>
-          Made with ❤️ by{' '}
-          <a
-            href='https://portfolio-eta-seven-57.vercel.app/'
-            target='_blank'
-            rel='noopener noreferrer'
-            style={{
-              color: theme.palette.primary.main,
-              textDecoration: 'none',
-              fontWeight: 'bold',
-            }}
-          >
-            Shamsul Arifin
-          </a>
-        </Typography>
+        <Container maxWidth='md'>
+          <Typography variant='body2'>
+            Made with ❤️ by{' '}
+            <a
+              href='https://portfolio-eta-seven-57.vercel.app/'
+              target='_blank'
+              rel='noopener noreferrer'
+              style={{
+                color: theme.palette.primary.main,
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
+            >
+              Shamsul Arifin
+            </a>
+          </Typography>
+        </Container>
       </Box>
-    </ThemeProvider>
+    </>
+  );
+}
+
+// Main App component which wraps AppContent with ThemeProviderWrapper
+function App() {
+  return (
+    <ThemeProviderWrapper>
+      <AppContent />
+    </ThemeProviderWrapper>
   );
 }
 

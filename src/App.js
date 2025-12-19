@@ -1456,7 +1456,6 @@ const themes = {
       },
     },
   }),
-  // New themes added below
   sunset: createTheme({
     palette: {
       mode: "dark",
@@ -2285,6 +2284,10 @@ function AppContent() {
 
   const [currentTab, setCurrentTab] = useState(0) // 0: Entry Form, 1: Summary, 2: Filter, 3: Progress
   const [fitnessEntries, setFitnessEntries] = useState([])
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  })
   const [customSupplements, setCustomSupplements] = useState([])
   const [unitSystem, setUnitSystem] = useState("metric")
   const [currentEditingIndex, setCurrentEditingIndex] = useState(-1)
@@ -2394,6 +2397,11 @@ function AppContent() {
   // Handle Tab Change
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue)
+    if (newValue === 1) {
+      // When Summary tab is selected, reset month filter for statistics and chart
+      const now = new Date()
+      setSelectedMonth(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`)
+    }
     if (newValue === 3) {
       // Progress tab
       setFilterStartDate("")
@@ -2643,7 +2651,13 @@ function AppContent() {
 
   // --- Summary Statistics Calculation ---
   const calculateStatistics = useCallback(() => {
-    if (fitnessEntries.length === 0) {
+    const filteredEntries = fitnessEntries.filter((entry) => {
+      const entryDate = new Date(entry.date)
+      const entryMonth = `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(2, "0")}`
+      return entryMonth === selectedMonth
+    })
+
+    if (filteredEntries.length === 0) {
       return {
         totalEntries: 0,
         avgWeight: "N/A",
@@ -2656,14 +2670,14 @@ function AppContent() {
 
     const currentWeightUnit = unitSystem === "metric" ? "kg" : "lbs"
 
-    const totalWeight = fitnessEntries.reduce((sum, entry) => {
+    const totalWeight = filteredEntries.reduce((sum, entry) => {
       return sum + convertWeight(entry.weight, "kg", currentWeightUnit)
     }, 0)
-    const avgWeight = `${(totalWeight / fitnessEntries.length).toFixed(1)} ${currentWeightUnit}`
+    const avgWeight = `${(totalWeight / filteredEntries.length).toFixed(1)} ${currentWeightUnit}`
 
     let totalBMI = 0
     let bmiCount = 0
-    fitnessEntries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
       const bmi = calculateBMI(entry.weight, entry.height)
       if (bmi !== null) {
         totalBMI += Number.parseFloat(bmi)
@@ -2673,7 +2687,7 @@ function AppContent() {
     const avgBMI = bmiCount > 0 ? (totalBMI / bmiCount).toFixed(2) : "N/A"
 
     const workoutCounts = {}
-    fitnessEntries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
       ;(Array.isArray(entry.workoutSplit) ? entry.workoutSplit : [entry.workoutSplit]).forEach((split) => {
         workoutCounts[split] = (workoutCounts[split] || 0) + 1
       })
@@ -2687,15 +2701,15 @@ function AppContent() {
       }
     }
 
-    const totalPain = fitnessEntries.reduce((sum, entry) => {
+    const totalPain = filteredEntries.reduce((sum, entry) => {
       const painValue = Number.parseInt(entry.painLevel.split(" ")[0])
       return sum + (isNaN(painValue) ? 0 : painValue)
     }, 0)
-    const avgPainLevel = `${(totalPain / fitnessEntries.length).toFixed(1)}`
+    const avgPainLevel = `${(totalPain / filteredEntries.length).toFixed(1)}`
 
     const supplementCounts = {}
     customSupplements.forEach((supName) => (supplementCounts[supName] = 0))
-    fitnessEntries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
       ;(entry.supplements || []).forEach((sup) => {
         if (sup.taken && supplementCounts.hasOwnProperty(sup.name)) {
           supplementCounts[sup.name]++
@@ -2705,68 +2719,52 @@ function AppContent() {
 
     const supplementFrequencies = {}
     for (const supName in supplementCounts) {
-      const freq = ((supplementCounts[supName] / fitnessEntries.length) * 100).toFixed(0)
+      const freq = ((supplementCounts[supName] / filteredEntries.length) * 100).toFixed(0)
       supplementFrequencies[supName] = `${freq}%`
     }
 
     return {
-      totalEntries: fitnessEntries.length,
+      totalEntries: filteredEntries.length,
       avgWeight,
       avgBMI,
       mostFrequentWorkout,
       avgPainLevel,
       supplementFrequencies,
     }
-  }, [fitnessEntries, customSupplements, unitSystem])
+  }, [fitnessEntries, customSupplements, unitSystem, selectedMonth])
 
   const stats = calculateStatistics()
 
   // --- Data for Chart ---
   const getChartData = useCallback(() => {
-    // Group entries by month
-    const monthlyData = {}
-
-    fitnessEntries.forEach((entry) => {
-      const date = new Date(entry.date)
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
-
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = {
-          weights: [],
-          bmis: [],
-          date: monthKey,
-        }
-      }
-
-      const displayWeight = Number.parseFloat(
-        convertWeight(entry.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1),
-      )
-      const bmi = Number.parseFloat(calculateBMI(entry.weight, entry.height))
-
-      monthlyData[monthKey].weights.push(displayWeight)
-      monthlyData[monthKey].bmis.push(bmi)
+    const filteredEntries = fitnessEntries.filter((entry) => {
+      const entryDate = new Date(entry.date)
+      const entryMonth = `${entryDate.getFullYear()}-${String(entryDate.getMonth() + 1).padStart(2, "0")}`
+      return entryMonth === selectedMonth
     })
 
-    // Calculate monthly averages and format for chart
-    return Object.keys(monthlyData)
-      .sort()
-      .map((monthKey) => {
-        const data = monthlyData[monthKey]
-        const avgWeight = data.weights.reduce((a, b) => a + b, 0) / data.weights.length
-        const avgBmi = data.bmis.reduce((a, b) => a + b, 0) / data.bmis.length
+    if (filteredEntries.length === 0) return []
 
-        // Format month for display (e.g., "Jan 2024")
-        const [year, month] = monthKey.split("-")
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        const displayDate = `${monthNames[Number.parseInt(month) - 1]} ${year}`
+    // Sort by date and map to chart data
+    return filteredEntries
+      .slice()
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .map((entry) => {
+        const date = new Date(entry.date)
+        const day = date.getDate()
+
+        const displayWeight = Number.parseFloat(
+          convertWeight(entry.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1),
+        )
+        const bmi = Number.parseFloat(calculateBMI(entry.weight, entry.height))
 
         return {
-          date: displayDate,
-          weight: Number.parseFloat(avgWeight.toFixed(1)),
-          bmi: Number.parseFloat(avgBmi.toFixed(2)),
+          date: `Day ${day}`,
+          weight: displayWeight,
+          bmi: bmi,
         }
       })
-  }, [fitnessEntries, unitSystem]) // Ensure dependencies are correctly listed
+  }, [fitnessEntries, unitSystem, selectedMonth])
 
   const chartData = getChartData()
 
@@ -2868,13 +2866,15 @@ function AppContent() {
         .map((entry) => {
           const displayWeight = convertWeight(entry.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1)
           let displayHeight = ""
-          if (unitSystem === "metric") {
-            displayHeight = entry.height ? `${entry.height.toFixed(1)} cm` : "N/A"
-          } else {
-            const convertedHeight = entry.height
-              ? convertCmToDisplayHeight(entry.height, "ft/in")
-              : { feet: "", inches: "" }
-            displayHeight = entry.height ? `${convertedHeight.feet}' ${convertedHeight.inches.toFixed(1)}''` : "N/A"
+          if (entry.height) {
+            if (unitSystem === "metric") {
+              displayHeight = `${entry.height.toFixed(1)} cm`
+            } else {
+              const convertedHeight = entry.height
+                ? convertCmToDisplayHeight(entry.height, "ft/in")
+                : { feet: "", inches: "" }
+              displayHeight = entry.height ? `${convertedHeight.feet}' ${convertedHeight.inches.toFixed(1)}''` : "N/A"
+            }
           }
           const workoutSplitDisplay = Array.isArray(entry.workoutSplit)
             ? entry.workoutSplit.join(", ")
@@ -3344,6 +3344,17 @@ function AppContent() {
             <Typography variant="h5" align="center" gutterBottom>
               Summary Statistics
             </Typography>
+            <Box display="flex" justifyContent="center" alignItems="center" gap={2} sx={{ mb: 3 }}>
+              <Typography variant="body1">Select Month:</Typography>
+              <TextField
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                size="small"
+                sx={{ minWidth: 180 }}
+              />
+            </Box>
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography variant="body2">
@@ -3392,7 +3403,7 @@ function AppContent() {
 
             {/* Fitness Progress Chart */}
             <Typography variant="h6" align="center" gutterBottom sx={{ mt: 5, mb: 3 }}>
-              Monthly Weight & BMI Progress
+              Daily Weight & BMI Progress - {selectedMonth}
             </Typography>
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
@@ -3466,7 +3477,7 @@ function AppContent() {
               </ResponsiveContainer>
             ) : (
               <Typography variant="body1" align="center" sx={{ color: "text.disabled", mt: 3 }}>
-                Add entries to see your progress chart!
+                No entries for {selectedMonth}. Add some or change the month.
               </Typography>
             )}
           </Box>
@@ -3596,7 +3607,7 @@ function AppContent() {
             </Typography>
             {entriesToDisplay.length === 0 ? (
               <Typography variant="body1" align="center" sx={{ color: "text.disabled", mt: 3 }}>
-                No entries yet. Add one above!
+                No entries found matching your criteria. Try adjusting filters or adding new entries.
               </Typography>
             ) : (
               <List

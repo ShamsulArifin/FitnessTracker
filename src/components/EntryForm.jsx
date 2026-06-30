@@ -37,7 +37,7 @@ export default function EntryForm({
           <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 1 }}>
             Date, Weight & Height
           </Typography>
-          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "0px" }}>
+          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField label="Date" type="date" fullWidth required value={trackDate}
@@ -76,7 +76,7 @@ export default function EntryForm({
         {/* Section 2: Workout Split and Pain Level */}
         <Grid item xs={12}>
           <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 1 }}>Workout & Pain</Typography>
-          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "0px" }}>
+          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControl fullWidth required sx={{ minWidth: 250 }}>
@@ -141,7 +141,7 @@ export default function EntryForm({
         {/* Section 3: Supplements */}
         <Grid item xs={12}>
           <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 1 }}>Supplements</Typography>
-          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "0px" }}>
+          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
               <Typography variant="subtitle1" sx={{ color: "text.secondary", flexGrow: 1 }}>Supplements:</Typography>
               <Button variant="contained"
@@ -175,7 +175,7 @@ export default function EntryForm({
         {/* Section 4: Notes */}
         <Grid item xs={12}>
           <Typography variant="subtitle1" sx={{ color: "text.secondary", mb: 1 }}>Notes</Typography>
-          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "0px" }}>
+          <Paper elevation={3} sx={{ p: 3, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <TextField label="Notes" multiline rows={3} fullWidth value={notes}
               onChange={(e) => setNotes(e.target.value)} InputLabelProps={{ shrink: true }} />
           </Paper>

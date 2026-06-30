@@ -40,7 +40,7 @@ export const themes = {
             WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.15)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.45)",
-            borderRadius: "0px",
+            borderRadius: "6px",
             backgroundColor: "rgba(20, 18, 30, 0.35)",
             backgroundImage: "none",
           },
@@ -53,7 +53,7 @@ export const themes = {
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
             color: "#E6E1E5",
-            borderRadius: "0px",
+            borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(156, 224, 255, 0.25)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(156, 224, 255, 0.55)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#9CE0FF" },
@@ -68,7 +68,7 @@ export const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#E6E1E5", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#E6E1E5", borderRadius: "6px" },
           icon: { color: "#E6E1E5" },
         },
       },
@@ -81,7 +81,7 @@ export const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "0px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -111,7 +111,7 @@ export const themes = {
             backgroundColor: "rgba(20, 18, 30, 0.65)",
             backgroundImage: "none",
             border: "1px solid rgba(255, 255, 255, 0.15)",
-            borderRadius: "0px",
+            borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
@@ -120,7 +120,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#C9C5CD" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(156, 224, 255, 0.1)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(156, 224, 255, 0.1)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -153,7 +153,7 @@ export const themes = {
           root: {
             backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.25)", boxShadow: "0 8px 32px rgba(98, 0, 238, 0.15)",
-            borderRadius: "0px", backgroundColor: "rgba(255, 255, 255, 0.45)", backgroundImage: "none",
+            borderRadius: "6px", backgroundColor: "rgba(255, 255, 255, 0.45)", backgroundImage: "none",
           },
         },
       },
@@ -161,7 +161,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(0, 0, 0, 0.06)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#212121", borderRadius: "0px",
+            color: "#212121", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(98, 0, 238, 0.25)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(98, 0, 238, 0.55)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#6200EE" },
@@ -172,7 +172,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#757575", "&.Mui-focused": { color: "#6200EE" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(0, 0, 0, 0.06)", color: "#212121", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.06)", color: "#212121", borderRadius: "6px" },
           icon: { color: "#757575" },
         },
       },
@@ -180,7 +180,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#757575", "&.Mui-checked": { color: "#6200EE" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
+          root: { borderRadius: "6px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
           containedPrimary: { backgroundColor: "#6200EE", color: "#FFFFFF", "&:hover": { backgroundColor: "#7F39FB" } },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF", "&:hover": { backgroundColor: "#66BB6A" } },
           containedError: { backgroundColor: "#B00020", color: "#FFFFFF", "&:hover": { backgroundColor: "#D32F2F" } },
@@ -194,7 +194,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(255, 255, 255, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(255, 255, 255, 0.5)", borderRadius: "0px",
+            border: "1px solid rgba(255, 255, 255, 0.5)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(98, 0, 238, 0.2)",
           },
         },
@@ -203,7 +203,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#757575" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#212121", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(98, 0, 238, 0.1)" },
+          root: { color: "#212121", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(98, 0, 238, 0.1)" },
           deleteIcon: { color: "rgba(0, 0, 0, 0.54)", "&:hover": { color: "rgba(0, 0, 0, 0.87)" } },
         },
       },
@@ -236,7 +236,7 @@ export const themes = {
           root: {
             backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(129, 212, 250, 0.2)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
-            borderRadius: "0px", backgroundColor: "rgba(0, 30, 80, 0.35)", backgroundImage: "none",
+            borderRadius: "6px", backgroundColor: "rgba(0, 30, 80, 0.35)", backgroundImage: "none",
           },
         },
       },
@@ -244,7 +244,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(255, 255, 255, 0.08)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#E0F2F7", borderRadius: "0px",
+            color: "#E0F2F7", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(129, 212, 250, 0.3)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(129, 212, 250, 0.6)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#81D4FA" },
@@ -254,7 +254,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#BBDEFB", "&.Mui-focused": { color: "#81D4FA" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.08)", color: "#E0F2F7", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.08)", color: "#E0F2F7", borderRadius: "6px" },
           icon: { color: "#E0F2F7" },
         },
       },
@@ -262,7 +262,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#90CAF9", "&.Mui-checked": { color: "#81D4FA" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
+          root: { borderRadius: "6px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
           containedPrimary: { backgroundColor: "#81D4FA", color: "#000000", "&:hover": { backgroundColor: "#B2EBF2" } },
           containedSuccess: { backgroundColor: "#A5D6A7", color: "#000000", "&:hover": { backgroundColor: "#C8E6C9" } },
           containedError: { backgroundColor: "#EF9A9A", color: "#000000", "&:hover": { backgroundColor: "#FFCDD2" } },
@@ -276,7 +276,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(0, 30, 80, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(129, 212, 250, 0.2)", borderRadius: "0px",
+            border: "1px solid rgba(129, 212, 250, 0.2)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
@@ -285,7 +285,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#BBDEFB" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(129, 212, 250, 0.2)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(129, 212, 250, 0.2)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -318,7 +318,7 @@ export const themes = {
           root: {
             backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(168, 230, 207, 0.2)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
-            borderRadius: "0px", backgroundColor: "rgba(10, 25, 15, 0.35)", backgroundImage: "none",
+            borderRadius: "6px", backgroundColor: "rgba(10, 25, 15, 0.35)", backgroundImage: "none",
           },
         },
       },
@@ -326,7 +326,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#F0F5F0", borderRadius: "0px",
+            color: "#F0F5F0", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(168, 230, 207, 0.25)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(168, 230, 207, 0.55)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#A8E6CF" },
@@ -336,7 +336,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#D3DBE2", "&.Mui-focused": { color: "#A8E6CF" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#F0F5F0", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#F0F5F0", borderRadius: "6px" },
           icon: { color: "#F0F5F0" },
         },
       },
@@ -344,7 +344,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#B0B5BB", "&.Mui-checked": { color: "#A8E6CF" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
+          root: { borderRadius: "6px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
           containedPrimary: { backgroundColor: "#A8E6CF", color: "#000000", "&:hover": { backgroundColor: "#D2F8D2" } },
           containedSuccess: { backgroundColor: "#8BC34A", color: "#000000", "&:hover": { backgroundColor: "#C5E1A5" } },
           containedError: { backgroundColor: "#F48FB1", color: "#000000", "&:hover": { backgroundColor: "#FFCDD2" } },
@@ -358,7 +358,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(10, 25, 15, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(168, 230, 207, 0.2)", borderRadius: "0px",
+            border: "1px solid rgba(168, 230, 207, 0.2)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
           },
         },
@@ -367,7 +367,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#D3DBE2" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(168, 230, 207, 0.2)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(168, 230, 207, 0.2)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -398,7 +398,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(187, 134, 252, 0.2)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
             backgroundColor: "rgba(15, 5, 25, 0.35)", backgroundImage: "none",
           },
@@ -408,7 +408,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#FFFFFF", borderRadius: "0px",
+            color: "#FFFFFF", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(187, 134, 252, 0.3)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(187, 134, 252, 0.6)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#BB86FC" },
@@ -418,7 +418,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#BBBBBB", "&.Mui-focused": { color: "#BB86FC" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "6px" },
           icon: { color: "#FFFFFF" },
         },
       },
@@ -426,7 +426,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#757575", "&.Mui-checked": { color: "#BB86FC" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#BB86FC", color: "#000000" },
           containedSuccess: { backgroundColor: "#80E280", color: "#000000" },
           containedError: { backgroundColor: "#CF6679", color: "#FFFFFF" },
@@ -439,7 +439,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(15, 5, 25, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(187, 134, 252, 0.2)", borderRadius: "0px",
+            border: "1px solid rgba(187, 134, 252, 0.2)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
@@ -448,7 +448,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#BBBBBB" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(187, 134, 252, 0.15)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(187, 134, 252, 0.15)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -479,7 +479,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 193, 7, 0.2)", boxShadow: "0 8px 32px rgba(255, 152, 0, 0.15)",
             backgroundColor: "rgba(255, 255, 255, 0.45)", backgroundImage: "none",
           },
@@ -487,13 +487,13 @@ export const themes = {
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "0px" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "6px" },
         },
       },
       MuiInputLabel: { styleOverrides: { root: { color: "#757575", "&.Mui-focused": { color: "#FFC107" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "6px" },
           icon: { color: "#757575" },
         },
       },
@@ -501,7 +501,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#BDBDBD", "&.Mui-checked": { color: "#FFC107" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#FFC107", color: "#000000" },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF" },
           containedError: { backgroundColor: "#F44336", color: "#FFFFFF" },
@@ -514,7 +514,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(255, 255, 255, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(255, 193, 7, 0.3)", borderRadius: "0px",
+            border: "1px solid rgba(255, 193, 7, 0.3)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(255, 152, 0, 0.2)",
           },
         },
@@ -523,7 +523,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#757575" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#212121", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(255, 193, 7, 0.15)" },
+          root: { color: "#212121", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(255, 193, 7, 0.15)" },
           deleteIcon: { color: "rgba(0, 0, 0, 0.54)", "&:hover": { color: "rgba(0, 0, 0, 0.87)" } },
         },
       },
@@ -554,7 +554,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(255, 255, 255, 0.1)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.55)",
             backgroundColor: "rgba(10, 10, 10, 0.35)", backgroundImage: "none",
           },
@@ -562,13 +562,13 @@ export const themes = {
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#FFFFFF", borderRadius: "0px" },
+          root: { backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#FFFFFF", borderRadius: "6px" },
         },
       },
       MuiInputLabel: { styleOverrides: { root: { color: "#E0E0E0", "&.Mui-focused": { color: "#BDBDBD" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "6px" },
           icon: { color: "#FFFFFF" },
         },
       },
@@ -576,7 +576,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#9E9E9E", "&.Mui-checked": { color: "#BDBDBD" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#BDBDBD", color: "#000000" },
           containedSuccess: { backgroundColor: "#A5D6A7", color: "#000000" },
           containedError: { backgroundColor: "#EF9A9A", color: "#000000" },
@@ -589,7 +589,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(10, 10, 10, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(255, 255, 255, 0.12)", borderRadius: "0px",
+            border: "1px solid rgba(255, 255, 255, 0.12)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.55)",
           },
         },
@@ -598,7 +598,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#E0E0E0" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(189, 189, 189, 0.15)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(189, 189, 189, 0.15)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -635,7 +635,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "2px solid rgba(0, 188, 212, 0.3)", boxShadow: "5px 5px 0px 0px rgba(0,188,212,0.3)",
             backgroundColor: "rgba(5, 15, 25, 0.45)", backgroundImage: "none",
           },
@@ -645,7 +645,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(0, 188, 212, 0.1)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#263238", border: "1px dashed rgba(0, 188, 212, 0.5)", borderRadius: "0px",
+            color: "#263238", border: "1px dashed rgba(0, 188, 212, 0.5)", borderRadius: "6px",
           },
         },
       },
@@ -660,7 +660,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#90A4AE", "&.Mui-checked": { color: "#00BCD4" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "uppercase", border: "2px solid", boxShadow: "3px 3px 0px 0px rgba(0,0,0,0.3)" },
+          root: { borderRadius: "6px", textTransform: "uppercase", border: "2px solid", boxShadow: "3px 3px 0px 0px rgba(0,0,0,0.3)" },
           containedPrimary: { backgroundColor: "#00BCD4", color: "#263238", borderColor: "#00838F", "&:hover": { backgroundColor: "#00ACC1", boxShadow: "1px 1px 0px 0px rgba(0,0,0,0.3)" } },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF", borderColor: "#388E3C", "&:hover": { backgroundColor: "#5CB85C", boxShadow: "1px 1px 0px 0px rgba(0,0,0,0.3)" } },
           containedError: { backgroundColor: "#FF5722", color: "#FFFFFF", borderColor: "#E64A19", "&:hover": { backgroundColor: "#FF6F42", boxShadow: "1px 1px 0px 0px rgba(0,0,0,0.3)" } },
@@ -674,7 +674,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(5, 15, 25, 0.65)", backgroundImage: "none",
-            border: "2px solid rgba(0, 188, 212, 0.3)", borderRadius: "0px",
+            border: "2px solid rgba(0, 188, 212, 0.3)", borderRadius: "6px",
             boxShadow: "5px 5px 0px 0px rgba(0,188,212,0.3)",
           },
         },
@@ -683,7 +683,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#455A64" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#263238", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(0, 188, 212, 0.15)", border: "1px dashed rgba(0, 131, 143, 0.5)" },
+          root: { color: "#263238", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(0, 188, 212, 0.15)", border: "1px dashed rgba(0, 131, 143, 0.5)" },
           deleteIcon: { color: "rgba(0, 0, 0, 0.54)", "&:hover": { color: "rgba(0, 0, 0, 0.87)" } },
         },
       },
@@ -716,14 +716,14 @@ export const themes = {
           root: {
             backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
             border: "1px solid rgba(255, 152, 0, 0.2)", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.5)",
-            borderRadius: "0px", backgroundColor: "rgba(93, 64, 55, 0.7)",
+            borderRadius: "6px", backgroundColor: "rgba(93, 64, 55, 0.7)",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "rgba(110, 75, 65, 0.6)", color: "#FFFDE7", borderRadius: "0px",
+            backgroundColor: "rgba(110, 75, 65, 0.6)", color: "#FFFDE7", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 172, 128, 0.4)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 172, 128, 0.7)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#FF7043" },
@@ -733,7 +733,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#F5DEB3", "&.Mui-focused": { color: "#FF7043" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(110, 75, 65, 0.6)", color: "#FFFDE7", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(110, 75, 65, 0.6)", color: "#FFFDE7", borderRadius: "6px" },
           icon: { color: "#FFFDE7" },
         },
       },
@@ -741,7 +741,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#D2B48C", "&.Mui-checked": { color: "#FF7043" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
+          root: { borderRadius: "6px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
           containedPrimary: { backgroundColor: "#FF7043", color: "#FFFFFF", "&:hover": { backgroundColor: "#FF8A65" } },
           containedSuccess: { backgroundColor: "#8BC34A", color: "#FFFFFF", "&:hover": { backgroundColor: "#A5D6A7" } },
           containedError: { backgroundColor: "#D32F2F", color: "#FFFFFF", "&:hover": { backgroundColor: "#EF5350" } },
@@ -755,7 +755,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(20, 5, 0, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(255, 112, 67, 0.2)", borderRadius: "0px",
+            border: "1px solid rgba(255, 112, 67, 0.2)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
@@ -764,7 +764,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#F5DEB3" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#FFFFFF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(255, 112, 67, 0.2)" },
+          root: { color: "#FFFFFF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(255, 112, 67, 0.2)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -797,7 +797,7 @@ export const themes = {
           root: {
             backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(167, 167, 255, 0.2)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
-            borderRadius: "0px", backgroundColor: "rgba(3, 0, 26, 0.35)", backgroundImage: "none",
+            borderRadius: "6px", backgroundColor: "rgba(3, 0, 26, 0.35)", backgroundImage: "none",
           },
         },
       },
@@ -805,7 +805,7 @@ export const themes = {
         styleOverrides: {
           root: {
             backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-            color: "#E0E0FF", borderRadius: "0px",
+            color: "#E0E0FF", borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(167, 167, 255, 0.4)" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(167, 167, 255, 0.7)" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#A7A7FF" },
@@ -815,7 +815,7 @@ export const themes = {
       MuiInputLabel: { styleOverrides: { root: { color: "#B0B0FF", "&.Mui-focused": { color: "#A7A7FF" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#E0E0FF", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#E0E0FF", borderRadius: "6px" },
           icon: { color: "#E0E0FF" },
         },
       },
@@ -823,7 +823,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#8080B0", "&.Mui-checked": { color: "#A7A7FF" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
+          root: { borderRadius: "6px", textTransform: "none", fontWeight: 500, padding: "3px 10px", boxShadow: "none", "&:hover": { boxShadow: "none" } },
           containedPrimary: { backgroundColor: "#A7A7FF", color: "#000000", "&:hover": { backgroundColor: "#CCCCFF" } },
           containedSuccess: { backgroundColor: "#B9F6CA", color: "#000000", "&:hover": { backgroundColor: "#E8F5E9" } },
           containedError: { backgroundColor: "#FF8A80", color: "#000000", "&:hover": { backgroundColor: "#FFCDD2" } },
@@ -837,7 +837,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(3, 0, 26, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(167, 167, 255, 0.2)", borderRadius: "0px",
+            border: "1px solid rgba(167, 167, 255, 0.2)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
@@ -846,7 +846,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#B0B0FF" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#E0E0FF", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(167, 167, 255, 0.15)" },
+          root: { color: "#E0E0FF", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(167, 167, 255, 0.15)" },
           deleteIcon: { color: "rgba(255, 255, 255, 0.7)", "&:hover": { color: "rgba(255, 255, 255, 0.9)" } },
         },
       },
@@ -877,7 +877,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(118, 255, 3, 0.2)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
             backgroundColor: "rgba(230, 255, 230, 0.4)", backgroundImage: "none",
           },
@@ -885,13 +885,13 @@ export const themes = {
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "0px" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "6px" },
         },
       },
       MuiInputLabel: { styleOverrides: { root: { color: "#4CAF50", "&.Mui-focused": { color: "#76FF03" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "6px" },
           icon: { color: "#4CAF50" },
         },
       },
@@ -899,7 +899,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#9E9E9E", "&.Mui-checked": { color: "#76FF03" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#76FF03", color: "#000000" },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF" },
           containedError: { backgroundColor: "#F44336", color: "#FFFFFF" },
@@ -912,7 +912,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(230, 255, 230, 0.65)", backgroundImage: "none",
-            border: "1px solid rgba(118, 255, 3, 0.25)", borderRadius: "0px",
+            border: "1px solid rgba(118, 255, 3, 0.25)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(0, 200, 83, 0.2)",
           },
         },
@@ -921,7 +921,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#4CAF50" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#212121", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(118, 255, 3, 0.15)" },
+          root: { color: "#212121", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(118, 255, 3, 0.15)" },
           deleteIcon: { color: "rgba(0, 0, 0, 0.54)", "&:hover": { color: "rgba(0, 0, 0, 0.87)" } },
         },
       },
@@ -952,7 +952,7 @@ export const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "0px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderRadius: "6px", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             border: "1px solid rgba(179, 157, 219, 0.25)", boxShadow: "0 8px 32px rgba(179, 157, 219, 0.15)",
             backgroundColor: "rgba(255, 255, 255, 0.45)", backgroundImage: "none",
           },
@@ -960,13 +960,13 @@ export const themes = {
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#424242", borderRadius: "0px" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#424242", borderRadius: "6px" },
         },
       },
       MuiInputLabel: { styleOverrides: { root: { color: "#757575", "&.Mui-focused": { color: "#B39DDB" } } } },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#424242", borderRadius: "0px" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#424242", borderRadius: "6px" },
           icon: { color: "#757575" },
         },
       },
@@ -974,7 +974,7 @@ export const themes = {
       MuiRadio: { styleOverrides: { root: { color: "#BDBDBD", "&.Mui-checked": { color: "#B39DDB" } } } },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "0px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#B39DDB", color: "#000000" },
           containedSuccess: { backgroundColor: "#C8E6C9", color: "#000000" },
           containedError: { backgroundColor: "#FFCDD2", color: "#000000" },
@@ -987,7 +987,7 @@ export const themes = {
           paper: {
             backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
             backgroundColor: "rgba(255, 255, 255, 0.6)", backgroundImage: "none",
-            border: "1px solid rgba(179, 157, 219, 0.3)", borderRadius: "0px",
+            border: "1px solid rgba(179, 157, 219, 0.3)", borderRadius: "6px",
             boxShadow: "0 8px 32px rgba(179, 157, 219, 0.2)",
           },
         },
@@ -996,7 +996,7 @@ export const themes = {
       MuiDialogContentText: { styleOverrides: { root: { color: "#757575" } } },
       MuiChip: {
         styleOverrides: {
-          root: { color: "#424242", margin: "2px", borderRadius: "0px", fontWeight: 500, backgroundColor: "rgba(179, 157, 219, 0.1)" },
+          root: { color: "#424242", margin: "2px", borderRadius: "6px", fontWeight: 500, backgroundColor: "rgba(179, 157, 219, 0.1)" },
           deleteIcon: { color: "rgba(0, 0, 0, 0.54)", "&:hover": { color: "rgba(0, 0, 0, 0.87)" } },
         },
       },

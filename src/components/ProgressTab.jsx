@@ -33,7 +33,7 @@ export default function ProgressTab({
       ) : (
         <List
           sx={{
-            "& > div": { mb: 2, p: 2, borderRadius: "0px", backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)" },
+            "& > div": { mb: 2, p: 2, borderRadius: "6px", backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)" },
             mt: 3,
           }}
         >
@@ -60,7 +60,7 @@ export default function ProgressTab({
             }
 
             return (
-              <Paper key={index} elevation={2} sx={{ borderRadius: "0px", backgroundColor: theme.palette.background.paper }}>
+              <Paper key={index} elevation={2} sx={{ borderRadius: "6px", backgroundColor: theme.palette.background.paper }}>
                 <ListItem alignItems="flex-start">
                   <ListItemText
                     primary={

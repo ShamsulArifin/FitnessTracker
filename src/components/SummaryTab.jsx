@@ -111,7 +111,7 @@ export default function SummaryTab({
               tickLine={{ stroke: theme.palette.text.secondary }}
             />
             <Tooltip
-              contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.text.disabled}`, borderRadius: "0px" }}
+              contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.text.disabled}`, borderRadius: "6px" }}
               labelStyle={{ color: theme.palette.text.primary }}
               itemStyle={{ color: theme.palette.text.secondary }}
               formatter={(value, name) => {

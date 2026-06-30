@@ -512,7 +512,7 @@ function AppContent() {
       <Container
         maxWidth="md"
         sx={{
-          my: 4, p: 4, borderRadius: "0px",
+          my: 4, p: 4, borderRadius: "6px",
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.55)",
           backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
           border: "1px solid rgba(255, 255, 255, 0.15)", boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3)",
@@ -649,7 +649,7 @@ function AppContent() {
 
         <Box sx={{
           mt: 4, textAlign: "center", color: theme.palette.text.secondary, fontSize: "0.9rem",
-          p: 2, borderRadius: "0px",
+          p: 2, borderRadius: "6px",
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
         }}>
           For posting your ad here, contact developer.

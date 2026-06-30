@@ -36,7 +36,7 @@ export function ManageSupplementsDialog({
             </Typography>
           ) : (
             customSupplements.map((name) => (
-              <ListItem key={name} sx={{ bgcolor: theme.palette.background.default, mb: 1, borderRadius: "0px" }}>
+              <ListItem key={name} sx={{ bgcolor: theme.palette.background.default, mb: 1, borderRadius: "6px" }}>
                 <ListItemText primary={name} sx={{ color: "text.primary" }} />
                 <ListItemSecondaryAction>
                   <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteCustomSupplement(name)}>

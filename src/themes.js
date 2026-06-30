@@ -12,10 +12,10 @@ export const themes = {
       text: { primary: "#E6E1E5", secondary: "#A8A3AB", disabled: "#938F99" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
@@ -23,7 +23,7 @@ export const themes = {
     components: {
       MuiCssBaseline: {
         styleOverrides: `
-          @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
           @keyframes gradientMove {
             0%   { background-position: 0% 50%; }
             25%  { background-position: 100% 0%; }
@@ -138,16 +138,16 @@ export const themes = {
       text: { primary: "#212121", secondary: "#757575", disabled: "#BDBDBD" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -221,16 +221,16 @@ export const themes = {
       text: { primary: "#E0F2F7", secondary: "#BBDEFB", disabled: "#90CAF9" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -303,16 +303,16 @@ export const themes = {
       text: { primary: "#F0F5F0", secondary: "#D3DBE2", disabled: "#B0B5BB" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -385,16 +385,16 @@ export const themes = {
       text: { primary: "#FFFFFF", secondary: "#BBBBBB", disabled: "#757575" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -466,16 +466,16 @@ export const themes = {
       text: { primary: "#212121", secondary: "#757575", disabled: "#BDBDBD" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -541,16 +541,16 @@ export const themes = {
       text: { primary: "#FFFFFF", secondary: "#E0E0E0", disabled: "#9E9E9E" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -628,7 +628,7 @@ export const themes = {
       MuiCssBaseline: {
         styleOverrides: `
           @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');
           body { font-family: "Roboto Mono", monospace; }
         `,
       },
@@ -701,16 +701,16 @@ export const themes = {
       text: { primary: "#FFFDE7", secondary: "#F5DEB3", disabled: "#D2B48C" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -782,16 +782,16 @@ export const themes = {
       text: { primary: "#E0E0FF", secondary: "#B0B0FF", disabled: "#8080B0" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -864,16 +864,16 @@ export const themes = {
       text: { primary: "#212121", secondary: "#4CAF50", disabled: "#9E9E9E" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {
@@ -939,16 +939,16 @@ export const themes = {
       text: { primary: "#424242", secondary: "#757575", disabled: "#BDBDBD" },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
-      h4: { fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
-      h5: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "2rem" },
-      h6: { fontFamily: "Montserrat, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
+      fontFamily: "DM Sans, sans-serif",
+      h4: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 700, fontSize: "2.5rem" },
+      h5: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "2rem" },
+      h6: { fontFamily: "Barlow Condensed, sans-serif", fontWeight: 600, fontSize: "1.5rem" },
       body1: { fontWeight: 400, fontSize: "1rem" },
       body2: { fontWeight: 400, fontSize: "0.875rem" },
       button: { fontWeight: 500, fontSize: "0.875rem", textTransform: "none" },
     },
     components: {
-      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');` },
+      MuiCssBaseline: { styleOverrides: `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500&display=swap');` },
       MuiPaper: {
         styleOverrides: {
           root: {

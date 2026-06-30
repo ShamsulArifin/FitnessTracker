@@ -2126,6 +2126,23 @@ const themes = {
   }),
 }
 
+// Per-theme gradient definitions: [color1, color2, color3]
+// Used to build a radial gradient background that shifts with the theme
+const themeGradients = {
+  dark:         ["#0a0a0f", "#1c1a2e", "#0d1117"],
+  light:        ["#e8e0f7", "#f0f4ff", "#faf5ff"],
+  ocean:        ["#021b3a", "#0d3b7a", "#0a2550"],
+  forest:       ["#1a2e1a", "#2e4a32", "#162414"],
+  purpleHaze:   ["#0e0716", "#1a0d2e", "#120520"],
+  sunny:        ["#fff8dc", "#fffbe6", "#fff3b0"],
+  grayscale:    ["#111111", "#2a2a2a", "#1a1a1a"],
+  retro:        ["#0d1f2d", "#1a3a4a", "#0a1825"],
+  sunset:       ["#1a0a00", "#3b1508", "#2a0e05"],
+  midnight:     ["#03001a", "#07003a", "#020014"],
+  vibrantGreen: ["#e8ffe8", "#f0fff0", "#d8f5d8"],
+  softPastel:   ["#f0eeff", "#fdf0f8", "#eef5ff"],
+}
+
 // Create a ThemeContext to manage the current theme state
 const ThemeContext = createContext()
 
@@ -3108,7 +3125,7 @@ function AppContent() {
   return (
     <>
       <CssBaseline />
-      {/* Ensure the body has a minimum height to allow for vertical centering of fixed elements */}
+      {/* Grainy gradient background — shifts per theme */}
       <Box
         sx={{
           position: "fixed",
@@ -3116,14 +3133,24 @@ function AppContent() {
           left: 0,
           width: "100%",
           height: "100%",
-          backgroundImage:
-            theme.palette.mode === "dark"
-              ? "repeating-linear-gradient(45deg, #1a1a1a 0, #1a1a1a 1px, transparent 1px, transparent 20px)"
-              : "repeating-linear-gradient(45deg, #E0E0E0 0, #E0E0E0 1px, transparent 1px, transparent 20px)",
-          backgroundSize: "20px 20px",
-          opacity: 1,
           zIndex: -1,
-          backgroundColor: theme.palette.background.default,
+          // Multi-stop radial gradient using theme-specific colors
+          background: (() => {
+            const g = themeGradients[currentThemeName] || themeGradients.dark
+            return `radial-gradient(ellipse at 20% 20%, ${g[0]} 0%, ${g[1]} 50%, ${g[2]} 100%)`
+          })(),
+          // SVG grain filter as a pseudo element isn't possible inline, so we
+          // layer a grain texture via a data-URI background image on top
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='0.18'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "300px 300px",
+            opacity: 1,
+            pointerEvents: "none",
+          },
         }}
       />
 
@@ -3135,10 +3162,12 @@ function AppContent() {
           my: 4,
           p: 4,
           borderRadius: "28px",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.mode === "dark"
+            ? "rgba(30, 27, 36, 0.72)"
+            : "rgba(255, 255, 255, 0.72)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
           pb: "100px", // Adjusted padding-bottom to account for footer
-          // No top padding adjustment needed as banners are removed
-          // Use auto margins to center the container for desktop view
           ml: { md: "auto" },
           mr: { md: "auto" },
         }}

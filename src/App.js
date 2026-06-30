@@ -3766,7 +3766,7 @@ function AppContent() {
               Filter & Sort Entries
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   label="Start Date"
                   type="date"
@@ -3776,7 +3776,7 @@ function AppContent() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <TextField
                   label="End Date"
                   type="date"
@@ -3786,7 +3786,7 @@ function AppContent() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <FormControl fullWidth required sx={{ minWidth: 200 }}>
                   <InputLabel id="filter-workout-label">Filter Workout</InputLabel>
                   <Select
@@ -3826,8 +3826,8 @@ function AppContent() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <FormControl fullWidth required sx={{ minWidth: 200 }}>
+              <Grid item xs={12} md={3}>
+                <FormControl fullWidth required sx={{ minWidth: 160 }}>
                   <InputLabel id="sort-order-label">Sort By Date</InputLabel>
                   <Select
                     labelId="sort-order-label"

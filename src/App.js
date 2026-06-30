@@ -108,12 +108,23 @@ const themes = {
       MuiCssBaseline: {
         styleOverrides: `
           @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-          @keyframes gradientDrift {
-            0%   { background-position: 0% 0%; }
-            25%  { background-position: 100% 0%; }
-            50%  { background-position: 100% 100%; }
-            75%  { background-position: 0% 100%; }
-            100% { background-position: 0% 0%; }
+          @keyframes blob1 {
+            0%   { transform: translate(0%, 0%)   scale(1); }
+            33%  { transform: translate(30%, -20%) scale(1.15); }
+            66%  { transform: translate(-15%, 25%) scale(0.9); }
+            100% { transform: translate(0%, 0%)   scale(1); }
+          }
+          @keyframes blob2 {
+            0%   { transform: translate(0%, 0%)   scale(1); }
+            33%  { transform: translate(-25%, 20%) scale(1.1); }
+            66%  { transform: translate(20%, -15%) scale(0.95); }
+            100% { transform: translate(0%, 0%)   scale(1); }
+          }
+          @keyframes blob3 {
+            0%   { transform: translate(0%, 0%)   scale(1); }
+            33%  { transform: translate(15%, 25%)  scale(0.9); }
+            66%  { transform: translate(-20%, -20%) scale(1.2); }
+            100% { transform: translate(0%, 0%)   scale(1); }
           }
         `,
       },
@@ -2131,21 +2142,21 @@ const themes = {
   }),
 }
 
-// Per-theme gradient definitions: [color1, color2, color3]
-// Used to build a radial gradient background that shifts with the theme
-const themeGradients = {
-  dark:         ["#0a0a0f", "#1c1a2e", "#0d1117"],
-  light:        ["#e8e0f7", "#f0f4ff", "#faf5ff"],
-  ocean:        ["#021b3a", "#0d3b7a", "#0a2550"],
-  forest:       ["#1a2e1a", "#2e4a32", "#162414"],
-  purpleHaze:   ["#0e0716", "#1a0d2e", "#120520"],
-  sunny:        ["#fff8dc", "#fffbe6", "#fff3b0"],
-  grayscale:    ["#111111", "#2a2a2a", "#1a1a1a"],
-  retro:        ["#0d1f2d", "#1a3a4a", "#0a1825"],
-  sunset:       ["#1a0a00", "#3b1508", "#2a0e05"],
-  midnight:     ["#03001a", "#07003a", "#020014"],
-  vibrantGreen: ["#e8ffe8", "#f0fff0", "#d8f5d8"],
-  softPastel:   ["#f0eeff", "#fdf0f8", "#eef5ff"],
+// Per-theme blob definitions: { base, blob1, blob2, blob3 }
+// base = dark background fill, blobs = vivid radial accent colors
+const themeBlobs = {
+  dark:         { base: "#080810", b1: "#3d1aff", b2: "#c020c0", b3: "#0a2a6e" },
+  light:        { base: "#ddd8f0", b1: "#a070ff", b2: "#ff70c0", b3: "#70a0ff" },
+  ocean:        { base: "#010d1f", b1: "#0057ff", b2: "#00c8ff", b3: "#0030a0" },
+  forest:       { base: "#0a140a", b1: "#1a7a30", b2: "#50c878", b3: "#0d4020" },
+  purpleHaze:   { base: "#0a0010", b1: "#7000ff", b2: "#c000ff", b3: "#3300aa" },
+  sunny:        { base: "#fff5cc", b1: "#ffb300", b2: "#ff7043", b3: "#fdd835" },
+  grayscale:    { base: "#0a0a0a", b1: "#505050", b2: "#888888", b3: "#303030" },
+  retro:        { base: "#050f18", b1: "#00bcd4", b2: "#ffeb3b", b3: "#005f70" },
+  sunset:       { base: "#100400", b1: "#ff4500", b2: "#ff8c00", b3: "#c2185b" },
+  midnight:     { base: "#02000f", b1: "#4040ff", b2: "#00e5ff", b3: "#200060" },
+  vibrantGreen: { base: "#e0ffe0", b1: "#00c853", b2: "#64dd17", b3: "#00e5ff" },
+  softPastel:   { base: "#f0ecff", b1: "#b39ddb", b2: "#f48fb1", b3: "#90caf9" },
 }
 
 // Create a ThemeContext to manage the current theme state
@@ -3029,7 +3040,7 @@ function AppContent() {
   return (
     <>
       <CssBaseline />
-      {/* Grainy gradient background — shifts per theme */}
+      {/* Grainy animated blob background — shifts per theme */}
       <Box
         sx={{
           position: "fixed",
@@ -3038,21 +3049,35 @@ function AppContent() {
           width: "100%",
           height: "100%",
           zIndex: -1,
-          // 400% background lets us pan the gradient around for animation
-          background: (() => {
-            const g = themeGradients[currentThemeName] || themeGradients.dark
-            return `linear-gradient(135deg, ${g[0]} 0%, ${g[1]} 25%, ${g[2]} 50%, ${g[1]} 75%, ${g[0]} 100%)`
-          })(),
-          backgroundSize: "400% 400%",
-          animation: "gradientDrift 18s ease infinite",
-          // Grain overlay
+          // Dark base fill
+          backgroundColor: (themeBlobs[currentThemeName] || themeBlobs.dark).base,
+          overflow: "hidden",
+          // Animated blobs via ::before
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            inset: "-50%",          // oversized so blobs don't clip at edges
+            width: "200%",
+            height: "200%",
+            background: (() => {
+              const t = themeBlobs[currentThemeName] || themeBlobs.dark
+              return [
+                `radial-gradient(ellipse 55% 45% at 25% 35%, ${t.b1}cc 0%, transparent 65%)`,
+                `radial-gradient(ellipse 50% 55% at 70% 65%, ${t.b2}bb 0%, transparent 60%)`,
+                `radial-gradient(ellipse 45% 50% at 60% 20%, ${t.b3}99 0%, transparent 60%)`,
+              ].join(", ")
+            })(),
+            animation: "blob1 14s ease-in-out infinite, blob2 18s ease-in-out infinite, blob3 22s ease-in-out infinite",
+            willChange: "transform",
+          },
+          // Grain overlay on top of blobs
           "&::after": {
             content: '""',
             position: "absolute",
             inset: 0,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='0.18'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23grain)' opacity='0.32'/%3E%3C/svg%3E")`,
             backgroundRepeat: "repeat",
-            backgroundSize: "300px 300px",
+            backgroundSize: "200px 200px",
             pointerEvents: "none",
           },
         }}

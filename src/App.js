@@ -33,6 +33,12 @@ import {
   DialogTitle,
   CircularProgress,
   Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material"
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles"
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -3637,6 +3643,135 @@ function AppContent() {
                 No entries for {selectedMonth}. Add some or change the month.
               </Typography>
             )}
+
+            {/* Daily Breakdown Table */}
+            <Typography variant="h6" align="center" gutterBottom sx={{ mt: 5, mb: 2 }}>
+              Daily Breakdown — {selectedMonth}
+            </Typography>
+            {(() => {
+              const monthEntries = fitnessEntries
+                .filter((entry) => {
+                  const d = new Date(entry.date)
+                  const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+                  return m === selectedMonth
+                })
+                .slice()
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+
+              if (monthEntries.length === 0) {
+                return (
+                  <Typography variant="body1" align="center" sx={{ color: "text.disabled" }}>
+                    No entries for {selectedMonth}. Add some or change the month.
+                  </Typography>
+                )
+              }
+
+              const weightUnit = unitSystem === "metric" ? "kg" : "lbs"
+
+              return (
+                <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 3, overflowX: "auto" }}>
+                  <Table size="small" aria-label="daily breakdown table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>Date</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, color: "text.primary" }}>
+                          Weight ({weightUnit})
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, color: "text.primary" }}>
+                          BMI
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>Workout</TableCell>
+                        <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>Pain Level</TableCell>
+                        {customSupplements.length > 0 && (
+                          <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>Supplements</TableCell>
+                        )}
+                        <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>Notes</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {monthEntries.map((entry) => {
+                        const displayWeight = convertWeight(entry.weight, "kg", weightUnit).toFixed(1)
+                        const bmi = calculateBMI(entry.weight, entry.height)
+                        const workouts = (
+                          Array.isArray(entry.workoutSplit) ? entry.workoutSplit : [entry.workoutSplit]
+                        ).filter(Boolean)
+                        const takenSupplements = (entry.supplements || []).filter((s) => s.taken)
+
+                        return (
+                          <TableRow
+                            key={entry.date}
+                            sx={{
+                              "&:nth-of-type(odd)": {
+                                backgroundColor: "rgba(128,128,128,0.06)",
+                              },
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell sx={{ color: "text.primary", whiteSpace: "nowrap" }}>
+                              {entry.date}
+                            </TableCell>
+                            <TableCell align="right" sx={{ color: "text.primary" }}>
+                              {displayWeight}
+                            </TableCell>
+                            <TableCell align="right" sx={{ color: "text.primary" }}>
+                              {bmi !== null ? bmi : "—"}
+                            </TableCell>
+                            <TableCell sx={{ color: "text.primary" }}>
+                              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                                {workouts.map((w) => (
+                                  <Chip
+                                    key={w}
+                                    label={w}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: getWorkoutColor(w),
+                                      color: theme.palette.mode === "dark" ? "#fff" : "#000",
+                                      fontWeight: 500,
+                                    }}
+                                  />
+                                ))}
+                              </Box>
+                            </TableCell>
+                            <TableCell sx={{ color: "text.primary", whiteSpace: "nowrap" }}>
+                              <Chip
+                                label={entry.painLevel || "—"}
+                                size="small"
+                                sx={{
+                                  backgroundColor: entry.painLevel
+                                    ? getPainLevelColor(entry.painLevel)
+                                    : "transparent",
+                                  color: "#fff",
+                                  fontWeight: 500,
+                                }}
+                              />
+                            </TableCell>
+                            {customSupplements.length > 0 && (
+                              <TableCell sx={{ color: "text.primary" }}>
+                                {takenSupplements.length > 0
+                                  ? takenSupplements
+                                      .map((s) => (s.quantity ? `${s.name} (${s.quantity})` : s.name))
+                                      .join(", ")
+                                  : "—"}
+                              </TableCell>
+                            )}
+                            <TableCell
+                              sx={{
+                                color: "text.secondary",
+                                maxWidth: 200,
+                                whiteSpace: "pre-wrap",
+                                wordBreak: "break-word",
+                              }}
+                            >
+                              {entry.notes || "—"}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )
+            })()}
           </Box>
         )}
 

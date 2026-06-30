@@ -108,6 +108,13 @@ const themes = {
       MuiCssBaseline: {
         styleOverrides: `
           @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+          @keyframes gradientDrift {
+            0%   { background-position: 0% 0%; }
+            25%  { background-position: 100% 0%; }
+            50%  { background-position: 100% 100%; }
+            75%  { background-position: 0% 100%; }
+            100% { background-position: 0% 0%; }
+          }
         `,
       },
       MuiPaper: {
@@ -3031,13 +3038,14 @@ function AppContent() {
           width: "100%",
           height: "100%",
           zIndex: -1,
-          // Multi-stop radial gradient using theme-specific colors
+          // 400% background lets us pan the gradient around for animation
           background: (() => {
             const g = themeGradients[currentThemeName] || themeGradients.dark
-            return `radial-gradient(ellipse at 20% 20%, ${g[0]} 0%, ${g[1]} 50%, ${g[2]} 100%)`
+            return `linear-gradient(135deg, ${g[0]} 0%, ${g[1]} 25%, ${g[2]} 50%, ${g[1]} 75%, ${g[0]} 100%)`
           })(),
-          // SVG grain filter as a pseudo element isn't possible inline, so we
-          // layer a grain texture via a data-URI background image on top
+          backgroundSize: "400% 400%",
+          animation: "gradientDrift 18s ease infinite",
+          // Grain overlay
           "&::after": {
             content: '""',
             position: "absolute",
@@ -3045,7 +3053,6 @@ function AppContent() {
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='0.18'/%3E%3C/svg%3E")`,
             backgroundRepeat: "repeat",
             backgroundSize: "300px 300px",
-            opacity: 1,
             pointerEvents: "none",
           },
         }}

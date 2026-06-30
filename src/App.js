@@ -3801,34 +3801,6 @@ function AppContent() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} display="flex" justifyContent="center" gap={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    setIsFilteredViewActive(true)
-                    setCurrentTab(3)
-                  }}
-                >
-                  Apply Filters
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  onClick={() => {
-                    setFilterStartDate("")
-                    setFilterEndDate("")
-                    setFilterWorkout("")
-                    setSortOrder("desc")
-                    setIsFilteredViewActive(false)
-                    setCurrentTab(3)
-                  }}
-                >
-                  Clear Filters
-                </Button>
-              </Grid>
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <FormControl fullWidth required sx={{ minWidth: 200 }}>
                   <InputLabel id="sort-order-label">Sort By Date</InputLabel>
@@ -3851,6 +3823,37 @@ function AppContent() {
                 </FormControl>
               </Grid>
             </Grid>
+            {/* Action buttons — separated below the filter fields */}
+            <Box display="flex" justifyContent="center" gap={2} mt={3}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ px: 3, py: 0.75 }}
+                onClick={() => {
+                  setIsFilteredViewActive(true)
+                  setCurrentTab(3)
+                }}
+              >
+                Apply Filters
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                sx={{ px: 3, py: 0.75 }}
+                onClick={() => {
+                  setFilterStartDate("")
+                  setFilterEndDate("")
+                  setFilterWorkout("")
+                  setSortOrder("desc")
+                  setIsFilteredViewActive(false)
+                  setCurrentTab(3)
+                }}
+              >
+                Clear Filters
+              </Button>
+            </Box>
           </Box>
         )}
 

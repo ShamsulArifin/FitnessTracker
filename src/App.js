@@ -31,7 +31,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  CircularProgress,
   Chip,
   Table,
   TableBody,
@@ -46,7 +45,6 @@ import EditIcon from "@mui/icons-material/Edit"
 import AddIcon from "@mui/icons-material/Add"
 // Changed import for CloseIcon
 import { Close as CloseIcon } from "@mui/icons-material"
-import PsychologyIcon from "@mui/icons-material/Psychology" // For the Gemini API button
 import BrushIcon from "@mui/icons-material/Brush" // Changed from SettingsIcon
 
 // Recharts imports for the graph
@@ -2351,11 +2349,6 @@ function AppContent() {
   const [pendingImportData, setPendingImportData] = useState(null) // { entries, supplements }
   const importFileInputRef = useRef(null)
 
-  // LLM Integration State
-  const [llmInsight, setLlmInsight] = useState("")
-  const [isLlmLoading, setIsLlmLoading] = useState(false)
-  const [isInsightDialogOpen, setIsInsightDialogOpen] = useState(false)
-
   // Settings Dialog State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
@@ -3026,102 +3019,6 @@ function AppContent() {
   }
 
   // --- Gemini API Integration for Fitness Insights ---
-  const fetchFitnessInsight = async () => {
-    if (fitnessEntries.length === 0) {
-      showSimpleAlertDialog("Please add some fitness entries to get insights!")
-      return
-    }
-
-    setIsLlmLoading(true)
-    setLlmInsight("")
-    setIsInsightDialogOpen(true)
-
-    const prompt = `
-      Analyze the following fitness data and provide a concise summary of progress, identify any noticeable trends (positive or negative), and suggest general areas for focus or improvement based on this data. Keep the response encouraging and actionable.
-
-      User's unit system: ${unitSystem}
-
-      Fitness Entries:
-      ${fitnessEntries
-        .map((entry) => {
-          const displayWeight = convertWeight(entry.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1)
-          let displayHeight = ""
-          if (entry.height) {
-            if (unitSystem === "metric") {
-              displayHeight = `${entry.height.toFixed(1)} cm`
-            } else {
-              const convertedHeight = entry.height
-                ? convertCmToDisplayHeight(entry.height, "ft/in")
-                : { feet: "", inches: "" }
-              displayHeight = entry.height ? `${convertedHeight.feet}' ${convertedHeight.inches.toFixed(1)}''` : "N/A"
-            }
-          }
-          const workoutSplitDisplay = Array.isArray(entry.workoutSplit)
-            ? entry.workoutSplit.join(", ")
-            : entry.workoutSplit
-          const supplementsDisplay =
-            (entry.supplements || [])
-              .filter((s) => s.taken)
-              .map((s) => (s.quantity ? `${s.name} (${s.quantity})` : s.name))
-              .join(", ") || "None"
-          return `Date: ${entry.date}, Weight: ${displayWeight} ${
-            unitSystem === "metric" ? "kg" : "lbs"
-          }, Height: ${displayHeight}, Workout: ${workoutSplitDisplay}, Pain Level: ${
-            entry.painLevel
-          }, Supplements: ${supplementsDisplay}, Notes: ${entry.notes || "None"}`
-        })
-        .join("\n")}
-
-      Overall Statistics:
-      Total Entries: ${stats.totalEntries}
-      Average Weight: ${stats.avgWeight}
-      Average BMI: ${stats.avgBMI}
-      Most Frequent Workout: ${stats.mostFrequentWorkout}
-      Average Pain Level: ${stats.avgPainLevel}
-      Supplement Frequencies: ${Object.entries(stats.supplementFrequencies)
-        .map(([name, freq]) => `${name}: ${freq}`)
-        .join(", ")}
-
-      Provide the analysis in a friendly tone.
-    `
-
-    try {
-      const chatHistory = []
-      chatHistory.push({ role: "user", parts: [{ text: prompt }] })
-      const payload = { contents: chatHistory }
-      const apiKey = "AIzaSyCQSkWi7iJTYTL3QmyMhPGmXarT-gE9lh4" // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-
-      const result = await response.json()
-
-      if (
-        result.candidates &&
-        result.candidates.length > 0 &&
-        result.candidates[0].content &&
-        result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0
-      ) {
-        setLlmInsight(result.candidates[0].content.parts[0].text)
-      } else {
-        console.error("Unexpected response structure from Gemini API:", result)
-        setLlmInsight("Sorry, I couldn't generate insights at this moment. Please try again later.")
-      }
-    } catch (error) {
-      console.error("Error fetching fitness insight from Gemini API:", error)
-      setLlmInsight(
-        "There was an error connecting to the insight service. Please check your network connection or try again later.",
-      )
-    } finally {
-      setIsLlmLoading(false)
-    }
-  }
-
   return (
     <>
       <CssBaseline />
@@ -3620,18 +3517,6 @@ function AppContent() {
                 </Grid>
               ))}
             </Grid>
-            <Box display="flex" justifyContent="center" mt={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={fetchFitnessInsight}
-                startIcon={<PsychologyIcon />}
-                disabled={isLlmLoading || fitnessEntries.length === 0}
-              >
-                {isLlmLoading ? <CircularProgress size={24} color="inherit" /> : "Get Fitness Insights ✨"}
-              </Button>
-            </Box>
-
             {/* Fitness Progress Chart */}
             <Typography variant="h6" align="center" gutterBottom sx={{ mt: 5, mb: 3 }}>
               Daily Weight & BMI Progress - {selectedMonth}
@@ -3913,6 +3798,7 @@ function AppContent() {
                 <Button
                   variant="contained"
                   color="primary"
+                  size="small"
                   onClick={() => {
                     setIsFilteredViewActive(true)
                     setCurrentTab(3)
@@ -3923,6 +3809,7 @@ function AppContent() {
                 <Button
                   variant="contained"
                   color="secondary"
+                  size="small"
                   onClick={() => {
                     setFilterStartDate("")
                     setFilterEndDate("")
@@ -4289,34 +4176,6 @@ function AppContent() {
           <DialogActions>
             <Button onClick={closeSimpleAlertDialog} color="primary" autoFocus>
               OK
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Dialog for Fitness Insights */}
-        <Dialog open={isInsightDialogOpen} onClose={() => setIsInsightDialogOpen(false)} fullWidth maxWidth="sm">
-          <DialogTitle>Fitness Insights from Gemini ✨</DialogTitle>
-          <DialogContent dividers>
-            {isLlmLoading ? (
-              <Box display="flex" justifyContent="center" alignItems="center" minHeight="150px">
-                <CircularProgress />
-                <Typography variant="body1" sx={{ ml: 2 }}>
-                  Generating insights...
-                </Typography>
-              </Box>
-            ) : llmInsight ? (
-              <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-                {llmInsight}
-              </Typography>
-            ) : (
-              <Typography variant="body1" color="error">
-                Could not retrieve insights.!
-              </Typography>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsInsightDialogOpen(false)} color="primary">
-              Close
             </Button>
           </DialogActions>
         </Dialog>

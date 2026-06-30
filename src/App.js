@@ -131,26 +131,29 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.4)",
-            borderRadius: "28px",
-            backgroundColor: "#3A3740", // Adjusted to a more opaque, slightly different dark background for sections
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.45)",
+            borderRadius: "20px",
+            backgroundColor: "rgba(20, 18, 30, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "#4C4952",
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#E6E1E5",
-            borderRadius: "16px",
+            borderRadius: "10px",
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(197, 198, 201, 0.3)",
+              borderColor: "rgba(156, 224, 255, 0.25)",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(197, 198, 201, 0.5)",
+              borderColor: "rgba(156, 224, 255, 0.55)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "#9CE0FF",
@@ -171,9 +174,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "#4C4952",
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
             color: "#E6E1E5",
-            borderRadius: "16px",
+            borderRadius: "10px",
           },
           icon: { color: "#E6E1E5" },
         },
@@ -241,10 +244,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#36343B",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(20, 18, 30, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.4)",
+            border: "1px solid rgba(255, 255, 255, 0.15)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
       },
@@ -330,26 +336,29 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backdropFilter: "none",
-            WebkitBackdropFilter: "none",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            borderRadius: "28px",
-            backgroundColor: "#FFFFFF",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.25)",
+            boxShadow: "0 8px 32px rgba(98, 0, 238, 0.15)",
+            borderRadius: "20px",
+            backgroundColor: "rgba(255, 255, 255, 0.45)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "#F5F5F5",
+            backgroundColor: "rgba(0, 0, 0, 0.06)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#212121",
-            borderRadius: "16px",
+            borderRadius: "10px",
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0, 0, 0, 0.23)",
+              borderColor: "rgba(98, 0, 238, 0.25)",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0, 0, 0, 0.87)",
+              borderColor: "rgba(98, 0, 238, 0.55)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "#6200EE",
@@ -366,9 +375,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "#F5F5F5",
+            backgroundColor: "rgba(0, 0, 0, 0.06)",
             color: "#212121",
-            borderRadius: "16px",
+            borderRadius: "10px",
           },
           icon: { color: "#757575" },
         },
@@ -436,10 +445,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#FFFFFF",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(255, 255, 255, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
+            border: "1px solid rgba(255, 255, 255, 0.5)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(98, 0, 238, 0.2)",
           },
         },
       },
@@ -525,26 +537,29 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(129, 212, 250, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
             borderRadius: "20px",
-            backgroundColor: "rgba(25, 118, 210, 0.7)", // Primary dark blue with transparency
+            backgroundColor: "rgba(0, 30, 80, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "rgba(30, 136, 229, 0.6)", // Slightly lighter primary blue with transparency
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#E0F2F7",
-            borderRadius: "12px",
+            borderRadius: "10px",
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255, 255, 255, 0.4)",
+              borderColor: "rgba(129, 212, 250, 0.3)",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255, 255, 255, 0.7)",
+              borderColor: "rgba(129, 212, 250, 0.6)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "#81D4FA",
@@ -560,9 +575,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "rgba(30, 136, 229, 0.6)",
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
             color: "#E0F2F7",
-            borderRadius: "12px",
+            borderRadius: "10px",
           },
           icon: { color: "#E0F2F7" },
         },
@@ -630,10 +645,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#1565C0",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(0, 30, 80, 0.65)",
             backgroundImage: "none",
+            border: "1px solid rgba(129, 212, 250, 0.2)",
             borderRadius: "20px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.5)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
       },
@@ -719,26 +737,29 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
-            borderRadius: "24px",
-            backgroundColor: "rgba(79, 108, 123, 0.8)", // Paper color with transparency
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(168, 230, 207, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+            borderRadius: "20px",
+            backgroundColor: "rgba(10, 25, 15, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "rgba(95, 129, 142, 0.7)", // Input field with transparency
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#F0F5F0",
-            borderRadius: "14px",
+            borderRadius: "10px",
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255, 255, 255, 0.2)",
+              borderColor: "rgba(168, 230, 207, 0.25)",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255, 255, 255, 0.4)",
+              borderColor: "rgba(168, 230, 207, 0.55)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "#A8E6CF",
@@ -754,9 +775,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "rgba(95, 129, 142, 0.7)",
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
             color: "#F0F5F0",
-            borderRadius: "14px",
+            borderRadius: "10px",
           },
           icon: { color: "#F0F5F0" },
         },
@@ -824,10 +845,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#394A5D",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(10, 25, 15, 0.65)",
             backgroundImage: "none",
-            borderRadius: "24px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.4)",
+            border: "1px solid rgba(168, 230, 207, 0.2)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
           },
         },
       },
@@ -914,14 +938,33 @@ const themes = {
         styleOverrides: {
           root: {
             borderRadius: "20px",
-            backgroundColor: "#2D2930",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(187, 134, 252, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+            backgroundColor: "rgba(15, 5, 25, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "#3F3B44", color: "#FFFFFF" },
+          root: {
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            color: "#FFFFFF",
+            borderRadius: "10px",
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(187, 134, 252, 0.3)",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(187, 134, 252, 0.6)",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#BB86FC",
+            },
+          },
         },
       },
       MuiInputLabel: {
@@ -931,7 +974,7 @@ const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "#3F3B44", color: "#FFFFFF" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "10px" },
           icon: { color: "#FFFFFF" },
         },
       },
@@ -966,9 +1009,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#28242A",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(15, 5, 25, 0.65)",
             backgroundImage: "none",
+            border: "1px solid rgba(187, 134, 252, 0.2)",
             borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
       },
@@ -1051,15 +1098,19 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "28px",
-            backgroundColor: "#FFFFFF",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            borderRadius: "20px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 193, 7, 0.2)",
+            boxShadow: "0 8px 32px rgba(255, 152, 0, 0.15)",
+            backgroundColor: "rgba(255, 255, 255, 0.45)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "#FFF8E1", color: "#212121" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "10px" },
         },
       },
       MuiInputLabel: {
@@ -1069,7 +1120,7 @@ const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "#FFF8E1", color: "#212121" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "10px" },
           icon: { color: "#757575" },
         },
       },
@@ -1104,9 +1155,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#FFFFFF",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(255, 255, 255, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
+            border: "1px solid rgba(255, 193, 7, 0.3)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(255, 152, 0, 0.2)",
           },
         },
       },
@@ -1189,15 +1244,19 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "28px",
-            backgroundColor: "#525252",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.5)",
+            borderRadius: "20px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.55)",
+            backgroundColor: "rgba(10, 10, 10, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "#616161", color: "#FFFFFF" },
+          root: { backgroundColor: "rgba(255, 255, 255, 0.07)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#FFFFFF", borderRadius: "10px" },
         },
       },
       MuiInputLabel: {
@@ -1207,7 +1266,7 @@ const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "#616161", color: "#FFFFFF" },
+          select: { backgroundColor: "rgba(255, 255, 255, 0.07)", color: "#FFFFFF", borderRadius: "10px" },
           icon: { color: "#FFFFFF" },
         },
       },
@@ -1242,9 +1301,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#383838",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(10, 10, 10, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.55)",
           },
         },
       },
@@ -1345,18 +1408,23 @@ const themes = {
         styleOverrides: {
           root: {
             borderRadius: "8px",
-            backgroundColor: "#B0BEC5",
-            border: "2px solid #607D8B",
-            boxShadow: "5px 5px 0px 0px #78909C",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "2px solid rgba(0, 188, 212, 0.3)",
+            boxShadow: "5px 5px 0px 0px rgba(0,188,212,0.3)",
+            backgroundColor: "rgba(5, 15, 25, 0.45)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "#CFD8DC",
+            backgroundColor: "rgba(0, 188, 212, 0.1)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#263238",
-            border: "1px dashed #607D8B",
+            border: "1px dashed rgba(0, 188, 212, 0.5)",
             borderRadius: "4px",
           },
         },
@@ -1369,9 +1437,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "#CFD8DC",
+            backgroundColor: "rgba(0, 188, 212, 0.1)",
             color: "#263238",
-            border: "1px dashed #607D8B",
+            border: "1px dashed rgba(0, 188, 212, 0.5)",
           },
           icon: { color: "#263238" },
         },
@@ -1449,10 +1517,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#CFD8DC",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(5, 15, 25, 0.65)",
             backgroundImage: "none",
+            border: "2px solid rgba(0, 188, 212, 0.3)",
             borderRadius: "8px",
-            border: "2px solid #607D8B",
+            boxShadow: "5px 5px 0px 0px rgba(0,188,212,0.3)",
           },
         },
       },
@@ -1643,10 +1714,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#4E342E",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(20, 5, 0, 0.65)",
             backgroundImage: "none",
-            borderRadius: "24px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.4)",
+            border: "1px solid rgba(255, 112, 67, 0.2)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
       },
@@ -1734,18 +1808,24 @@ const themes = {
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
             border: "1px solid rgba(167, 167, 255, 0.1)",
-            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.6)",
-            borderRadius: "28px",
-            backgroundColor: "rgba(44, 0, 79, 0.7)", // Paper with transparency
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
+            borderRadius: "20px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(167, 167, 255, 0.2)",
+            backgroundColor: "rgba(3, 0, 26, 0.35)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: "rgba(56, 0, 100, 0.6)", // Input field with transparency
+            backgroundColor: "rgba(255, 255, 255, 0.07)", // Input field glass
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             color: "#E0E0FF",
-            borderRadius: "16px",
+            borderRadius: "10px",
             "& .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(167, 167, 255, 0.4)",
             },
@@ -1766,9 +1846,9 @@ const themes = {
       MuiSelect: {
         styleOverrides: {
           select: {
-            backgroundColor: "rgba(56, 0, 100, 0.6)",
+            backgroundColor: "rgba(255, 255, 255, 0.07)",
             color: "#E0E0FF",
-            borderRadius: "16px",
+            borderRadius: "10px",
           },
           icon: { color: "#E0E0FF" },
         },
@@ -1836,10 +1916,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#20003D",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(3, 0, 26, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
-            boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.4)",
+            border: "1px solid rgba(167, 167, 255, 0.2)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
           },
         },
       },
@@ -1924,15 +2007,19 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "28px",
-            backgroundColor: "#F9FBE7",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            borderRadius: "20px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(118, 255, 3, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+            backgroundColor: "rgba(230, 255, 230, 0.4)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "#F0F4C3", color: "#212121" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#212121", borderRadius: "10px" },
         },
       },
       MuiInputLabel: {
@@ -1942,7 +2029,7 @@ const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "#F0F4C3", color: "#212121" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#212121", borderRadius: "10px" },
           icon: { color: "#4CAF50" },
         },
       },
@@ -1977,9 +2064,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#F0F4C3",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(230, 255, 230, 0.65)",
             backgroundImage: "none",
-            borderRadius: "28px",
+            border: "1px solid rgba(118, 255, 3, 0.25)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0, 200, 83, 0.2)",
           },
         },
       },
@@ -2062,15 +2153,19 @@ const themes = {
       MuiPaper: {
         styleOverrides: {
           root: {
-            borderRadius: "28px",
-            backgroundColor: "#FFFFFF",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.05)",
+            borderRadius: "20px",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(179, 157, 219, 0.25)",
+            boxShadow: "0 8px 32px rgba(179, 157, 219, 0.15)",
+            backgroundColor: "rgba(255, 255, 255, 0.45)",
+            backgroundImage: "none",
           },
         },
       },
       MuiInputBase: {
         styleOverrides: {
-          root: { backgroundColor: "#F5F5F5", color: "#424242" },
+          root: { backgroundColor: "rgba(0, 0, 0, 0.05)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#424242", borderRadius: "10px" },
         },
       },
       MuiInputLabel: {
@@ -2080,7 +2175,7 @@ const themes = {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: "#F5F5F5", color: "#424242" },
+          select: { backgroundColor: "rgba(0, 0, 0, 0.05)", color: "#424242", borderRadius: "10px" },
           icon: { color: "#757575" },
         },
       },
@@ -2115,9 +2210,13 @@ const themes = {
       MuiDialog: {
         styleOverrides: {
           paper: {
-            backgroundColor: "#FFFFFF",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
             backgroundImage: "none",
-            borderRadius: "28px",
+            border: "1px solid rgba(179, 157, 219, 0.3)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(179, 157, 219, 0.2)",
           },
         },
       },
@@ -3090,13 +3189,15 @@ function AppContent() {
         sx={{
           my: 4,
           p: 4,
-          borderRadius: "28px",
+          borderRadius: "24px",
           backgroundColor: theme.palette.mode === "dark"
-            ? "rgba(30, 27, 36, 0.72)"
-            : "rgba(255, 255, 255, 0.72)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          pb: "100px", // Adjusted padding-bottom to account for footer
+            ? "rgba(255, 255, 255, 0.06)"
+            : "rgba(255, 255, 255, 0.55)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3)",
+          pb: "100px",
           ml: { md: "auto" },
           mr: { md: "auto" },
         }}
@@ -3167,7 +3268,7 @@ function AppContent() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: theme.palette.mode === "dark" ? "#3A3740" : "#E0E0E0",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
                     borderRadius: "16px",
                   }}
                 >
@@ -3254,7 +3355,7 @@ function AppContent() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: theme.palette.mode === "dark" ? "#3A3740" : "#E0E0E0",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
                     borderRadius: "16px",
                   }}
                 >
@@ -3368,7 +3469,7 @@ function AppContent() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: theme.palette.mode === "dark" ? "#3A3740" : "#E0E0E0",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
                     borderRadius: "16px",
                   }}
                 >
@@ -3429,7 +3530,7 @@ function AppContent() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    backgroundColor: theme.palette.mode === "dark" ? "#3A3740" : "#E0E0E0",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
                     borderRadius: "16px",
                   }}
                 >
@@ -3898,7 +3999,7 @@ function AppContent() {
                     mb: 2,
                     p: 2,
                     borderRadius: "16px",
-                    backgroundColor: theme.palette.mode === "dark" ? "#3A3740" : "#E0E0E0",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)",
                   },
                   mt: 3,
                 }}

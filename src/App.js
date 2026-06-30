@@ -468,6 +468,17 @@ function AppContent() {
     <>
       <CssBaseline />
 
+      {/* Keyframe always injected regardless of active theme */}
+      <style>{`
+        @keyframes gradientMove {
+          0%   { background-position: 0% 50%; }
+          25%  { background-position: 100% 0%; }
+          50%  { background-position: 100% 100%; }
+          75%  { background-position: 0% 100%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
+
       {/* Animated gradient background */}
       <Box
         sx={{

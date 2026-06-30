@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback, createContext, useContext } from "react"
+import React, { useState, useEffect, useCallback, createContext, useContext, useRef } from "react"
 import {
   CssBaseline,
   AppBar,
@@ -2323,6 +2323,11 @@ function AppContent() {
   const [isConfirmDeleteCustomSupplementOpen, setIsConfirmDeleteCustomSupplementOpen] = useState(false) // New state for custom supplement delete confirmation
   const [supplementToDelete, setSupplementToDelete] = useState("") // State to hold the supplement name to delete
 
+  // Import state
+  const [isImportConfirmOpen, setIsImportConfirmOpen] = useState(false)
+  const [pendingImportData, setPendingImportData] = useState(null) // { entries, supplements }
+  const importFileInputRef = useRef(null)
+
   // LLM Integration State
   const [llmInsight, setLlmInsight] = useState("")
   const [isLlmLoading, setIsLlmLoading] = useState(false)
@@ -2647,6 +2652,158 @@ function AppContent() {
     } else {
       showSimpleAlertDialog("Your browser does not support downloading files directly. Please copy the data manually.")
     }
+  }
+
+  // Parse a CSV line respecting quoted fields
+  const parseCsvLine = (line) => {
+    const result = []
+    let current = ""
+    let inQuotes = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"'
+          i++
+        } else {
+          inQuotes = !inQuotes
+        }
+      } else if (ch === "," && !inQuotes) {
+        result.push(current)
+        current = ""
+      } else {
+        current += ch
+      }
+    }
+    result.push(current)
+    return result
+  }
+
+  const handleImportClick = () => {
+    if (importFileInputRef.current) {
+      importFileInputRef.current.value = ""
+      importFileInputRef.current.click()
+    }
+  }
+
+  const handleImportFileChange = (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    if (!file.name.endsWith(".csv")) {
+      showSimpleAlertDialog("Please select a valid CSV file.")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result
+        const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "")
+        if (lines.length < 2) {
+          showSimpleAlertDialog("The CSV file is empty or has no data rows.")
+          return
+        }
+
+        const headers = parseCsvLine(lines[0])
+        // Fixed base columns: Date, Weight (kg), Height (cm), BMI, Workout Split, Pain Level, Notes
+        const BASE_COL_COUNT = 7
+        // Supplement headers come in pairs: "Name (Taken)", "Name (Quantity)"
+        const detectedSupplements = []
+        for (let i = BASE_COL_COUNT; i < headers.length; i += 2) {
+          const takenHeader = headers[i] // e.g. "Protein (Taken)"
+          const match = takenHeader.match(/^(.+)\s+\(Taken\)$/)
+          if (match) {
+            detectedSupplements.push(match[1])
+          }
+        }
+
+        const parsedEntries = []
+        for (let i = 1; i < lines.length; i++) {
+          const cols = parseCsvLine(lines[i])
+          if (cols.length < BASE_COL_COUNT) continue
+
+          const date = cols[0].trim()
+          if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) continue // skip malformed rows
+
+          const weight = Number.parseFloat(cols[1])
+          const height = Number.parseFloat(cols[2])
+          // cols[3] is BMI — recalculated, so skip
+          const workoutSplit = cols[4]
+            ? cols[4]
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : []
+          const painLevel = cols[5] ? cols[5].trim() : ""
+          const notes = cols[6] ? cols[6].trim() : ""
+
+          const supplements = []
+          detectedSupplements.forEach((supName, idx) => {
+            const takenCol = BASE_COL_COUNT + idx * 2
+            const qtyCol = takenCol + 1
+            const taken = cols[takenCol] && cols[takenCol].trim().toLowerCase() === "yes"
+            if (taken) {
+              const quantity = cols[qtyCol] ? cols[qtyCol].trim() : ""
+              supplements.push({ name: supName, taken: true, quantity })
+            }
+          })
+
+          parsedEntries.push({
+            date,
+            weight: isNaN(weight) ? 0 : weight,
+            height: isNaN(height) ? 0 : height,
+            workoutSplit,
+            painLevel,
+            notes,
+            supplements,
+          })
+        }
+
+        if (parsedEntries.length === 0) {
+          showSimpleAlertDialog("No valid entries found in the CSV file.")
+          return
+        }
+
+        setPendingImportData({ entries: parsedEntries, supplements: detectedSupplements })
+        setIsImportConfirmOpen(true)
+      } catch (err) {
+        showSimpleAlertDialog("Failed to parse the CSV file. Make sure it was exported from this app.")
+      }
+    }
+    reader.readAsText(file)
+  }
+
+  const confirmImport = () => {
+    if (!pendingImportData) return
+
+    // Merge: imported entries take precedence over existing entries for the same date
+    const mergedMap = {}
+    fitnessEntries.forEach((entry) => {
+      mergedMap[entry.date] = entry
+    })
+    pendingImportData.entries.forEach((entry) => {
+      mergedMap[entry.date] = entry
+    })
+    const mergedEntries = Object.values(mergedMap).sort((a, b) => new Date(b.date) - new Date(a.date))
+
+    // Merge supplement names
+    const mergedSupplements = [...new Set([...customSupplements, ...pendingImportData.supplements])]
+
+    const importCount = pendingImportData.entries.length
+
+    setFitnessEntries(mergedEntries)
+    setCustomSupplements(mergedSupplements)
+    setIsImportConfirmOpen(false)
+    setPendingImportData(null)
+    showSimpleAlertDialog(
+      `Import successful! ${importCount} entries imported (duplicates replaced).`,
+    )
+  }
+
+  const cancelImport = () => {
+    setIsImportConfirmOpen(false)
+    setPendingImportData(null)
   }
 
   // --- Summary Statistics Calculation ---
@@ -3723,10 +3880,21 @@ function AppContent() {
               <Button variant="contained" color="success" onClick={handleDownloadCsv}>
                 Download as CSV
               </Button>
+              <Button variant="contained" color="primary" onClick={handleImportClick}>
+                Import CSV
+              </Button>
               <Button variant="contained" color="error" onClick={handleClearAllData}>
                 Clear All Data
               </Button>
             </Box>
+            {/* Hidden file input for CSV import */}
+            <input
+              type="file"
+              accept=".csv"
+              ref={importFileInputRef}
+              style={{ display: "none" }}
+              onChange={handleImportFileChange}
+            />
           </Box>
         )}
 
@@ -3805,6 +3973,31 @@ function AppContent() {
             </Button>
             <Button onClick={confirmClearAllData} color="error">
               Delete All
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Confirmation Dialog for CSV Import */}
+        <Dialog
+          open={isImportConfirmOpen}
+          onClose={cancelImport}
+          aria-labelledby="import-dialog-title"
+          aria-describedby="import-dialog-description"
+        >
+          <DialogTitle id="import-dialog-title">{"Confirm Import"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="import-dialog-description">
+              {pendingImportData
+                ? `This will import ${pendingImportData.entries.length} entries from the CSV file. Any existing entries with the same date will be overwritten. New entries will be merged with your current data.`
+                : ""}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={cancelImport} color="secondary" autoFocus>
+              Cancel
+            </Button>
+            <Button onClick={confirmImport} color="primary">
+              Import
             </Button>
           </DialogActions>
         </Dialog>

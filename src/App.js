@@ -175,7 +175,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "20px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -370,7 +370,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "20px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -564,7 +564,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "16px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -758,7 +758,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "18px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -931,7 +931,7 @@ const themes = {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "16px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#BB86FC", color: "#000000" },
           containedSuccess: { backgroundColor: "#80E280", color: "#000000" },
           containedError: { backgroundColor: "#CF6679", color: "#FFFFFF" },
@@ -1069,7 +1069,7 @@ const themes = {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "20px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#FFC107", color: "#000000" },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF" },
           containedError: { backgroundColor: "#F44336", color: "#FFFFFF" },
@@ -1207,7 +1207,7 @@ const themes = {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "20px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#BDBDBD", color: "#000000" },
           containedSuccess: { backgroundColor: "#A5D6A7", color: "#000000" },
           containedError: { backgroundColor: "#EF9A9A", color: "#000000" },
@@ -1577,7 +1577,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "18px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -1770,7 +1770,7 @@ const themes = {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: "20px",
+            borderRadius: "6px",
             textTransform: "none",
             fontWeight: 500,
             padding: "3px 10px",
@@ -1942,7 +1942,7 @@ const themes = {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "20px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#76FF03", color: "#000000" },
           containedSuccess: { backgroundColor: "#4CAF50", color: "#FFFFFF" },
           containedError: { backgroundColor: "#F44336", color: "#FFFFFF" },
@@ -2080,7 +2080,7 @@ const themes = {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: "20px", textTransform: "none" },
+          root: { borderRadius: "6px", textTransform: "none" },
           containedPrimary: { backgroundColor: "#B39DDB", color: "#000000" },
           containedSuccess: { backgroundColor: "#C8E6C9", color: "#000000" },
           containedError: { backgroundColor: "#FFCDD2", color: "#000000" },
@@ -3538,14 +3538,53 @@ function AppContent() {
             </Typography>
             <Box display="flex" justifyContent="center" alignItems="center" gap={2} sx={{ mb: 3 }}>
               <Typography variant="body1">Select Month:</Typography>
-              <TextField
-                type="month"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                size="small"
-                sx={{ minWidth: 180 }}
-              />
+              {/* Year selector */}
+              <FormControl size="small" sx={{ minWidth: 100 }}>
+                <InputLabel id="summary-year-label">Year</InputLabel>
+                <Select
+                  labelId="summary-year-label"
+                  label="Year"
+                  value={selectedMonth.split("-")[0]}
+                  onChange={(e) => {
+                    const month = selectedMonth.split("-")[1]
+                    setSelectedMonth(`${e.target.value}-${month}`)
+                  }}
+                >
+                  {Array.from(
+                    new Set(fitnessEntries.map((entry) => new Date(entry.date).getFullYear()))
+                  )
+                    .sort((a, b) => b - a)
+                    .map((year) => (
+                      <MenuItem key={year} value={String(year)}>
+                        {year}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+              {/* Month selector */}
+              <FormControl size="small" sx={{ minWidth: 130 }}>
+                <InputLabel id="summary-month-label">Month</InputLabel>
+                <Select
+                  labelId="summary-month-label"
+                  label="Month"
+                  value={selectedMonth.split("-")[1]}
+                  onChange={(e) => {
+                    const year = selectedMonth.split("-")[0]
+                    setSelectedMonth(`${year}-${e.target.value}`)
+                  }}
+                >
+                  {[
+                    ["01", "January"], ["02", "February"], ["03", "March"],
+                    ["04", "April"],   ["05", "May"],       ["06", "June"],
+                    ["07", "July"],    ["08", "August"],    ["09", "September"],
+                    ["10", "October"], ["11", "November"],  ["12", "December"],
+                  ].map(([val, label]) => (
+                    <MenuItem key={val} value={val}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} sm={6} md={4}>

@@ -21,6 +21,7 @@ import EntryForm from "./components/EntryForm"
 import SummaryTab from "./components/SummaryTab"
 import FilterTab from "./components/FilterTab"
 import ProgressTab from "./components/ProgressTab"
+import ExerciseLibrary from "./components/ExerciseLibrary"
 import {
   ManageSupplementsDialog,
   ConfirmClearDialog,
@@ -553,6 +554,7 @@ function AppContent() {
             <Tab label="Summary" />
             <Tab label="Filter & Sort" />
             <Tab label="Progress" />
+            <Tab label="Exercise Library" />
           </Tabs>
         </AppBar>
 
@@ -618,6 +620,8 @@ function AppContent() {
             getPainLevelColor={getPainLevelColor}
           />
         )}
+
+        {currentTab === 4 && <ExerciseLibrary />}
 
         {/* Dialogs */}
         <ManageSupplementsDialog

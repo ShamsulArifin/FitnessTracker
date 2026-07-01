@@ -229,210 +229,169 @@ export default function MacroCalculator({ unitSystem }) {
         Based on Mifflin-St Jeor formula
       </Typography>
 
-      <Grid container spacing={3}>
-        {/* ── Left: Inputs ── */}
-        <Grid item xs={12} md={5}>
-          <Paper elevation={0} sx={{ p: 2.5, display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 700 }}>
-              Your Info
-            </Typography>
+      {/* ── Input row — full width, all fields horizontal ── */}
+      <Paper elevation={0} sx={{ p: 2.5, mb: 3 }}>
+        <Grid container spacing={2} alignItems="flex-start">
 
-            {/* Sex toggle */}
-            <Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5 }}>Biological Sex</Typography>
-              <ToggleButtonGroup
-                value={sex}
-                exclusive
-                onChange={(_, v) => { if (v) setSex(v) }}
-                size="small"
-                fullWidth
-              >
-                <ToggleButton value="male" sx={{ textTransform: "none" }}>Male</ToggleButton>
-                <ToggleButton value="female" sx={{ textTransform: "none" }}>Female</ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
+          {/* Sex + Age */}
+          <Grid item xs={6} sm={4} md={2}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem" }}>Sex</Typography>
+            <ToggleButtonGroup
+              value={sex} exclusive size="small" fullWidth
+              onChange={(_, v) => { if (v) setSex(v) }}
+            >
+              <ToggleButton value="male"   sx={{ textTransform: "none", fontSize: "0.75rem", py: 0.6 }}>Male</ToggleButton>
+              <ToggleButton value="female" sx={{ textTransform: "none", fontSize: "0.75rem", py: 0.6 }}>Female</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
 
-            {/* Age */}
+          <Grid item xs={6} sm={4} md={1}>
             <TextField
               label="Age" type="number" size="small" fullWidth
               value={age} onChange={(e) => setAge(e.target.value)}
               InputProps={{ inputProps: { min: 10, max: 100 } }}
             />
+          </Grid>
 
-            {/* Weight */}
+          {/* Weight */}
+          <Grid item xs={6} sm={4} md={2}>
             <TextField
               label={wLabel} type="number" size="small" fullWidth
               value={weightInput} onChange={(e) => setWeightInput(e.target.value)}
             />
+          </Grid>
 
-            {/* Height */}
-            {isImperial ? (
-              <Box display="flex" gap={1}>
-                <TextField
-                  label="Height (ft)" type="number" size="small" sx={{ flex: 1 }}
-                  value={heightFt} onChange={(e) => setHeightFt(e.target.value)}
-                />
-                <TextField
-                  label="Height (in)" type="number" size="small" sx={{ flex: 1 }}
-                  value={heightIn} onChange={(e) => setHeightIn(e.target.value)}
-                />
-              </Box>
-            ) : (
+          {/* Height */}
+          {isImperial ? (
+            <>
+              <Grid item xs={3} sm={2} md={1}>
+                <TextField label="Ft" type="number" size="small" fullWidth
+                  value={heightFt} onChange={(e) => setHeightFt(e.target.value)} />
+              </Grid>
+              <Grid item xs={3} sm={2} md={1}>
+                <TextField label="In" type="number" size="small" fullWidth
+                  value={heightIn} onChange={(e) => setHeightIn(e.target.value)} />
+              </Grid>
+            </>
+          ) : (
+            <Grid item xs={6} sm={4} md={2}>
               <TextField
                 label="Height (cm)" type="number" size="small" fullWidth
                 value={heightInput} onChange={(e) => setHeightInput(e.target.value)}
               />
-            )}
+            </Grid>
+          )}
 
-            {/* Activity */}
+          {/* Activity */}
+          <Grid item xs={12} sm={6} md={2}>
             <FormControl size="small" fullWidth>
-              <InputLabel>Activity Level</InputLabel>
-              <Select
-                value={activityLevel}
-                label="Activity Level"
-                onChange={(e) => setActivityLevel(e.target.value)}
-              >
+              <InputLabel>Activity</InputLabel>
+              <Select value={activityLevel} label="Activity" onChange={(e) => setActivityLevel(e.target.value)}>
                 {ACTIVITY_LEVELS.map((l) => (
                   <MenuItem key={l.id} value={l.id}>
                     <Box>
-                      <Typography variant="body2" fontWeight={600}>{l.label}</Typography>
-                      <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.72rem" }}>{l.desc}</Typography>
+                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: "0.8rem" }}>{l.label}</Typography>
+                      <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.68rem" }}>{l.desc}</Typography>
                     </Box>
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
+          </Grid>
 
-            {/* Goal */}
-            <Box>
-              <Typography variant="body2" sx={{ color: "text.secondary", mb: 1 }}>Goal</Typography>
-              <Grid container spacing={1}>
-                {GOALS.map((g) => (
-                  <Grid item xs={6} key={g.id}>
-                    <Box
-                      onClick={() => setGoal(g.id)}
-                      sx={{
-                        p: 1.2, borderRadius: "6px", cursor: "pointer", textAlign: "center",
-                        border: `2px solid ${goal === g.id ? theme.palette.primary.main : "transparent"}`,
-                        backgroundColor: goal === g.id
-                          ? theme.palette.primary.main + "18"
-                          : theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
-                        transition: "all 0.15s",
-                        "&:hover": { borderColor: theme.palette.primary.main + "80" },
-                      }}
-                    >
-                      <Typography variant="body2" fontWeight={700} sx={{ color: goal === g.id ? theme.palette.primary.main : "text.primary" }}>
-                        {g.label}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.68rem", mt: 0.2 }}>
-                        {g.desc}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
+          {/* Goal — inline cards */}
+          <Grid item xs={12} sm={12} md={4}>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5, fontSize: "0.75rem" }}>Goal</Typography>
+            <Box display="flex" gap={1}>
+              {GOALS.map((g) => (
+                <Box
+                  key={g.id}
+                  onClick={() => setGoal(g.id)}
+                  sx={{
+                    flex: 1, p: "6px 4px", borderRadius: "6px", cursor: "pointer", textAlign: "center",
+                    border: `2px solid ${goal === g.id ? theme.palette.primary.main : "transparent"}`,
+                    backgroundColor: goal === g.id
+                      ? theme.palette.primary.main + "18"
+                      : theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                    transition: "all 0.15s",
+                    "&:hover": { borderColor: theme.palette.primary.main + "80" },
+                  }}
+                >
+                  <Typography variant="body2" fontWeight={700} sx={{ color: goal === g.id ? theme.palette.primary.main : "text.primary", fontSize: "0.75rem" }}>
+                    {g.label}
+                  </Typography>
+                </Box>
+              ))}
             </Box>
+          </Grid>
 
-            {/* Days slider */}
-            <Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>Plan Duration</Typography>
-                <Chip
-                  label={`${days} day${days !== 1 ? "s" : ""}`}
-                  size="small" color="primary" variant="outlined"
-                />
-              </Box>
-              <Slider
-                value={days}
-                onChange={(_, v) => setDays(v)}
-                min={1} max={30} step={1}
-                marks={[
-                  { value: 7,  label: "1 wk" },
-                  { value: 14, label: "2 wk" },
-                  { value: 21, label: "3 wk" },
-                  { value: 30, label: "30d"  },
-                ]}
-                sx={{ mt: 1 }}
-              />
-            </Box>
-          </Paper>
         </Grid>
 
-        {/* ── Right: Results ── */}
-        <Grid item xs={12} md={7}>
-          {!result ? (
-            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" gap={2} py={8}>
-              <Typography variant="body1" sx={{ color: "text.disabled" }}>
-                Fill in your info to see your macros
-              </Typography>
-            </Box>
-          ) : (
-            <Box display="flex" flexDirection="column" gap={2.5}>
+        {/* Duration slider — full width below inputs */}
+        <Box sx={{ mt: 2.5, px: 0.5 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
+            <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem" }}>Plan Duration</Typography>
+            <Chip label={`${days} day${days !== 1 ? "s" : ""}`} size="small" color="primary" variant="outlined"
+              sx={{ height: 20, fontSize: "0.68rem", "& .MuiChip-label": { px: 0.8 } }} />
+          </Box>
+          <Slider
+            value={days} onChange={(_, v) => setDays(v)}
+            min={1} max={30} step={1}
+            marks={[{ value: 7, label: "1 wk" }, { value: 14, label: "2 wk" }, { value: 21, label: "3 wk" }, { value: 30, label: "30d" }]}
+          />
+        </Box>
+      </Paper>
 
-              {/* Calorie summary cards */}
-              <Grid container spacing={2}>
-                {[
-                  { label: "BMR",         value: result.bmr,              sub: "Base metabolic rate",    color: theme.palette.text.secondary },
-                  { label: "Maintenance", value: result.maintenanceTdee,  sub: "TDEE at current weight", color: theme.palette.primary.main    },
-                  { label: "Target",      value: result.tdee,             sub: GOALS.find(g=>g.id===goal)?.desc, color: goal === "cut" ? theme.palette.error.main : goal === "maintain" ? theme.palette.primary.main : theme.palette.success.main },
-                ].map(({ label, value, sub, color }) => (
-                  <Grid item xs={4} key={label}>
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 1.5, textAlign: "center",
-                        backgroundColor: color + "14",
-                        border: `1px solid ${color}40`,
-                      }}
-                    >
-                      <Typography variant="h6" fontWeight={800} sx={{ color, lineHeight: 1.1 }}>
-                        {value.toLocaleString()}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "text.primary", fontWeight: 600, fontSize: "0.75rem" }}>
-                        {label}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.65rem" }}>
-                        kcal/day
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                ))}
+      {/* ── Results — full width ── */}
+      {!result ? (
+        <Box display="flex" alignItems="center" justifyContent="center" py={6}>
+          <Typography variant="body1" sx={{ color: "text.disabled" }}>
+            Fill in your info above to see your macros
+          </Typography>
+        </Box>
+      ) : (
+        <Box display="flex" flexDirection="column" gap={2.5}>
+
+          {/* Calorie cards + macro bars side by side */}
+          <Grid container spacing={2}>
+            {/* Calorie summary — 3 cards */}
+            {[
+              { label: "BMR",         value: result.bmr,             color: theme.palette.text.secondary, sub: "Base metabolic rate"    },
+              { label: "Maintenance", value: result.maintenanceTdee, color: theme.palette.primary.main,   sub: "TDEE at current weight"  },
+              { label: "Target",      value: result.tdee,            sub: GOALS.find(g => g.id === goal)?.desc,
+                color: goal === "cut" ? theme.palette.error.main : goal === "maintain" ? theme.palette.primary.main : theme.palette.success.main },
+            ].map(({ label, value, sub, color }) => (
+              <Grid item xs={4} md={2} key={label}>
+                <Paper elevation={0} sx={{ p: 1.5, textAlign: "center", backgroundColor: color + "14", border: `1px solid ${color}40`, height: "100%" }}>
+                  <Typography variant="h6" fontWeight={800} sx={{ color, lineHeight: 1.1 }}>{value.toLocaleString()}</Typography>
+                  <Typography variant="body2" sx={{ color: "text.primary", fontWeight: 600, fontSize: "0.72rem" }}>{label}</Typography>
+                  <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.63rem" }}>kcal/day</Typography>
+                </Paper>
               </Grid>
+            ))}
 
-              {/* Deficit/surplus note */}
-              {result.deficit !== 0 && (
-                <Typography variant="body2" align="center" sx={{ color: result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main }}>
-                  {result.deficit < 0 ? `${Math.abs(result.deficit)} kcal deficit/day` : `+${result.deficit} kcal surplus/day`}
-                  {" · "}
-                  <span style={{ color: theme.palette.text.secondary }}>
-                    ~{Math.round(Math.abs(result.deficit) * days / 7700 * 10) / 10} kg {result.deficit < 0 ? "lost" : "gained"} in {days} days
-                  </span>
-                </Typography>
-              )}
-
-              {/* Macro breakdown */}
-              <Paper elevation={0} sx={{ p: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>
-                  Daily Macros
-                </Typography>
-                <MacroBar label="Protein" grams={result.protein} calories={result.protein * calPerGram.protein} color={theme.palette.primary.main}    pct={result.proteinPct} />
-                <MacroBar label="Carbs"   grams={result.carbs}   calories={result.carbs   * calPerGram.carb}    color={theme.palette.success.main}    pct={result.carbPct}    />
-                <MacroBar label="Fat"     grams={result.fat}     calories={result.fat     * calPerGram.fat}      color={theme.palette.warning?.main || "#FFA726"} pct={result.fatPct} />
+            {/* Macro bars */}
+            <Grid item xs={12} md={6}>
+              <Paper elevation={0} sx={{ p: 2, height: "100%" }}>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Daily Macros</Typography>
+                <MacroBar label="Protein" grams={result.protein} calories={result.protein * calPerGram.protein} color={theme.palette.primary.main} pct={result.proteinPct} />
+                <MacroBar label="Carbs"   grams={result.carbs}   calories={result.carbs * calPerGram.carb}       color={theme.palette.success.main} pct={result.carbPct} />
+                <MacroBar label="Fat"     grams={result.fat}     calories={result.fat * calPerGram.fat}           color={theme.palette.warning?.main || "#FFA726"} pct={result.fatPct} />
               </Paper>
+            </Grid>
 
-              {/* Per-meal suggestion */}
-              <Paper elevation={0} sx={{ p: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
-                  Per Meal (÷ 4 meals)
-                </Typography>
+            {/* Per-meal */}
+            <Grid item xs={12} md={4}>
+              <Paper elevation={0} sx={{ p: 2, height: "100%" }}>
+                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Per Meal (÷ 4)</Typography>
                 <Grid container spacing={1}>
                   {[
-                    { label: "Calories", val: `${Math.round(result.tdee / 4)} kcal`,   color: "text.primary" },
-                    { label: "Protein",  val: `${Math.round(result.protein / 4)}g`,     color: theme.palette.primary.main },
-                    { label: "Carbs",    val: `${Math.round(result.carbs / 4)}g`,       color: theme.palette.success.main },
-                    { label: "Fat",      val: `${Math.round(result.fat / 4)}g`,         color: theme.palette.warning?.main || "#FFA726" },
+                    { label: "Calories", val: `${Math.round(result.tdee / 4)} kcal`,         color: "text.primary" },
+                    { label: "Protein",  val: `${Math.round(result.protein / 4)}g`,           color: theme.palette.primary.main },
+                    { label: "Carbs",    val: `${Math.round(result.carbs / 4)}g`,             color: theme.palette.success.main },
+                    { label: "Fat",      val: `${Math.round(result.fat / 4)}g`,               color: theme.palette.warning?.main || "#FFA726" },
                   ].map(({ label, val, color }) => (
-                    <Grid item xs={3} key={label}>
+                    <Grid item xs={6} key={label}>
                       <Box sx={{ textAlign: "center", p: 1, borderRadius: "6px", backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)" }}>
                         <Typography variant="body2" fontWeight={700} sx={{ color }}>{val}</Typography>
                         <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.68rem" }}>{label}</Typography>
@@ -441,19 +400,28 @@ export default function MacroCalculator({ unitSystem }) {
                   ))}
                 </Grid>
               </Paper>
+            </Grid>
+          </Grid>
 
-              {/* Day-by-day table */}
-              <Paper elevation={0} sx={{ p: 2 }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
-                  {days}-Day Plan
-                </Typography>
-                <DaySchedule macros={result} days={days} />
-              </Paper>
-
-            </Box>
+          {/* Deficit/surplus note */}
+          {result.deficit !== 0 && (
+            <Typography variant="body2" align="center" sx={{ color: result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main }}>
+              {result.deficit < 0 ? `${Math.abs(result.deficit)} kcal deficit/day` : `+${result.deficit} kcal surplus/day`}
+              {" · "}
+              <span style={{ color: theme.palette.text.secondary }}>
+                ~{Math.round(Math.abs(result.deficit) * days / 7700 * 10) / 10} kg {result.deficit < 0 ? "lost" : "gained"} in {days} days
+              </span>
+            </Typography>
           )}
-        </Grid>
-      </Grid>
+
+          {/* Day-by-day table — full width */}
+          <Paper elevation={0} sx={{ p: 2 }}>
+            <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>{days}-Day Plan</Typography>
+            <DaySchedule macros={result} days={days} />
+          </Paper>
+
+        </Box>
+      )}
     </Box>
   )
 }

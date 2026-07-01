@@ -368,8 +368,8 @@ export default function MacroCalculator({ unitSystem }) {
       ) : (
         <Box display="flex" flexDirection="column" gap={2}>
 
-          {/* Row 1: 3 calorie stat cards + deficit note */}
-          <Grid container spacing={2}>
+          {/* Row 1: 3 calorie stat cards — equal width, full row */}
+          <Grid container spacing={2} sx={{ mb: 2 }}>
             {[
               { label: "BMR",         value: result.bmr,             note: "Base metabolic rate",   color: theme.palette.text.secondary },
               { label: "Maintenance", value: result.maintenanceTdee, note: "TDEE (no deficit)",      color: theme.palette.primary.main },
@@ -415,10 +415,10 @@ export default function MacroCalculator({ unitSystem }) {
             </Box>
           )}
 
-          {/* Row 2: Macro bars + Per-meal (equal height) */}
+          {/* Row 2: Macro bars + Per-meal (equal height, full width) */}
           <Grid container spacing={2} alignItems="stretch">
 
-            {/* Macro bars */}
+            {/* Macro bars — 7/12 */}
             <Grid item xs={12} md={7}>
               <Paper elevation={0} sx={{ p: 2.5, height: "100%" }}>
                 <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Daily Macros</Typography>
@@ -428,7 +428,7 @@ export default function MacroCalculator({ unitSystem }) {
               </Paper>
             </Grid>
 
-            {/* Per-meal */}
+            {/* Per-meal — 5/12 */}
             <Grid item xs={12} md={5}>
               <Paper elevation={0} sx={{ p: 2.5, height: "100%" }}>
                 <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Per Meal (÷ 4 meals)</Typography>

@@ -231,75 +231,74 @@ export default function MacroCalculator({ unitSystem }) {
 
       {/* ── Input panel ── */}
       <Paper elevation={0} sx={{ p: 3, mb: 3 }}>
-        {/* Row 1: all body metrics in one evenly spaced row */}
-        <Grid container spacing={2} alignItems="stretch">
-
+        {/* All inputs in one flex row — wraps naturally on small screens */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+            alignItems: "flex-end",
+          }}
+        >
           {/* Sex */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 0.5 }}>Sex</Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 120 }}>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>Sex</Typography>
             <ToggleButtonGroup
-              value={sex} exclusive size="small" fullWidth
+              value={sex} exclusive size="small"
               onChange={(_, v) => { if (v) setSex(v) }}
               sx={{ height: 40 }}
             >
-              <ToggleButton value="male"   sx={{ textTransform: "none", flex: 1 }}>Male</ToggleButton>
-              <ToggleButton value="female" sx={{ textTransform: "none", flex: 1 }}>Female</ToggleButton>
+              <ToggleButton value="male"   sx={{ textTransform: "none", px: 2 }}>Male</ToggleButton>
+              <ToggleButton value="female" sx={{ textTransform: "none", px: 2 }}>Female</ToggleButton>
             </ToggleButtonGroup>
-          </Grid>
+          </Box>
 
           {/* Age */}
-          <Grid item xs={6} sm={3} md={1}>
-            <TextField
-              label="Age" type="number" size="small" fullWidth
-              value={age} onChange={(e) => setAge(e.target.value)}
-              InputProps={{ inputProps: { min: 10, max: 100 } }}
-            />
-          </Grid>
+          <TextField
+            label="Age" type="number" size="small"
+            value={age} onChange={(e) => setAge(e.target.value)}
+            InputProps={{ inputProps: { min: 10, max: 100 } }}
+            sx={{ width: 90 }}
+          />
 
           {/* Weight */}
-          <Grid item xs={6} sm={3} md={2}>
-            <TextField
-              label={wLabel} type="number" size="small" fullWidth
-              value={weightInput} onChange={(e) => setWeightInput(e.target.value)}
-            />
-          </Grid>
+          <TextField
+            label={wLabel} type="number" size="small"
+            value={weightInput} onChange={(e) => setWeightInput(e.target.value)}
+            sx={{ width: 140 }}
+          />
 
           {/* Height */}
           {isImperial ? (
             <>
-              <Grid item xs={3} sm={2} md={1}>
-                <TextField label="Ft" type="number" size="small" fullWidth
-                  value={heightFt} onChange={(e) => setHeightFt(e.target.value)} />
-              </Grid>
-              <Grid item xs={3} sm={2} md={1}>
-                <TextField label="In" type="number" size="small" fullWidth
-                  value={heightIn} onChange={(e) => setHeightIn(e.target.value)} />
-              </Grid>
+              <TextField label="Height (ft)" type="number" size="small"
+                value={heightFt} onChange={(e) => setHeightFt(e.target.value)}
+                sx={{ width: 100 }} />
+              <TextField label="Height (in)" type="number" size="small"
+                value={heightIn} onChange={(e) => setHeightIn(e.target.value)}
+                sx={{ width: 100 }} />
             </>
           ) : (
-            <Grid item xs={6} sm={3} md={2}>
-              <TextField
-                label="Height (cm)" type="number" size="small" fullWidth
-                value={heightInput} onChange={(e) => setHeightInput(e.target.value)}
-              />
-            </Grid>
+            <TextField
+              label="Height (cm)" type="number" size="small"
+              value={heightInput} onChange={(e) => setHeightInput(e.target.value)}
+              sx={{ width: 140 }}
+            />
           )}
 
           {/* Activity */}
-          <Grid item xs={12} sm={6} md={2}>
-            <FormControl size="small" fullWidth>
-              <InputLabel>Activity</InputLabel>
-              <Select value={activityLevel} label="Activity" onChange={(e) => setActivityLevel(e.target.value)}>
-                {ACTIVITY_LEVELS.map((l) => (
-                  <MenuItem key={l.id} value={l.id}>{l.label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <FormControl size="small" sx={{ width: 180 }}>
+            <InputLabel>Activity</InputLabel>
+            <Select value={activityLevel} label="Activity" onChange={(e) => setActivityLevel(e.target.value)}>
+              {ACTIVITY_LEVELS.map((l) => (
+                <MenuItem key={l.id} value={l.id}>{l.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-          {/* Goal — 4 equal buttons */}
-          <Grid item xs={12} sm={12} md={4}>
-            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 0.5 }}>Goal</Typography>
+          {/* Goal */}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, flex: 1, minWidth: 240 }}>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>Goal</Typography>
             <Box display="flex" gap={1} height={40}>
               {GOALS.map((g) => (
                 <Box
@@ -312,29 +311,36 @@ export default function MacroCalculator({ unitSystem }) {
                     justifyContent: "center",
                     borderRadius: "6px",
                     cursor: "pointer",
-                    border: `2px solid ${goal === g.id ? theme.palette.primary.main : theme.palette.mode === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
+                    whiteSpace: "nowrap",
+                    border: `2px solid ${goal === g.id
+                      ? theme.palette.primary.main
+                      : theme.palette.mode === "dark" ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.12)"}`,
                     backgroundColor: goal === g.id
                       ? theme.palette.primary.main + "20"
                       : "transparent",
-                    transition: "all 0.15s",
+                    transition: "border-color 0.15s, background-color 0.15s",
                     "&:hover": { borderColor: theme.palette.primary.main + "80" },
                   }}
                 >
                   <Typography
                     variant="body2"
                     fontWeight={700}
-                    sx={{ color: goal === g.id ? theme.palette.primary.main : "text.secondary", fontSize: "0.78rem", userSelect: "none" }}
+                    sx={{
+                      color: goal === g.id ? theme.palette.primary.main : "text.secondary",
+                      fontSize: "0.78rem",
+                      userSelect: "none",
+                      whiteSpace: "nowrap",
+                    }}
                   >
                     {g.label}
                   </Typography>
                 </Box>
               ))}
             </Box>
-          </Grid>
+          </Box>
+        </Box>
 
-        </Grid>
-
-        {/* Row 2: Duration slider */}
+        {/* Duration slider */}
         <Box sx={{ mt: 3 }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
             <Typography variant="body2" sx={{ color: "text.secondary" }}>Plan Duration</Typography>

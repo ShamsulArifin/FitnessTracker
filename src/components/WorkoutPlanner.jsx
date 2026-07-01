@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
   Box, Typography, Paper, Button, TextField, Select, MenuItem,
   FormControl, InputLabel, IconButton, Chip, Dialog, DialogTitle,
   DialogContent, DialogActions, List, ListItem, ListItemText,
-  ListItemSecondaryAction, Divider, Grid,
+  ListItemSecondaryAction, Divider, Grid, Tooltip,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import AddIcon from "@mui/icons-material/Add"
@@ -12,6 +12,8 @@ import EditIcon from "@mui/icons-material/Edit"
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ExpandLessIcon from "@mui/icons-material/ExpandLess"
+import DownloadIcon from "@mui/icons-material/Download"
+import UploadIcon from "@mui/icons-material/Upload"
 
 const STORAGE_KEY = "workoutPlans"
 
@@ -144,6 +146,10 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   const [setsValue, setSetsValue] = useState("3")
   const [repsValue, setRepsValue] = useState("10")
 
+  // Import / export
+  const importRef = useRef(null)
+  const [importError, setImportError] = useState("")
+
   // Persist
   useEffect(() => { savePlans(plans) }, [plans])
 
@@ -245,6 +251,56 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
     setSetsDialog(null)
   }
 
+  // ── Export / Import ───────────────────────────────────────────────────────
+  const exportPlan = (plan) => {
+    const blob = new Blob([JSON.stringify(plan, null, 2)], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${plan.name.replace(/\s+/g, "_") || "workout_plan"}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const exportAllPlans = () => {
+    const blob = new Blob([JSON.stringify(plans, null, 2)], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "all_workout_plans.json"
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImportFile = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target.result)
+        // Accept a single plan object or an array of plans
+        const incoming = Array.isArray(parsed) ? parsed : [parsed]
+        // Validate minimal shape
+        if (!incoming.every((p) => p.name && Array.isArray(p.days))) {
+          setImportError("Invalid file format — expected a workout plan JSON.")
+          return
+        }
+        // Reassign new IDs to avoid collisions, keep rest intact
+        const stamped = incoming.map((p) => ({ ...p, id: Date.now() + Math.random() }))
+        const merged = [...plans, ...stamped]
+        setPlans(merged)
+        setActivePlanId(stamped[0].id)
+        setImportError("")
+      } catch {
+        setImportError("Could not parse the file. Make sure it's a valid JSON.")
+      }
+    }
+    reader.readAsText(file)
+    // Reset so the same file can be re-imported
+    e.target.value = ""
+  }
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <Box sx={{ mt: 2 }}>
@@ -267,6 +323,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
           borderBottom: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
         }}
       >
+        {/* Plan chips */}
         {plans.map((p) => (
           <Box key={p.id} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Chip
@@ -278,6 +335,8 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
             />
           </Box>
         ))}
+
+        {/* New Plan */}
         <Button
           size="small"
           variant="outlined"
@@ -286,7 +345,69 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
         >
           New Plan
         </Button>
+
+        {/* Spacer */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* Export active plan */}
+        {activePlan && (
+          <Tooltip title={`Export "${activePlan.name}"`}>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={() => exportPlan(activePlan)}
+              sx={{ flexShrink: 0 }}
+            >
+              Export Plan
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Export all */}
+        {plans.length > 0 && (
+          <Tooltip title="Export all plans as a single JSON file">
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={exportAllPlans}
+              sx={{ flexShrink: 0 }}
+            >
+              Export All
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Import */}
+        <Tooltip title="Import plan(s) from a JSON file">
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => importRef.current?.click()}
+            sx={{ flexShrink: 0 }}
+          >
+            Import
+          </Button>
+        </Tooltip>
+
+        {/* Hidden file input */}
+        <input
+          type="file"
+          accept=".json"
+          ref={importRef}
+          style={{ display: "none" }}
+          onChange={handleImportFile}
+        />
       </Box>
+
+      {/* Import error */}
+      {importError && (
+        <Typography variant="body2" sx={{ color: "error.main", mb: 2 }}>
+          {importError}
+        </Typography>
+      )}
 
       {/* ── Active plan detail ── */}
       {!activePlan ? (

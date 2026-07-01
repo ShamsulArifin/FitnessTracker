@@ -366,16 +366,16 @@ export default function MacroCalculator({ unitSystem }) {
           </Typography>
         </Box>
       ) : (
-        <Box display="flex" flexDirection="column" gap={2}>
+        <Box>
 
-          {/* Row 1: 3 calorie stat cards — equal width, full row */}
+          {/* Row 1: 3 calorie stat cards */}
           <Grid container spacing={2} sx={{ mb: 2 }}>
             {[
-              { label: "BMR",         value: result.bmr,             note: "Base metabolic rate",   color: theme.palette.text.secondary },
-              { label: "Maintenance", value: result.maintenanceTdee, note: "TDEE (no deficit)",      color: theme.palette.primary.main },
-              { label: "Target",      value: result.tdee,            note: GOALS.find(g => g.id === goal)?.desc,
+              { label: "BMR",         value: result.bmr,             color: theme.palette.text.secondary },
+              { label: "Maintenance", value: result.maintenanceTdee, color: theme.palette.primary.main },
+              { label: "Target",      value: result.tdee,
                 color: goal === "cut" ? theme.palette.error.main : goal === "maintain" ? theme.palette.primary.main : theme.palette.success.main },
-            ].map(({ label, value, note, color }) => (
+            ].map(({ label, value, color }) => (
               <Grid item xs={4} key={label}>
                 <Paper elevation={0} sx={{
                   p: 2, textAlign: "center",
@@ -388,9 +388,7 @@ export default function MacroCalculator({ unitSystem }) {
                   <Typography variant="body2" sx={{ fontWeight: 700, color: "text.primary", mt: 0.25 }}>
                     {label}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: "text.disabled" }}>
-                    kcal / day
-                  </Typography>
+                  <Typography variant="caption" sx={{ color: "text.disabled" }}>kcal / day</Typography>
                 </Paper>
               </Grid>
             ))}
@@ -398,13 +396,11 @@ export default function MacroCalculator({ unitSystem }) {
 
           {/* Deficit/surplus banner */}
           {result.deficit !== 0 && (
-            <Box
-              sx={{
-                p: 1.5, borderRadius: "6px", textAlign: "center",
-                backgroundColor: result.deficit < 0 ? theme.palette.error.main + "14" : theme.palette.success.main + "14",
-                border: `1px solid ${result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main}30`,
-              }}
-            >
+            <Box sx={{
+              mb: 2, p: 1.5, borderRadius: "6px", textAlign: "center",
+              backgroundColor: result.deficit < 0 ? theme.palette.error.main + "14" : theme.palette.success.main + "14",
+              border: `1px solid ${result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main}30`,
+            }}>
               <Typography variant="body2" sx={{ color: result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main, fontWeight: 700 }}>
                 {result.deficit < 0 ? `${Math.abs(result.deficit)} kcal deficit/day` : `+${result.deficit} kcal surplus/day`}
                 {" · "}
@@ -415,8 +411,8 @@ export default function MacroCalculator({ unitSystem }) {
             </Box>
           )}
 
-          {/* Row 2: Macro bars + Per-meal (equal height, full width) */}
-          <Grid container spacing={2} alignItems="stretch">
+          {/* Row 2: Macro bars + Per-meal (full width) */}
+          <Grid container spacing={2} alignItems="stretch" sx={{ mb: 2 }}>
 
             {/* Macro bars — 7/12 */}
             <Grid item xs={12} md={7}>

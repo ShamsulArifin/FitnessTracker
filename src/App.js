@@ -23,6 +23,7 @@ import FilterTab from "./components/FilterTab"
 import ProgressTab from "./components/ProgressTab"
 import ExerciseLibrary from "./components/ExerciseLibrary"
 import WorkoutPlanner from "./components/WorkoutPlanner"
+import MacroCalculator from "./components/MacroCalculator"
 import {
   ManageSupplementsDialog,
   ConfirmClearDialog,
@@ -558,6 +559,7 @@ function AppContent() {
             <Tab label="Progress" />
             <Tab label="Workouts" />
             <Tab label="Workout Plans" />
+            <Tab label="Macros" />
           </Tabs>
         </AppBar>
 
@@ -639,6 +641,8 @@ function AppContent() {
             onPendingConsumed={() => setPendingExercise(null)}
           />
         )}
+
+        {currentTab === 6 && <MacroCalculator unitSystem={unitSystem} />}
 
         {/* Dialogs */}
         <ManageSupplementsDialog

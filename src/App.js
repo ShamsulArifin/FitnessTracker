@@ -22,6 +22,7 @@ import SummaryTab from "./components/SummaryTab"
 import FilterTab from "./components/FilterTab"
 import ProgressTab from "./components/ProgressTab"
 import ExerciseLibrary from "./components/ExerciseLibrary"
+import WorkoutPlanner from "./components/WorkoutPlanner"
 import {
   ManageSupplementsDialog,
   ConfirmClearDialog,
@@ -112,6 +113,7 @@ function AppContent() {
   const [isImportConfirmOpen, setIsImportConfirmOpen] = useState(false)
   const [pendingImportData, setPendingImportData] = useState(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [pendingExercise, setPendingExercise] = useState(null) // exercise to add to a plan
   const importFileInputRef = useRef(null)
 
   // Load from localStorage
@@ -554,7 +556,8 @@ function AppContent() {
             <Tab label="Summary" />
             <Tab label="Filter & Sort" />
             <Tab label="Progress" />
-            <Tab label="Exercise Library" />
+            <Tab label="Workouts" />
+            <Tab label="Workout Plans" />
           </Tabs>
         </AppBar>
 
@@ -621,7 +624,21 @@ function AppContent() {
           />
         )}
 
-        {currentTab === 4 && <ExerciseLibrary />}
+        {currentTab === 4 && (
+          <ExerciseLibrary
+            onAddToPlan={(ex) => {
+              setPendingExercise(ex)
+              setCurrentTab(5)
+            }}
+          />
+        )}
+
+        {currentTab === 5 && (
+          <WorkoutPlanner
+            pendingExercise={pendingExercise}
+            onPendingConsumed={() => setPendingExercise(null)}
+          />
+        )}
 
         {/* Dialogs */}
         <ManageSupplementsDialog

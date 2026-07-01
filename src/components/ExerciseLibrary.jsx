@@ -96,7 +96,7 @@ function DialogImage({ id, name, imageCount }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ExerciseLibrary() {
+export default function ExerciseLibrary({ onAddToPlan }) {
   const theme = useTheme()
 
   const [exercises, setExercises] = useState([])
@@ -319,7 +319,7 @@ export default function ExerciseLibrary() {
                     </Typography>
                   </Box>
 
-                  {/* ③ Tags — 46px, pinned bottom */}
+                  {/* ③ Tags + Add to Plan — 46px, pinned bottom */}
                   <Box
                     sx={{
                       height: 46,
@@ -360,6 +360,30 @@ export default function ExerciseLibrary() {
                         "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
                       }}
                     />
+                    {/* Add to plan */}
+                    {onAddToPlan && (
+                      <Box
+                        component="button"
+                        onClick={(e) => { e.stopPropagation(); onAddToPlan(ex) }}
+                        sx={{
+                          ml: "auto",
+                          flexShrink: 0,
+                          border: "none",
+                          borderRadius: "4px",
+                          backgroundColor: theme.palette.primary.main,
+                          color: theme.palette.primary.contrastText,
+                          fontSize: "0.6rem",
+                          fontWeight: 700,
+                          px: 0.8,
+                          py: 0.3,
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                          "&:hover": { opacity: 0.85 },
+                        }}
+                      >
+                        + Plan
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               ))}

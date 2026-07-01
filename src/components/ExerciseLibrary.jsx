@@ -1,116 +1,101 @@
 import React, { useState, useEffect, useMemo } from "react"
 import {
-  Box, Typography, Paper, Grid, TextField, FormControl,
-  InputLabel, Select, MenuItem, Chip, Dialog, DialogTitle,
-  DialogContent, DialogActions, Button, CircularProgress,
-  InputAdornment, Divider,
+  Box, Typography, FormControl, InputLabel, Select, MenuItem,
+  Chip, Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, CircularProgress, TextField, InputAdornment, Divider,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import SearchIcon from "@mui/icons-material/Search"
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 
+// Free, public-domain dataset with hosted images
 const DATASET_URL =
-  "https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/data/exercises.json"
+  "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json"
 
-// Build the GIF URL from media_id
-const gifUrl = (media_id) =>
-  media_id ? `https://static.exercisedb.dev/media/${media_id}.gif` : null
+// GitHub-hosted exercise images — each exercise has images[0], images[1] etc.
+const imgUrl = (id, index = 0) =>
+  `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${id}/${index}.jpg`
 
 const titleCase = (str) =>
   str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : ""
 
-// Card thumbnail — shows GIF if available, falls back to a placeholder box
-function ExerciseThumbnail({ media_id, name }) {
+const PAGE_SIZE = 12
+
+// ── Card image ────────────────────────────────────────────────────────────────
+function CardImage({ id, name }) {
   const theme = useTheme()
   const [failed, setFailed] = useState(false)
-  const url = gifUrl(media_id)
 
-  if (!url || failed) {
-    return (
-      <Box
-        sx={{
-          width: "100%",
-          height: 140,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor:
-            theme.palette.mode === "dark"
-              ? "rgba(255,255,255,0.04)"
-              : "rgba(0,0,0,0.05)",
-          borderRadius: "6px 6px 0 0",
-          flexShrink: 0,
-        }}
-      >
-        <FitnessCenterIcon sx={{ fontSize: 40, color: "text.disabled" }} />
-      </Box>
-    )
-  }
+  const placeholderBg =
+    theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)"
 
   return (
     <Box
       sx={{
+        height: 180,
         width: "100%",
-        height: 140,
-        overflow: "hidden",
-        borderRadius: "6px 6px 0 0",
         flexShrink: 0,
-        backgroundColor:
-          theme.palette.mode === "dark"
-            ? "rgba(255,255,255,0.04)"
-            : "rgba(0,0,0,0.04)",
+        overflow: "hidden",
+        backgroundColor: placeholderBg,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <img
-        src={url}
-        alt={name}
-        onError={() => setFailed(true)}
-        style={{
-          height: "100%",
-          width: "100%",
-          objectFit: "contain",
-        }}
-      />
+      {failed ? (
+        <FitnessCenterIcon sx={{ fontSize: 48, color: "text.disabled", opacity: 0.4 }} />
+      ) : (
+        <img
+          src={imgUrl(id)}
+          alt={name}
+          onError={() => setFailed(true)}
+          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+        />
+      )}
     </Box>
   )
 }
 
-// Detail dialog GIF — larger, centered
-function ExerciseGif({ media_id, name }) {
+// ── Dialog image (shows both frames as a slideshow) ───────────────────────────
+function DialogImage({ id, name, imageCount }) {
   const theme = useTheme()
+  const [frame, setFrame] = useState(0)
   const [failed, setFailed] = useState(false)
-  const url = gifUrl(media_id)
 
-  if (!url || failed) return null
+  // Auto-cycle between frames to simulate animation
+  useEffect(() => {
+    if (imageCount < 2) return
+    const t = setInterval(() => setFrame((f) => (f + 1) % imageCount), 900)
+    return () => clearInterval(t)
+  }, [imageCount])
+
+  if (failed) return null
 
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
         mb: 2,
-        borderRadius: "6px",
         overflow: "hidden",
+        borderRadius: "6px",
         backgroundColor:
-          theme.palette.mode === "dark"
-            ? "rgba(255,255,255,0.04)"
-            : "rgba(0,0,0,0.04)",
-        maxHeight: 300,
+          theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+        height: 260,
       }}
     >
       <img
-        src={url}
+        src={imgUrl(id, frame)}
         alt={name}
         onError={() => setFailed(true)}
-        style={{ maxHeight: 300, width: "auto", maxWidth: "100%", objectFit: "contain" }}
+        style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
       />
     </Box>
   )
 }
 
+// ── Main component ────────────────────────────────────────────────────────────
 export default function ExerciseLibrary() {
   const theme = useTheme()
 
@@ -119,9 +104,11 @@ export default function ExerciseLibrary() {
   const [error, setError] = useState(null)
 
   const [search, setSearch] = useState("")
-  const [filterBodyPart, setFilterBodyPart] = useState("")
+  const [filterCategory, setFilterCategory] = useState("")
   const [filterEquipment, setFilterEquipment] = useState("")
+  const [filterMuscle, setFilterMuscle] = useState("")
 
+  const [page, setPage] = useState(1)   // how many pages loaded (each = 12)
   const [selected, setSelected] = useState(null)
 
   const doFetch = () => {
@@ -135,32 +122,43 @@ export default function ExerciseLibrary() {
 
   useEffect(() => { doFetch() }, [])
 
-  const bodyParts = useMemo(
-    () => [...new Set(exercises.map((e) => e.body_part))].sort(),
+  // Reset page when filters change
+  useEffect(() => { setPage(1) }, [search, filterCategory, filterEquipment, filterMuscle])
+
+  const categories = useMemo(
+    () => [...new Set(exercises.map((e) => e.category))].filter(Boolean).sort(),
     [exercises],
   )
   const equipmentList = useMemo(
-    () => [...new Set(exercises.map((e) => e.equipment))].sort(),
+    () => [...new Set(exercises.map((e) => e.equipment))].filter(Boolean).sort(),
+    [exercises],
+  )
+  const muscleList = useMemo(
+    () => [...new Set(exercises.flatMap((e) => e.primaryMuscles))].filter(Boolean).sort(),
     [exercises],
   )
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
     return exercises.filter((ex) => {
-      if (filterBodyPart && ex.body_part !== filterBodyPart) return false
+      if (filterCategory && ex.category !== filterCategory) return false
       if (filterEquipment && ex.equipment !== filterEquipment) return false
-      if (q && !ex.name.toLowerCase().includes(q) && !ex.target.toLowerCase().includes(q)) return false
+      if (filterMuscle && !ex.primaryMuscles.includes(filterMuscle)) return false
+      if (q &&
+        !ex.name.toLowerCase().includes(q) &&
+        !ex.primaryMuscles.some((m) => m.toLowerCase().includes(q))) return false
       return true
     })
-  }, [exercises, search, filterBodyPart, filterEquipment])
+  }, [exercises, search, filterCategory, filterEquipment, filterMuscle])
 
-  const hasActiveFilter = search || filterBodyPart || filterEquipment
+  const visible = filtered.slice(0, page * PAGE_SIZE)
+  const hasMore = visible.length < filtered.length
+  const hasFilter = search || filterCategory || filterEquipment || filterMuscle
 
-  const chipColor = (type) => {
-    if (type === "body weight") return theme.palette.success.main
-    if (type === "dumbbell") return theme.palette.primary.main
-    if (type === "barbell") return theme.palette.error.light
-    if (type === "cable") return theme.palette.secondary.main
+  const levelColor = (level) => {
+    if (level === "beginner") return theme.palette.success.main
+    if (level === "intermediate") return theme.palette.warning?.main || "#FFA726"
+    if (level === "expert") return theme.palette.error.main
     return theme.palette.text.disabled
   }
 
@@ -174,19 +172,10 @@ export default function ExerciseLibrary() {
       </Typography>
 
       {/* ── Filters ── */}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 2,
-          mb: 3,
-          alignItems: "center",
-        }}
-      >
-        {/* Search — takes most space */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mb: 3, alignItems: "center" }}>
         <TextField
           size="small"
-          placeholder="Search by name or target muscle…"
+          placeholder="Search by name or muscle…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           InputProps={{
@@ -196,48 +185,39 @@ export default function ExerciseLibrary() {
               </InputAdornment>
             ),
           }}
-          sx={{ flex: "1 1 260px", minWidth: 220 }}
+          sx={{ flex: "1 1 240px", minWidth: 200 }}
         />
-
-        {/* Body Part */}
-        <FormControl size="small" sx={{ flex: "1 1 180px", minWidth: 160 }}>
-          <InputLabel>Body Part</InputLabel>
-          <Select
-            value={filterBodyPart}
-            label="Body Part"
-            onChange={(e) => setFilterBodyPart(e.target.value)}
-          >
-            <MenuItem value="">All Body Parts</MenuItem>
-            {bodyParts.map((bp) => (
-              <MenuItem key={bp} value={bp}>{titleCase(bp)}</MenuItem>
+        <FormControl size="small" sx={{ flex: "1 1 160px", minWidth: 140 }}>
+          <InputLabel>Category</InputLabel>
+          <Select value={filterCategory} label="Category" onChange={(e) => setFilterCategory(e.target.value)}>
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.map((c) => (
+              <MenuItem key={c} value={c}>{titleCase(c)}</MenuItem>
             ))}
           </Select>
         </FormControl>
-
-        {/* Equipment */}
-        <FormControl size="small" sx={{ flex: "1 1 180px", minWidth: 160 }}>
+        <FormControl size="small" sx={{ flex: "1 1 160px", minWidth: 140 }}>
           <InputLabel>Equipment</InputLabel>
-          <Select
-            value={filterEquipment}
-            label="Equipment"
-            onChange={(e) => setFilterEquipment(e.target.value)}
-          >
+          <Select value={filterEquipment} label="Equipment" onChange={(e) => setFilterEquipment(e.target.value)}>
             <MenuItem value="">All Equipment</MenuItem>
             {equipmentList.map((eq) => (
               <MenuItem key={eq} value={eq}>{titleCase(eq)}</MenuItem>
             ))}
           </Select>
         </FormControl>
-
-        {/* Clear */}
-        {hasActiveFilter && (
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => { setSearch(""); setFilterBodyPart(""); setFilterEquipment("") }}
-            sx={{ flexShrink: 0 }}
-          >
-            Clear Filters
+        <FormControl size="small" sx={{ flex: "1 1 160px", minWidth: 140 }}>
+          <InputLabel>Muscle</InputLabel>
+          <Select value={filterMuscle} label="Muscle" onChange={(e) => setFilterMuscle(e.target.value)}>
+            <MenuItem value="">All Muscles</MenuItem>
+            {muscleList.map((m) => (
+              <MenuItem key={m} value={m}>{titleCase(m)}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {hasFilter && (
+          <Button size="small" variant="outlined" sx={{ flexShrink: 0 }}
+            onClick={() => { setSearch(""); setFilterCategory(""); setFilterEquipment(""); setFilterMuscle("") }}>
+            Clear
           </Button>
         )}
       </Box>
@@ -245,7 +225,9 @@ export default function ExerciseLibrary() {
       {/* Results count */}
       {!loading && !error && exercises.length > 0 && (
         <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
-          Showing {Math.min(filtered.length, 120)}{filtered.length > 120 ? "+" : ""} of {filtered.length} results
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {filtered.length !== exercises.length ? ` (of ${exercises.length})` : ""}
+          {" · "}showing {visible.length}
         </Typography>
       )}
 
@@ -271,146 +253,206 @@ export default function ExerciseLibrary() {
         </Box>
       )}
 
-      {/* ── Exercise grid ── */}
+      {/* ── Fixed 3-column grid ── */}
       {!loading && !error && (
-        <Grid container spacing={2}>
-          {filtered.slice(0, 120).map((ex) => (
-            <Grid item xs={12} sm={6} md={4} key={ex.id}>
-              <Paper
-                elevation={2}
-                onClick={() => setSelected(ex)}
-                sx={{
-                  cursor: "pointer",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
-                  transition: "transform 0.15s, box-shadow 0.15s",
-                  "&:hover": {
-                    transform: "translateY(-3px)",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-                  },
-                }}
-              >
-                {/* GIF thumbnail */}
-                <ExerciseThumbnail media_id={ex.media_id} name={ex.name} />
+        <>
+          {filtered.length === 0 ? (
+            <Typography variant="body1" align="center" sx={{ color: "text.disabled", py: 6 }}>
+              No exercises match your search.
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 2,
+              }}
+            >
+              {visible.map((ex) => (
+                <Box
+                  key={ex.id}
+                  onClick={() => setSelected(ex)}
+                  sx={{
+                    cursor: "pointer",
+                    borderRadius: "6px",
+                    overflow: "hidden",
+                    // Fixed height: 180 image + 56 name + 46 tags = 282px
+                    height: 282,
+                    display: "flex",
+                    flexDirection: "column",
+                    backgroundColor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(255,255,255,0.07)"
+                        : "rgba(0,0,0,0.05)",
+                    border: `1px solid ${
+                      theme.palette.mode === "dark"
+                        ? "rgba(255,255,255,0.1)"
+                        : "rgba(0,0,0,0.08)"
+                    }`,
+                    backdropFilter: "blur(8px)",
+                    transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                    "&:hover": {
+                      transform: "translateY(-3px)",
+                      boxShadow: "0 10px 28px rgba(0,0,0,0.35)",
+                      borderColor: theme.palette.primary.main + "80",
+                    },
+                  }}
+                >
+                  {/* ① Image — 180px */}
+                  <CardImage id={ex.id} name={ex.name} />
 
-                {/* Card body */}
-                <Box sx={{ p: 1.5, display: "flex", flexDirection: "column", gap: 1, flexGrow: 1 }}>
-                  <Typography
-                    variant="body2"
-                    fontWeight={600}
+                  {/* ② Name — 56px, 2-line clamp */}
+                  <Box sx={{ height: 56, px: 1.5, pt: 1, pb: 0.5, display: "flex", alignItems: "flex-start" }}>
+                    <Typography
+                      variant="body2"
+                      fontWeight={700}
+                      sx={{
+                        color: "text.primary",
+                        lineHeight: 1.35,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {ex.name}
+                    </Typography>
+                  </Box>
+
+                  {/* ③ Tags — 46px, pinned bottom */}
+                  <Box
                     sx={{
-                      color: "text.primary",
+                      height: 46,
+                      px: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      flexWrap: "nowrap",
                       overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      borderTop: `1px solid ${
+                        theme.palette.mode === "dark"
+                          ? "rgba(255,255,255,0.08)"
+                          : "rgba(0,0,0,0.07)"
+                      }`,
                     }}
                   >
-                    {titleCase(ex.name)}
-                  </Typography>
-                  <Box display="flex" flexWrap="wrap" gap={0.5} mt="auto">
+                    {/* Primary muscle */}
                     <Chip
-                      label={titleCase(ex.body_part)}
+                      label={titleCase(ex.primaryMuscles[0] || "")}
                       size="small"
-                      sx={{ backgroundColor: theme.palette.primary.main + "33", color: theme.palette.primary.main, fontWeight: 500, fontSize: "0.68rem" }}
+                      sx={{
+                        backgroundColor: theme.palette.primary.main + "28",
+                        color: theme.palette.primary.main,
+                        fontWeight: 600, fontSize: "0.62rem", height: 20,
+                        maxWidth: "44%",
+                        "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+                      }}
                     />
+                    {/* Difficulty level */}
                     <Chip
-                      label={titleCase(ex.target)}
+                      label={titleCase(ex.level || "")}
                       size="small"
-                      sx={{ backgroundColor: theme.palette.secondary.main + "33", color: theme.palette.secondary.main, fontWeight: 500, fontSize: "0.68rem" }}
-                    />
-                    <Chip
-                      label={titleCase(ex.equipment)}
-                      size="small"
-                      sx={{ backgroundColor: chipColor(ex.equipment) + "33", color: chipColor(ex.equipment), fontWeight: 500, fontSize: "0.68rem" }}
+                      sx={{
+                        backgroundColor: levelColor(ex.level) + "28",
+                        color: levelColor(ex.level),
+                        fontWeight: 600, fontSize: "0.62rem", height: 20,
+                        maxWidth: "44%",
+                        "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+                      }}
                     />
                   </Box>
                 </Box>
-              </Paper>
-            </Grid>
-          ))}
-
-          {filtered.length > 120 && (
-            <Grid item xs={12}>
-              <Typography variant="body2" align="center" sx={{ color: "text.disabled", py: 2 }}>
-                Showing first 120 results — refine your search to see more.
-              </Typography>
-            </Grid>
+              ))}
+            </Box>
           )}
 
-          {filtered.length === 0 && (
-            <Grid item xs={12}>
-              <Typography variant="body1" align="center" sx={{ color: "text.disabled", py: 6 }}>
-                No exercises match your search.
-              </Typography>
-            </Grid>
+          {/* Load More */}
+          {hasMore && (
+            <Box display="flex" justifyContent="center" mt={4}>
+              <Button
+                variant="outlined"
+                onClick={() => setPage((p) => p + 1)}
+                sx={{ px: 4 }}
+              >
+                Load More ({filtered.length - visible.length} remaining)
+              </Button>
+            </Box>
           )}
-        </Grid>
+        </>
       )}
 
       {/* ── Detail dialog ── */}
-      <Dialog
-        open={Boolean(selected)}
-        onClose={() => setSelected(null)}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={Boolean(selected)} onClose={() => setSelected(null)} maxWidth="sm" fullWidth>
         {selected && (
           <>
-            <DialogTitle sx={{ pb: 1 }}>{titleCase(selected.name)}</DialogTitle>
+            <DialogTitle sx={{ pb: 1 }}>{selected.name}</DialogTitle>
             <DialogContent>
-              {/* Animated GIF */}
-              <ExerciseGif media_id={selected.media_id} name={selected.name} />
+              {/* Animated image slideshow */}
+              <DialogImage
+                id={selected.id}
+                name={selected.name}
+                imageCount={selected.images?.length || 1}
+              />
 
               {/* Meta chips */}
               <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-                <Chip label={`Body Part: ${titleCase(selected.body_part)}`} size="small" color="primary" variant="outlined" />
-                <Chip label={`Target: ${titleCase(selected.target)}`} size="small" color="secondary" variant="outlined" />
-                <Chip label={`Equipment: ${titleCase(selected.equipment)}`} size="small" variant="outlined" />
-                {selected.muscle_group && (
-                  <Chip label={`Muscle Group: ${titleCase(selected.muscle_group)}`} size="small" variant="outlined" />
+                {selected.category && (
+                  <Chip label={titleCase(selected.category)} size="small" color="primary" variant="outlined" />
+                )}
+                {selected.level && (
+                  <Chip
+                    label={titleCase(selected.level)} size="small" variant="outlined"
+                    sx={{ borderColor: levelColor(selected.level), color: levelColor(selected.level) }}
+                  />
+                )}
+                {selected.equipment && (
+                  <Chip label={titleCase(selected.equipment)} size="small" variant="outlined" />
+                )}
+                {selected.force && (
+                  <Chip label={`Force: ${titleCase(selected.force)}`} size="small" variant="outlined" />
+                )}
+                {selected.mechanic && (
+                  <Chip label={titleCase(selected.mechanic)} size="small" variant="outlined" />
                 )}
               </Box>
 
-              {/* Secondary muscles */}
-              {selected.secondary_muscles?.length > 0 && (
+              {/* Muscles */}
+              {selected.primaryMuscles?.length > 0 && (
+                <Typography variant="body2" sx={{ color: "text.secondary", mb: 0.5 }}>
+                  <strong>Primary: </strong>{selected.primaryMuscles.map(titleCase).join(", ")}
+                </Typography>
+              )}
+              {selected.secondaryMuscles?.length > 0 && (
                 <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>
-                  <strong>Secondary muscles: </strong>
-                  {selected.secondary_muscles.map(titleCase).join(", ")}
+                  <strong>Secondary: </strong>{selected.secondaryMuscles.map(titleCase).join(", ")}
                 </Typography>
               )}
 
               <Divider sx={{ my: 1.5 }} />
 
               {/* Instructions */}
-              <Typography variant="subtitle2" sx={{ color: "text.secondary", mb: 1, fontWeight: 700 }}>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
                 Instructions
               </Typography>
-              {selected.instructions?.en ? (
-                selected.instructions.en
-                  .split(/\.\s+/)
-                  .filter(Boolean)
-                  .map((step, i) => (
-                    <Box key={i} display="flex" gap={1.5} mb={1} alignItems="flex-start">
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          minWidth: 22, height: 22,
-                          borderRadius: "50%",
-                          backgroundColor: theme.palette.primary.main,
-                          color: theme.palette.primary.contrastText,
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontWeight: 700, fontSize: "0.7rem", flexShrink: 0, mt: "1px",
-                        }}
-                      >
-                        {i + 1}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                        {step.trim()}{step.trim().endsWith(".") ? "" : "."}
-                      </Typography>
+              {selected.instructions?.length > 0 ? (
+                selected.instructions.map((step, i) => (
+                  <Box key={i} display="flex" gap={1.5} mb={1} alignItems="flex-start">
+                    <Box
+                      sx={{
+                        minWidth: 22, height: 22, borderRadius: "50%",
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontWeight: 700, fontSize: "0.65rem", flexShrink: 0, mt: "2px",
+                      }}
+                    >
+                      {i + 1}
                     </Box>
-                  ))
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      {step}
+                    </Typography>
+                  </Box>
+                ))
               ) : (
                 <Typography variant="body2" sx={{ color: "text.disabled" }}>
                   No instructions available.

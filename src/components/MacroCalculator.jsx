@@ -366,42 +366,40 @@ export default function MacroCalculator({ unitSystem }) {
           </Typography>
         </Box>
       ) : (
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
 
-          {/* Row 1: 3 calorie stat cards */}
-          <Grid container spacing={2} sx={{ mb: 2 }}>
+          {/* Row 1: 3 calorie cards — CSS grid, no MUI Grid negative-margin issues */}
+          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
             {[
               { label: "BMR",         value: result.bmr,             color: theme.palette.text.secondary },
               { label: "Maintenance", value: result.maintenanceTdee, color: theme.palette.primary.main },
               { label: "Target",      value: result.tdee,
                 color: goal === "cut" ? theme.palette.error.main : goal === "maintain" ? theme.palette.primary.main : theme.palette.success.main },
             ].map(({ label, value, color }) => (
-              <Grid item xs={4} key={label}>
-                <Paper elevation={0} sx={{
-                  p: 2, textAlign: "center",
-                  backgroundColor: color + "14",
-                  border: `1px solid ${color}35`,
-                }}>
-                  <Typography sx={{ fontSize: "1.6rem", fontWeight: 800, color, lineHeight: 1.15 }}>
-                    {value.toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 700, color: "text.primary", mt: 0.25 }}>
-                    {label}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: "text.disabled" }}>kcal / day</Typography>
-                </Paper>
-              </Grid>
+              <Paper key={label} elevation={0} sx={{
+                p: 2.5, textAlign: "center",
+                backgroundColor: color + "14",
+                border: `1px solid ${color}35`,
+              }}>
+                <Typography sx={{ fontSize: "1.8rem", fontWeight: 800, color, lineHeight: 1.1 }}>
+                  {value.toLocaleString()}
+                </Typography>
+                <Typography variant="body2" fontWeight={700} sx={{ color: "text.primary", mt: 0.25 }}>
+                  {label}
+                </Typography>
+                <Typography variant="caption" sx={{ color: "text.disabled" }}>kcal / day</Typography>
+              </Paper>
             ))}
-          </Grid>
+          </Box>
 
           {/* Deficit/surplus banner */}
           {result.deficit !== 0 && (
             <Box sx={{
-              mb: 2, p: 1.5, borderRadius: "6px", textAlign: "center",
+              p: 1.5, borderRadius: "6px", textAlign: "center",
               backgroundColor: result.deficit < 0 ? theme.palette.error.main + "14" : theme.palette.success.main + "14",
               border: `1px solid ${result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main}30`,
             }}>
-              <Typography variant="body2" sx={{ color: result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main, fontWeight: 700 }}>
+              <Typography variant="body2" fontWeight={700} sx={{ color: result.deficit < 0 ? theme.palette.error.main : theme.palette.success.main }}>
                 {result.deficit < 0 ? `${Math.abs(result.deficit)} kcal deficit/day` : `+${result.deficit} kcal surplus/day`}
                 {" · "}
                 <span style={{ fontWeight: 400, color: theme.palette.text.secondary }}>
@@ -411,48 +409,42 @@ export default function MacroCalculator({ unitSystem }) {
             </Box>
           )}
 
-          {/* Row 2: Macro bars + Per-meal (full width) */}
-          <Grid container spacing={2} alignItems="stretch" sx={{ mb: 2 }}>
+          {/* Row 2: Macro bars + Per-meal — CSS grid */}
+          <Box sx={{ display: "grid", gridTemplateColumns: "7fr 5fr", gap: 2 }}>
 
-            {/* Macro bars — 7/12 */}
-            <Grid item xs={12} md={7}>
-              <Paper elevation={0} sx={{ p: 2.5, height: "100%" }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Daily Macros</Typography>
-                <MacroBar label="Protein" grams={result.protein} calories={result.protein * calPerGram.protein} color={theme.palette.primary.main}            pct={result.proteinPct} />
-                <MacroBar label="Carbs"   grams={result.carbs}   calories={result.carbs   * calPerGram.carb}    color={theme.palette.success.main}             pct={result.carbPct}    />
-                <MacroBar label="Fat"     grams={result.fat}     calories={result.fat     * calPerGram.fat}      color={theme.palette.warning?.main || "#FFA726"} pct={result.fatPct}  />
-              </Paper>
-            </Grid>
+            {/* Macro bars */}
+            <Paper elevation={0} sx={{ p: 2.5 }}>
+              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Daily Macros</Typography>
+              <MacroBar label="Protein" grams={result.protein} calories={result.protein * calPerGram.protein} color={theme.palette.primary.main}            pct={result.proteinPct} />
+              <MacroBar label="Carbs"   grams={result.carbs}   calories={result.carbs   * calPerGram.carb}    color={theme.palette.success.main}             pct={result.carbPct}    />
+              <MacroBar label="Fat"     grams={result.fat}     calories={result.fat     * calPerGram.fat}      color={theme.palette.warning?.main || "#FFA726"} pct={result.fatPct}  />
+            </Paper>
 
-            {/* Per-meal — 5/12 */}
-            <Grid item xs={12} md={5}>
-              <Paper elevation={0} sx={{ p: 2.5, height: "100%" }}>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Per Meal (÷ 4 meals)</Typography>
-                <Grid container spacing={1.5}>
-                  {[
-                    { label: "Calories", val: `${Math.round(result.tdee / 4)}`,     unit: "kcal", color: "text.primary" },
-                    { label: "Protein",  val: `${Math.round(result.protein / 4)}`,  unit: "g",    color: theme.palette.primary.main },
-                    { label: "Carbs",    val: `${Math.round(result.carbs / 4)}`,    unit: "g",    color: theme.palette.success.main },
-                    { label: "Fat",      val: `${Math.round(result.fat / 4)}`,      unit: "g",    color: theme.palette.warning?.main || "#FFA726" },
-                  ].map(({ label, val, unit, color }) => (
-                    <Grid item xs={6} key={label}>
-                      <Box sx={{
-                        textAlign: "center", p: 1.5, borderRadius: "6px",
-                        backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
-                      }}>
-                        <Box display="flex" justifyContent="center" alignItems="baseline" gap={0.3}>
-                          <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color, lineHeight: 1 }}>{val}</Typography>
-                          <Typography variant="caption" sx={{ color: "text.disabled" }}>{unit}</Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Paper>
-            </Grid>
+            {/* Per-meal */}
+            <Paper elevation={0} sx={{ p: 2.5 }}>
+              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 2 }}>Per Meal (÷ 4 meals)</Typography>
+              <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
+                {[
+                  { label: "Calories", val: Math.round(result.tdee / 4),    unit: "kcal", color: "text.primary" },
+                  { label: "Protein",  val: Math.round(result.protein / 4), unit: "g",    color: theme.palette.primary.main },
+                  { label: "Carbs",    val: Math.round(result.carbs / 4),   unit: "g",    color: theme.palette.success.main },
+                  { label: "Fat",      val: Math.round(result.fat / 4),     unit: "g",    color: theme.palette.warning?.main || "#FFA726" },
+                ].map(({ label, val, unit, color }) => (
+                  <Box key={label} sx={{
+                    textAlign: "center", p: 1.5, borderRadius: "6px",
+                    backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+                  }}>
+                    <Box display="flex" justifyContent="center" alignItems="baseline" gap={0.3}>
+                      <Typography sx={{ fontSize: "1.3rem", fontWeight: 800, color, lineHeight: 1 }}>{val}</Typography>
+                      <Typography variant="caption" sx={{ color: "text.disabled" }}>{unit}</Typography>
+                    </Box>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
 
-          </Grid>
+          </Box>
 
           {/* Row 3: Day plan table */}
           <Paper elevation={0} sx={{ p: 2.5 }}>

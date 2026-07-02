@@ -86,13 +86,13 @@ function DaySchedule({ macros, days }) {
   const rows = Array.from({ length: days }, (_, i) => i + 1)
 
   return (
-    <Box sx={{ overflowX: "auto" }}>
+    <Box sx={{ overflowX: "auto", width: "100%" }}>
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "80px repeat(4, 1fr)",
+          gridTemplateColumns: "60px repeat(4, 1fr)",
           gap: 0,
-          minWidth: 380,
+          minWidth: 320,
         }}
       >
         {/* Header */}
@@ -230,7 +230,7 @@ export default function MacroCalculator({ unitSystem }) {
       </Typography>
 
       {/* ── Input panel ── */}
-      <Paper elevation={0} sx={{ p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ p: { xs: 2, sm: 3 }, mb: 3 }}>
         {/* All inputs in one flex row — wraps naturally on small screens */}
         <Box
           sx={{
@@ -241,7 +241,7 @@ export default function MacroCalculator({ unitSystem }) {
           }}
         >
           {/* Sex */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: 120 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, minWidth: { xs: "100%", sm: 120 } }}>
             <Typography variant="caption" sx={{ color: "text.secondary" }}>Sex</Typography>
             <ToggleButtonGroup
               value={sex} exclusive size="small"
@@ -258,14 +258,14 @@ export default function MacroCalculator({ unitSystem }) {
             label="Age" type="number" size="small"
             value={age} onChange={(e) => setAge(e.target.value)}
             InputProps={{ inputProps: { min: 10, max: 100 } }}
-            sx={{ width: 90 }}
+            sx={{ width: { xs: "100%", sm: 90 } }}
           />
 
           {/* Weight */}
           <TextField
             label={wLabel} type="number" size="small"
             value={weightInput} onChange={(e) => setWeightInput(e.target.value)}
-            sx={{ width: 140 }}
+            sx={{ width: { xs: "100%", sm: 140 } }}
           />
 
           {/* Height */}
@@ -273,21 +273,21 @@ export default function MacroCalculator({ unitSystem }) {
             <>
               <TextField label="Height (ft)" type="number" size="small"
                 value={heightFt} onChange={(e) => setHeightFt(e.target.value)}
-                sx={{ width: 100 }} />
+                sx={{ width: { xs: "calc(50% - 8px)", sm: 100 } }} />
               <TextField label="Height (in)" type="number" size="small"
                 value={heightIn} onChange={(e) => setHeightIn(e.target.value)}
-                sx={{ width: 100 }} />
+                sx={{ width: { xs: "calc(50% - 8px)", sm: 100 } }} />
             </>
           ) : (
             <TextField
               label="Height (cm)" type="number" size="small"
               value={heightInput} onChange={(e) => setHeightInput(e.target.value)}
-              sx={{ width: 140 }}
+              sx={{ width: { xs: "100%", sm: 140 } }}
             />
           )}
 
           {/* Activity */}
-          <FormControl size="small" sx={{ width: 180 }}>
+          <FormControl size="small" sx={{ width: { xs: "100%", sm: 180 } }}>
             <InputLabel>Activity</InputLabel>
             <Select value={activityLevel} label="Activity" onChange={(e) => setActivityLevel(e.target.value)}>
               {ACTIVITY_LEVELS.map((l) => (
@@ -297,7 +297,7 @@ export default function MacroCalculator({ unitSystem }) {
           </FormControl>
 
           {/* Goal */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, flex: 1, minWidth: 240 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, flex: 1, minWidth: { xs: "100%", sm: 240 } }}>
             <Typography variant="caption" sx={{ color: "text.secondary" }}>Goal</Typography>
             <Box display="flex" gap={1} height={40}>
               {GOALS.map((g) => (
@@ -369,7 +369,7 @@ export default function MacroCalculator({ unitSystem }) {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
 
           {/* Row 1: 3 calorie cards — CSS grid, no MUI Grid negative-margin issues */}
-          <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 2 }}>
             {[
               { label: "BMR",         value: result.bmr,             color: theme.palette.text.secondary },
               { label: "Maintenance", value: result.maintenanceTdee, color: theme.palette.primary.main },
@@ -410,7 +410,7 @@ export default function MacroCalculator({ unitSystem }) {
           )}
 
           {/* Row 2: Macro bars + Per-meal — CSS grid */}
-          <Box sx={{ display: "grid", gridTemplateColumns: "7fr 5fr", gap: 2 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "7fr 5fr" }, gap: 2 }}>
 
             {/* Macro bars */}
             <Paper elevation={0} sx={{ p: 2.5 }}>

@@ -24,11 +24,11 @@ export default function SummaryTab({
   const theme = useTheme()
 
   return (
-    <Box sx={{ mt: 2, p: 4 }} component={Paper} elevation={0}>
+    <Box sx={{ mt: 2, p: { xs: 2, sm: 4 } }} component={Paper} elevation={0}>
       <Typography variant="h5" align="center" gutterBottom>Summary Statistics</Typography>
 
       {/* Month selector */}
-      <Box display="flex" justifyContent="center" alignItems="center" gap={2} sx={{ mb: 3 }}>
+      <Box display="flex" justifyContent="center" alignItems="center" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>
         <Typography variant="body1">Select Month:</Typography>
         <FormControl size="small" sx={{ minWidth: 100 }}>
           <InputLabel id="summary-year-label">Year</InputLabel>
@@ -162,7 +162,7 @@ export default function SummaryTab({
         const weightUnit = unitSystem === "metric" ? "kg" : "lbs"
 
         return (
-          <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 0, overflowX: "auto" }}>
+          <TableContainer component={Paper} elevation={0} sx={{ borderRadius: 0, overflowX: "auto", width: "100%" }}>
             <Table size="small" aria-label="daily breakdown table">
               <TableHead>
                 <TableRow>

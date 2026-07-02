@@ -264,7 +264,7 @@ export default function ExerciseLibrary({ onAddToPlan }) {
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
+                gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
                 gap: 2,
               }}
             >

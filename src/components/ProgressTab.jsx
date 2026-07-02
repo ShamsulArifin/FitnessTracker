@@ -110,7 +110,7 @@ export default function ProgressTab({
           })}
         </List>
       )}
-      <Box display="flex" justifyContent="center" gap={2} mt={4}>
+      <Box display="flex" justifyContent="center" flexWrap="wrap" gap={2} mt={4}>
         <Button variant="contained" color="success" onClick={handleDownloadCsv}>Download as CSV</Button>
         <Button variant="contained" color="primary" onClick={handleImportClick}>Import CSV</Button>
         <Button variant="contained" color="error" onClick={handleClearAllData}>Clear All Data</Button>

@@ -346,60 +346,38 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
           New Plan
         </Button>
 
-        {/* Spacer */}
-        <Box sx={{ flexGrow: 1 }} />
+        {/* Push export/import to right on desktop, wrap to new line on mobile */}
+        <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }} />
 
         {/* Export active plan */}
         {activePlan && (
           <Tooltip title={`Export "${activePlan.name}"`}>
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={() => exportPlan(activePlan)}
-              sx={{ flexShrink: 0 }}
-            >
-              Export Plan
+            <Button size="small" variant="outlined" startIcon={<DownloadIcon />}
+              onClick={() => exportPlan(activePlan)} sx={{ flexShrink: 0 }}>
+              Export
             </Button>
           </Tooltip>
         )}
 
         {/* Export all */}
         {plans.length > 0 && (
-          <Tooltip title="Export all plans as a single JSON file">
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={exportAllPlans}
-              sx={{ flexShrink: 0 }}
-            >
+          <Tooltip title="Export all plans">
+            <Button size="small" variant="outlined" startIcon={<DownloadIcon />}
+              onClick={exportAllPlans} sx={{ flexShrink: 0 }}>
               Export All
             </Button>
           </Tooltip>
         )}
 
         {/* Import */}
-        <Tooltip title="Import plan(s) from a JSON file">
-          <Button
-            size="small"
-            variant="outlined"
-            startIcon={<UploadIcon />}
-            onClick={() => importRef.current?.click()}
-            sx={{ flexShrink: 0 }}
-          >
+        <Tooltip title="Import plan(s) from JSON">
+          <Button size="small" variant="outlined" startIcon={<UploadIcon />}
+            onClick={() => importRef.current?.click()} sx={{ flexShrink: 0 }}>
             Import
           </Button>
         </Tooltip>
 
-        {/* Hidden file input */}
-        <input
-          type="file"
-          accept=".json"
-          ref={importRef}
-          style={{ display: "none" }}
-          onChange={handleImportFile}
-        />
+        <input type="file" accept=".json" ref={importRef} style={{ display: "none" }} onChange={handleImportFile} />
       </Box>
 
       {/* Import error */}

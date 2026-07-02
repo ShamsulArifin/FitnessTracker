@@ -516,7 +516,7 @@ function AppContent() {
       <Container
         maxWidth="md"
         sx={{
-          my: 4, p: 4, borderRadius: "6px",
+          my: { xs: 1, sm: 4 }, p: { xs: 1.5, sm: 4 }, borderRadius: "6px",
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.55)",
           backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
           border: "1px solid rgba(255, 255, 255, 0.15)", boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3)",
@@ -524,11 +524,11 @@ function AppContent() {
         }}
         component={Paper}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
           <FormControl component="fieldset">
             <RadioGroup row value={unitSystem} onChange={handleUnitSystemChange}>
-              <FormControlLabel value="metric" control={<Radio />} label="Metric" />
-              <FormControlLabel value="imperial" control={<Radio />} label="Imperial" />
+              <FormControlLabel value="metric" control={<Radio size="small" />} label="Metric" />
+              <FormControlLabel value="imperial" control={<Radio size="small" />} label="Imperial" />
             </RadioGroup>
           </FormControl>
           <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}>
@@ -550,7 +550,14 @@ function AppContent() {
         <AppBar position="static" color="transparent" elevation={0}
           sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", mb: 3 }}
         >
-          <Tabs value={currentTab} onChange={handleTabChange} aria-label="fitness tracker tabs" centered
+          <Tabs
+            value={currentTab}
+            onChange={handleTabChange}
+            aria-label="fitness tracker tabs"
+            centered={false}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
             TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
           >
             <Tab label="Entry Form" />

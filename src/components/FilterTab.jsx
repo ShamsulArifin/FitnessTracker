@@ -18,7 +18,7 @@ export default function FilterTab({
   const theme = useTheme()
 
   return (
-    <Box sx={{ mt: 2, p: 4 }} component={Paper} elevation={0}>
+    <Box sx={{ mt: 2, p: { xs: 2, sm: 4 } }} component={Paper} elevation={0}>
       <Typography variant="h5" align="center" gutterBottom>Filter & Sort Entries</Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3}>
@@ -30,7 +30,7 @@ export default function FilterTab({
             onChange={(e) => setFilterEndDate(e.target.value)} InputLabelProps={{ shrink: true }} />
         </Grid>
         <Grid item xs={12} md={3}>
-          <FormControl fullWidth sx={{ minWidth: 200 }}>
+          <FormControl fullWidth sx={{ minWidth: { xs: 0, sm: 200 } }}>
             <InputLabel id="filter-workout-label">Filter Workout</InputLabel>
             <Select
               labelId="filter-workout-label" value={filterWorkout}

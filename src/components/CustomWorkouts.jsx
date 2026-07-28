@@ -16,6 +16,7 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 import LinkIcon from "@mui/icons-material/Link"
 
 const STORAGE_KEY = "customWorkouts"
+const DATASET_URL = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json"
 
 const CATEGORIES = [
   "strength", "cardio", "stretching", "plyometrics",
@@ -189,6 +190,15 @@ export default function CustomWorkouts({ onAddToPlan }) {
   const [importError, setImportError] = useState("")
   const importRef = useRef(null)
 
+  // Load exercise library for the superset picker
+  const [libraryNames, setLibraryNames] = useState([])
+  useEffect(() => {
+    fetch(DATASET_URL)
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setLibraryNames(data.map((e) => e.name)))
+      .catch(() => {})
+  }, [])
+
   useEffect(() => { saveWorkouts(workouts) }, [workouts])
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -234,8 +244,13 @@ export default function CustomWorkouts({ onAddToPlan }) {
     reader.readAsText(file); e.target.value = ""
   }
 
-  // Names for superset autocomplete
-  const workoutNames = workouts.filter((w) => w.id !== editingId).map((w) => w.name)
+  // Combined options for superset autocomplete — grouped by source
+  const supersetOptions = [
+    ...workouts
+      .filter((w) => w.id !== editingId)
+      .map((w) => ({ label: w.name, group: "My Custom Workouts" })),
+    ...libraryNames.map((name) => ({ label: name, group: "Exercise Library" })),
+  ]
 
   const inputBg = theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"
 
@@ -388,16 +403,33 @@ export default function CustomWorkouts({ onAddToPlan }) {
           {form.superset && (
             <Autocomplete
               freeSolo
-              options={workoutNames}
+              options={supersetOptions}
+              groupBy={(option) => option.group}
+              getOptionLabel={(option) => typeof option === "string" ? option : option.label}
               value={form.supersetWith}
-              onInputChange={(_, v) => setForm((f) => ({ ...f, supersetWith: v }))}
+              onChange={(_, v) => setForm((f) => ({ ...f, supersetWith: typeof v === "string" ? v : v?.label || "" }))}
+              onInputChange={(_, v, reason) => {
+                if (reason === "input") setForm((f) => ({ ...f, supersetWith: v }))
+              }}
+              filterOptions={(opts, { inputValue }) => {
+                const q = inputValue.toLowerCase()
+                return q.length < 1
+                  ? opts.slice(0, 40) // show first 40 when empty
+                  : opts.filter((o) => o.label.toLowerCase().includes(q)).slice(0, 60)
+              }}
+              renderOption={(props, option) => (
+                <li {...props} key={`${option.group}-${option.label}`}>
+                  <Typography variant="body2">{option.label}</Typography>
+                </li>
+              )}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Paired with (exercise name)"
+                  label="Paired with"
                   size="small"
                   fullWidth
-                  placeholder="Type or select another workout"
+                  placeholder="Search custom workouts or exercise library…"
+                  helperText={libraryNames.length === 0 ? "Loading exercise library…" : `${supersetOptions.length} exercises available`}
                 />
               )}
             />

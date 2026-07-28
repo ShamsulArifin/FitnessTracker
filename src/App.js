@@ -24,6 +24,7 @@ import ProgressTab from "./components/ProgressTab"
 import ExerciseLibrary from "./components/ExerciseLibrary"
 import WorkoutPlanner from "./components/WorkoutPlanner"
 import MacroCalculator from "./components/MacroCalculator"
+import CustomWorkouts from "./components/CustomWorkouts"
 import {
   ManageSupplementsDialog,
   ConfirmClearDialog,
@@ -115,6 +116,7 @@ function AppContent() {
   const [pendingImportData, setPendingImportData] = useState(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [pendingExercise, setPendingExercise] = useState(null) // exercise to add to a plan
+  const [workoutsSubTab, setWorkoutsSubTab] = useState(0) // 0: Library, 1: Custom
   const importFileInputRef = useRef(null)
 
   // Load from localStorage
@@ -634,12 +636,38 @@ function AppContent() {
         )}
 
         {currentTab === 4 && (
-          <ExerciseLibrary
-            onAddToPlan={(ex) => {
-              setPendingExercise(ex)
-              setCurrentTab(5)
-            }}
-          />
+          <Box sx={{ mt: 2 }}>
+            {/* Sub-tabs: Library | Custom */}
+            <Box sx={{ borderBottom: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, mb: 3 }}>
+              <Tabs
+                value={workoutsSubTab}
+                onChange={(_, v) => setWorkoutsSubTab(v)}
+                TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
+                sx={{ minHeight: 40 }}
+              >
+                <Tab label="Exercise Library" sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
+                <Tab label="Custom Workouts" sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
+              </Tabs>
+            </Box>
+
+            {workoutsSubTab === 0 && (
+              <ExerciseLibrary
+                onAddToPlan={(ex) => {
+                  setPendingExercise(ex)
+                  setCurrentTab(5)
+                }}
+              />
+            )}
+
+            {workoutsSubTab === 1 && (
+              <CustomWorkouts
+                onAddToPlan={(ex) => {
+                  setPendingExercise(ex)
+                  setCurrentTab(5)
+                }}
+              />
+            )}
+          </Box>
         )}
 
         {currentTab === 5 && (

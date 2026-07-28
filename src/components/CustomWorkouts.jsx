@@ -3,7 +3,7 @@ import {
   Box, Typography, Button, TextField, FormControl,
   InputLabel, Select, MenuItem, IconButton, Chip, Dialog,
   DialogTitle, DialogContent, DialogActions, Grid, Tooltip,
-  Switch, FormControlLabel, Divider, Autocomplete,
+  Switch, Divider, Autocomplete, ToggleButton, ToggleButtonGroup,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import AddIcon from "@mui/icons-material/Add"
@@ -13,6 +13,7 @@ import DownloadIcon from "@mui/icons-material/Download"
 import UploadIcon from "@mui/icons-material/Upload"
 import AddCircleIcon from "@mui/icons-material/AddCircle"
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
+import DirectionsRunIcon from "@mui/icons-material/DirectionsRun"
 import LinkIcon from "@mui/icons-material/Link"
 
 const STORAGE_KEY = "customWorkouts"
@@ -28,6 +29,18 @@ const EQUIPMENT_OPTIONS = [
   "kettlebell", "resistance band", "other",
 ]
 
+// ── Cardio ────────────────────────────────────────────────────────────────────
+const CARDIO_ACTIVITIES = [
+  "Running", "Walking", "Cycling", "Rowing", "Swimming",
+  "Jump Rope", "Hiking", "Stair Climbing", "Sprints", "Other",
+]
+const CARDIO_MACHINES = [
+  "Treadmill", "Stationary Bike", "Elliptical", "Rowing Machine",
+  "Stair Climber", "Ski Erg", "Assault Bike", "Other",
+]
+const DISTANCE_UNITS = ["km", "miles", "m"]
+const SPEED_UNITS = ["km/h", "mph", "pace (min/km)", "pace (min/mi)"]
+
 const titleCase = (str) =>
   str ? str.replace(/\b\w/g, (c) => c.toUpperCase()) : ""
 
@@ -38,12 +51,23 @@ const emptyForm = () => ({
   equipment: "body only",
   primaryMuscles: [""],
   level: "beginner",
-  // Training parameters
+  // Strength / default training params
   sets: "3",
   reps: "10",
-  amrap: false,          // As Many Reps As Possible for last set
-  superset: false,       // Is this part of a superset?
-  supersetWith: "",      // Name of the paired exercise
+  amrap: false,
+  superset: false,
+  supersetWith: "",
+  // Cardio params
+  cardioType: "none",        // "none" | "activity" | "machine"
+  cardioActivity: "Running",
+  cardioMachine: "Treadmill",
+  distance: "",
+  distanceUnit: "km",
+  duration: "",              // minutes
+  speed: "",
+  speedUnit: "km/h",
+  incline: "",
+  resistance: "",
 })
 
 const loadWorkouts = () => {
@@ -62,120 +86,102 @@ function CustomCard({ workout, onEdit, onDelete, onAddToPlan }) {
     return theme.palette.error.main
   }
 
-  const setsRepsLabel = workout.amrap
-    ? `${workout.sets || "?"} sets × AMRAP`
-    : `${workout.sets || "?"} × ${workout.reps || "?"}${workout.amrap ? " AMRAP" : ""}`
+  const isCardio = workout.category === "cardio" && workout.cardioType !== "none"
+
+  const trainingLabel = (() => {
+    if (!isCardio) {
+      return workout.amrap ? `${workout.sets || "?"}s × AMRAP` : `${workout.sets || "?"}×${workout.reps || "?"}`
+    }
+    if (workout.cardioType === "machine") {
+      const parts = []
+      if (workout.duration) parts.push(`${workout.duration} min`)
+      if (workout.resistance) parts.push(`R${workout.resistance}`)
+      if (workout.incline) parts.push(`${workout.incline}% incline`)
+      return `${workout.cardioMachine || "Machine"}${parts.length ? ` · ${parts.join(" · ")}` : ""}`
+    }
+    const parts = []
+    if (workout.distance) parts.push(`${workout.distance} ${workout.distanceUnit || "km"}`)
+    if (workout.duration) parts.push(`${workout.duration} min`)
+    if (workout.speed) parts.push(`${workout.speed} ${workout.speedUnit || "km/h"}`)
+    return `${workout.cardioActivity || "Cardio"}${parts.length ? ` · ${parts.join(" · ")}` : ""}`
+  })()
 
   return (
     <Box sx={{
-      borderRadius: "6px",
-      overflow: "hidden",
-      display: "flex",
-      flexDirection: "column",
+      borderRadius: "6px", overflow: "hidden", display: "flex", flexDirection: "column",
       backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
       border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)"}`,
-      backdropFilter: "blur(8px)",
-      minHeight: 160,
+      backdropFilter: "blur(8px)", minHeight: 160,
     }}>
-      {/* Image area with overlay buttons */}
       <Box sx={{
-        position: "relative", height: 100,
+        position: "relative", height: 100, flexShrink: 0,
         backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <FitnessCenterIcon sx={{ fontSize: 40, color: "text.disabled", opacity: 0.4 }} />
-
-        {/* Add to plan */}
+        {isCardio
+          ? <DirectionsRunIcon sx={{ fontSize: 40, color: "text.disabled", opacity: 0.4 }} />
+          : <FitnessCenterIcon sx={{ fontSize: 40, color: "text.disabled", opacity: 0.4 }} />
+        }
         {onAddToPlan && (
           <Tooltip title="Add to Workout Plan">
-            <IconButton size="small"
-              onClick={(e) => { e.stopPropagation(); onAddToPlan(workout) }}
-              sx={{
-                position: "absolute", top: 6, right: 6,
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-                width: 28, height: 28,
-                "&:hover": { backgroundColor: theme.palette.primary.light },
-                boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
-              }}>
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); onAddToPlan(workout) }}
+              sx={{ position: "absolute", top: 6, right: 6, backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText, width: 28, height: 28, "&:hover": { backgroundColor: theme.palette.primary.light }, boxShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
               <AddCircleIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Tooltip>
         )}
-
-        {/* Edit / Delete */}
         <Box sx={{ position: "absolute", top: 6, left: 6, display: "flex", gap: 0.5 }}>
           <IconButton size="small" onClick={() => onEdit(workout)}
-            sx={{ backgroundColor: "rgba(0,0,0,0.4)", color: "#fff", width: 24, height: 24, "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" } }}>
+            sx={{ backgroundColor: "rgba(0,0,0,0.4)", color: "#fff", width: 24, height: 24 }}>
             <EditIcon sx={{ fontSize: 13 }} />
           </IconButton>
           <IconButton size="small" onClick={() => onDelete(workout.id)}
-            sx={{ backgroundColor: "rgba(0,0,0,0.4)", color: theme.palette.error.light, width: 24, height: 24, "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" } }}>
+            sx={{ backgroundColor: "rgba(0,0,0,0.4)", color: theme.palette.error.light, width: 24, height: 24 }}>
             <DeleteIcon sx={{ fontSize: 13 }} />
           </IconButton>
         </Box>
-
-        {/* Custom badge */}
-        <Chip label="Custom" size="small" sx={{
-          position: "absolute", bottom: 6, left: 6, height: 18, fontSize: "0.6rem",
-          backgroundColor: theme.palette.secondary.main + "aa", color: "#fff",
-          "& .MuiChip-label": { px: 0.6 },
-        }} />
-
-        {/* Superset badge */}
-        {workout.superset && (
-          <Chip
-            icon={<LinkIcon sx={{ fontSize: "0.75rem !important" }} />}
-            label="Superset" size="small"
-            sx={{
-              position: "absolute", bottom: 6, right: 6, height: 18, fontSize: "0.6rem",
-              backgroundColor: theme.palette.warning?.main + "aa" || "#FFA726aa", color: "#fff",
-              "& .MuiChip-label": { px: 0.6 }, "& .MuiChip-icon": { ml: 0.5 },
-            }}
-          />
-        )}
+        <Chip label="Custom" size="small" sx={{ position: "absolute", bottom: 6, left: 6, height: 18, fontSize: "0.6rem", backgroundColor: theme.palette.secondary.main + "aa", color: "#fff", "& .MuiChip-label": { px: 0.6 } }} />
+        {workout.superset && <Chip icon={<LinkIcon sx={{ fontSize: "0.75rem !important" }} />} label="Superset" size="small"
+          sx={{ position: "absolute", bottom: 6, right: 6, height: 18, fontSize: "0.6rem", backgroundColor: (theme.palette.warning?.main || "#FFA726") + "aa", color: "#fff", "& .MuiChip-label": { px: 0.6 }, "& .MuiChip-icon": { ml: 0.5 } }} />}
       </Box>
 
-      {/* Name */}
       <Box sx={{ px: 1.5, pt: 1, pb: 0.25 }}>
-        <Typography variant="body2" fontWeight={700} sx={{
-          color: "text.primary", lineHeight: 1.3,
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-        }}>
+        <Typography variant="body2" fontWeight={700} sx={{ color: "text.primary", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
           {workout.name || "Unnamed"}
         </Typography>
       </Box>
-
-      {/* Sets × reps */}
       <Box sx={{ px: 1.5, pb: 0.5 }}>
         <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600 }}>
-          {setsRepsLabel}
+          {trainingLabel}
         </Typography>
-        {workout.superset && workout.supersetWith && (
+        {!isCardio && workout.superset && workout.supersetWith && (
           <Typography variant="caption" sx={{ color: "text.disabled", display: "block", fontSize: "0.62rem" }}>
             + {workout.supersetWith}
           </Typography>
         )}
       </Box>
-
-      {/* Tags */}
-      <Box sx={{
-        px: 1.5, py: 0.75, mt: "auto", display: "flex", gap: 0.5, overflow: "hidden",
-        borderTop: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}`,
-      }}>
+      <Box sx={{ px: 1.5, py: 0.75, mt: "auto", display: "flex", gap: 0.5, overflow: "hidden", borderTop: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}` }}>
         {workout.primaryMuscles?.[0] && (
-          <Chip label={titleCase(workout.primaryMuscles[0])} size="small" sx={{
-            height: 20, fontSize: "0.62rem",
-            backgroundColor: theme.palette.primary.main + "28", color: theme.palette.primary.main,
-            maxWidth: "50%", "& .MuiChip-label": { px: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-          }} />
+          <Chip label={titleCase(workout.primaryMuscles[0])} size="small" sx={{ height: 20, fontSize: "0.62rem", backgroundColor: theme.palette.primary.main + "28", color: theme.palette.primary.main, maxWidth: "50%", "& .MuiChip-label": { px: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }} />
         )}
-        <Chip label={titleCase(workout.level || "beginner")} size="small" sx={{
-          height: 20, fontSize: "0.62rem",
-          backgroundColor: levelColor(workout.level) + "28", color: levelColor(workout.level),
-          maxWidth: "50%", "& .MuiChip-label": { px: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-        }} />
+        <Chip label={titleCase(workout.level || "beginner")} size="small" sx={{ height: 20, fontSize: "0.62rem", backgroundColor: levelColor(workout.level) + "28", color: levelColor(workout.level), maxWidth: "50%", "& .MuiChip-label": { px: 0.7, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }} />
       </Box>
+    </Box>
+  )
+}
+
+// ── Toggle row helper ─────────────────────────────────────────────────────────
+function ToggleRow({ label, desc, checked, onToggle, color }) {
+  const theme = useTheme()
+  const activeColor = color || theme.palette.primary.main
+  const bg = theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"
+  return (
+    <Box sx={{ px: 2, py: 1, borderRadius: "6px", backgroundColor: checked ? activeColor + "18" : bg, border: `1px solid ${checked ? activeColor + "50" : "transparent"}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Box>
+        <Typography variant="body2" fontWeight={600} sx={{ color: checked ? activeColor : "text.primary" }}>{label}</Typography>
+        <Typography variant="caption" sx={{ color: "text.disabled" }}>{desc}</Typography>
+      </Box>
+      <Switch checked={checked} onChange={onToggle} size="small" />
     </Box>
   )
 }
@@ -189,9 +195,8 @@ export default function CustomWorkouts({ onAddToPlan }) {
   const [editingId, setEditingId] = useState(null)
   const [importError, setImportError] = useState("")
   const importRef = useRef(null)
-
-  // Load exercise library for the superset picker
   const [libraryNames, setLibraryNames] = useState([])
+
   useEffect(() => {
     fetch(DATASET_URL)
       .then((r) => r.ok ? r.json() : [])
@@ -209,11 +214,7 @@ export default function CustomWorkouts({ onAddToPlan }) {
 
   const saveForm = () => {
     if (!form.name.trim()) return
-    const entry = {
-      ...form,
-      id: editingId || `custom_${Date.now()}`,
-      primaryMuscles: [form.primaryMuscles[0]].filter(Boolean),
-    }
+    const entry = { ...form, id: editingId || `custom_${Date.now()}`, primaryMuscles: [form.primaryMuscles[0]].filter(Boolean) }
     setWorkouts((p) => editingId ? p.map((w) => (w.id === editingId ? entry : w)) : [...p, entry])
     setIsFormOpen(false)
   }
@@ -237,30 +238,24 @@ export default function CustomWorkouts({ onAddToPlan }) {
         const incoming = Array.isArray(parsed) ? parsed : [parsed]
         if (!incoming.every((w) => w.name)) { setImportError("Invalid format — each workout must have a name."); return }
         const stamped = incoming.map((w) => ({ ...emptyForm(), ...w, id: `custom_${Date.now()}_${Math.random()}` }))
-        setWorkouts((p) => [...p, ...stamped])
-        setImportError("")
+        setWorkouts((p) => [...p, ...stamped]); setImportError("")
       } catch { setImportError("Could not parse file. Make sure it's a valid JSON.") }
     }
     reader.readAsText(file); e.target.value = ""
   }
 
-  // Combined options for superset autocomplete — grouped by source
   const supersetOptions = [
-    ...workouts
-      .filter((w) => w.id !== editingId)
-      .map((w) => ({ label: w.name, group: "My Custom Workouts" })),
+    ...workouts.filter((w) => w.id !== editingId).map((w) => ({ label: w.name, group: "My Custom Workouts" })),
     ...libraryNames.map((name) => ({ label: name, group: "Exercise Library" })),
   ]
 
+  const isCardio = form.category === "cardio"
   const inputBg = theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"
 
   return (
     <Box>
-      {/* Toolbar */}
       <Box display="flex" alignItems="center" flexWrap="wrap" gap={1} mb={3}>
-        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>
-          New Workout
-        </Button>
+        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={openCreate}>New Workout</Button>
         <Box sx={{ flexGrow: 1 }} />
         {workouts.length > 0 && (
           <Tooltip title="Export all custom workouts">
@@ -289,7 +284,7 @@ export default function CustomWorkouts({ onAddToPlan }) {
         </Box>
       )}
 
-      {/* ── Create / Edit dialog ── */}
+      {/* ── Dialog ── */}
       <Dialog open={isFormOpen} onClose={() => setIsFormOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? "Edit Workout" : "New Custom Workout"}</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
@@ -298,7 +293,7 @@ export default function CustomWorkouts({ onAddToPlan }) {
           <TextField label="Workout Name" size="small" fullWidth autoFocus sx={{ mb: 2 }}
             value={form.name} onChange={set("name")} />
 
-          {/* Category / Level / Equipment / Muscle */}
+          {/* Category / Level */}
           <Grid container spacing={1.5} sx={{ mb: 2 }}>
             <Grid item xs={6}>
               <FormControl size="small" fullWidth>
@@ -316,123 +311,186 @@ export default function CustomWorkouts({ onAddToPlan }) {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6}>
-              <FormControl size="small" fullWidth>
-                <InputLabel>Equipment</InputLabel>
-                <Select value={form.equipment} label="Equipment" onChange={set("equipment")}>
-                  {EQUIPMENT_OPTIONS.map((eq) => <MenuItem key={eq} value={eq}>{titleCase(eq)}</MenuItem>)}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField label="Primary Muscle" size="small" fullWidth
-                value={form.primaryMuscles[0] || ""}
-                onChange={(e) => setForm((f) => ({ ...f, primaryMuscles: [e.target.value] }))}
-                placeholder="e.g. biceps" />
-            </Grid>
+            {!isCardio && (
+              <>
+                <Grid item xs={6}>
+                  <FormControl size="small" fullWidth>
+                    <InputLabel>Equipment</InputLabel>
+                    <Select value={form.equipment} label="Equipment" onChange={set("equipment")}>
+                      {EQUIPMENT_OPTIONS.map((eq) => <MenuItem key={eq} value={eq}>{titleCase(eq)}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField label="Primary Muscle" size="small" fullWidth
+                    value={form.primaryMuscles[0] || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, primaryMuscles: [e.target.value] }))}
+                    placeholder="e.g. biceps" />
+                </Grid>
+              </>
+            )}
           </Grid>
 
           <Divider sx={{ mb: 2 }} />
 
-          {/* ── Training Parameters ── */}
-          <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Training Parameters</Typography>
+          {/* ── CARDIO BRANCH ── */}
+          {isCardio ? (
+            <>
+              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Cardio Type</Typography>
 
-          <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
-            {/* Sets */}
-            <Grid item xs={6}>
-              <TextField
-                label="Sets" type="number" size="small" fullWidth
-                value={form.sets} onChange={set("sets")}
-                InputProps={{ inputProps: { min: 1 } }}
-              />
-            </Grid>
+              {/* Type selector */}
+              <ToggleButtonGroup
+                value={form.cardioType} exclusive size="small" fullWidth sx={{ mb: 2 }}
+                onChange={(_, v) => { if (v) setForm((f) => ({ ...f, cardioType: v })) }}
+              >
+                <ToggleButton value="none" sx={{ textTransform: "none", fontSize: "0.75rem", flex: 1 }}>Custom (sets/reps)</ToggleButton>
+                <ToggleButton value="activity" sx={{ textTransform: "none", fontSize: "0.75rem", flex: 1 }}>Activity</ToggleButton>
+                <ToggleButton value="machine" sx={{ textTransform: "none", fontSize: "0.75rem", flex: 1 }}>Machine</ToggleButton>
+              </ToggleButtonGroup>
 
-            {/* Reps — disabled if AMRAP */}
-            <Grid item xs={6}>
-              <TextField
-                label={form.amrap ? "Reps (AMRAP on last)" : "Reps per Set"}
-                type="number" size="small" fullWidth
-                value={form.reps} onChange={set("reps")}
-                disabled={form.amrap}
-                InputProps={{ inputProps: { min: 1 } }}
-              />
-            </Grid>
-          </Grid>
-
-          {/* AMRAP toggle */}
-          <Box
-            sx={{
-              px: 2, py: 1, borderRadius: "6px", mb: 1.5,
-              backgroundColor: form.amrap ? theme.palette.primary.main + "18" : inputBg,
-              border: `1px solid ${form.amrap ? theme.palette.primary.main + "50" : "transparent"}`,
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-            }}
-          >
-            <Box>
-              <Typography variant="body2" fontWeight={600} sx={{ color: form.amrap ? theme.palette.primary.main : "text.primary" }}>
-                AMRAP
-              </Typography>
-              <Typography variant="caption" sx={{ color: "text.disabled" }}>
-                As Many Reps As Possible on the last set
-              </Typography>
-            </Box>
-            <Switch checked={form.amrap} onChange={toggle("amrap")} size="small" />
-          </Box>
-
-          {/* Superset toggle */}
-          <Box
-            sx={{
-              px: 2, py: 1, borderRadius: "6px", mb: form.superset ? 1.5 : 0,
-              backgroundColor: form.superset ? (theme.palette.warning?.main || "#FFA726") + "18" : inputBg,
-              border: `1px solid ${form.superset ? (theme.palette.warning?.main || "#FFA726") + "50" : "transparent"}`,
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-            }}
-          >
-            <Box>
-              <Typography variant="body2" fontWeight={600} sx={{ color: form.superset ? (theme.palette.warning?.main || "#FFA726") : "text.primary" }}>
-                Superset
-              </Typography>
-              <Typography variant="caption" sx={{ color: "text.disabled" }}>
-                Paired back-to-back with another exercise
-              </Typography>
-            </Box>
-            <Switch checked={form.superset} onChange={toggle("superset")} size="small" />
-          </Box>
-
-          {/* Superset partner picker — only shown when superset is on */}
-          {form.superset && (
-            <Autocomplete
-              freeSolo
-              options={supersetOptions}
-              groupBy={(option) => option.group}
-              getOptionLabel={(option) => typeof option === "string" ? option : option.label}
-              value={form.supersetWith}
-              onChange={(_, v) => setForm((f) => ({ ...f, supersetWith: typeof v === "string" ? v : v?.label || "" }))}
-              onInputChange={(_, v, reason) => {
-                if (reason === "input") setForm((f) => ({ ...f, supersetWith: v }))
-              }}
-              filterOptions={(opts, { inputValue }) => {
-                const q = inputValue.toLowerCase()
-                return q.length < 1
-                  ? opts.slice(0, 40) // show first 40 when empty
-                  : opts.filter((o) => o.label.toLowerCase().includes(q)).slice(0, 60)
-              }}
-              renderOption={(props, option) => (
-                <li {...props} key={`${option.group}-${option.label}`}>
-                  <Typography variant="body2">{option.label}</Typography>
-                </li>
+              {/* ── Activity ── */}
+              {form.cardioType === "activity" && (
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                  <FormControl size="small" fullWidth>
+                    <InputLabel>Activity</InputLabel>
+                    <Select value={form.cardioActivity} label="Activity" onChange={set("cardioActivity")}>
+                      {CARDIO_ACTIVITIES.map((a) => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  <Grid container spacing={1.5}>
+                    <Grid item xs={6}>
+                      <TextField label="Distance" type="number" size="small" fullWidth
+                        value={form.distance} onChange={set("distance")} placeholder="e.g. 5" />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <FormControl size="small" fullWidth>
+                        <InputLabel>Unit</InputLabel>
+                        <Select value={form.distanceUnit} label="Unit" onChange={set("distanceUnit")}>
+                          {DISTANCE_UNITS.map((u) => <MenuItem key={u} value={u}>{u}</MenuItem>)}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label="Duration (min)" type="number" size="small" fullWidth
+                        value={form.duration} onChange={set("duration")} placeholder="e.g. 30" />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label="Speed" type="number" size="small" fullWidth
+                        value={form.speed} onChange={set("speed")} placeholder="e.g. 10" />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormControl size="small" fullWidth>
+                        <InputLabel>Speed Unit</InputLabel>
+                        <Select value={form.speedUnit} label="Speed Unit" onChange={set("speedUnit")}>
+                          {SPEED_UNITS.map((u) => <MenuItem key={u} value={u}>{u}</MenuItem>)}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </Box>
               )}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Paired with"
-                  size="small"
-                  fullWidth
-                  placeholder="Search custom workouts or exercise library…"
-                  helperText={libraryNames.length === 0 ? "Loading exercise library…" : `${supersetOptions.length} exercises available`}
+
+              {/* ── Machine ── */}
+              {form.cardioType === "machine" && (
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                  <FormControl size="small" fullWidth>
+                    <InputLabel>Machine</InputLabel>
+                    <Select value={form.cardioMachine} label="Machine" onChange={set("cardioMachine")}>
+                      {CARDIO_MACHINES.map((m) => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  <Grid container spacing={1.5}>
+                    <Grid item xs={6}>
+                      <TextField label="Duration (min)" type="number" size="small" fullWidth
+                        value={form.duration} onChange={set("duration")} placeholder="e.g. 20" />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label="Resistance Level" type="number" size="small" fullWidth
+                        value={form.resistance} onChange={set("resistance")} placeholder="e.g. 8" />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label="Incline (%)" type="number" size="small" fullWidth
+                        value={form.incline} onChange={set("incline")} placeholder="e.g. 5" />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label="Speed" type="number" size="small" fullWidth
+                        value={form.speed} onChange={set("speed")} placeholder="e.g. 8" />
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
+
+              {/* Cardio type=none falls through to sets/reps below */}
+              {form.cardioType === "none" && (
+                <Typography variant="caption" sx={{ color: "text.disabled", display: "block", mb: 1 }}>
+                  Using custom sets / reps for this cardio exercise.
+                </Typography>
+              )}
+            </>
+          ) : (
+            <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Training Parameters</Typography>
+          )}
+
+          {/* ── Sets/Reps/AMRAP/Superset — shown for strength OR cardio-none ── */}
+          {(!isCardio || form.cardioType === "none") && (
+            <>
+              <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
+                <Grid item xs={6}>
+                  <TextField label="Sets" type="number" size="small" fullWidth
+                    value={form.sets} onChange={set("sets")} InputProps={{ inputProps: { min: 1 } }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField label={form.amrap ? "Reps (AMRAP on last)" : "Reps per Set"}
+                    type="number" size="small" fullWidth disabled={form.amrap}
+                    value={form.reps} onChange={set("reps")} InputProps={{ inputProps: { min: 1 } }} />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                <ToggleRow
+                  label="AMRAP"
+                  desc="As Many Reps As Possible on the last set"
+                  checked={form.amrap}
+                  onToggle={toggle("amrap")}
                 />
+                <ToggleRow
+                  label="Superset"
+                  desc="Pair back-to-back with another exercise"
+                  checked={form.superset}
+                  onToggle={toggle("superset")}
+                  color={theme.palette.warning?.main || "#FFA726"}
+                />
+              </Box>
+
+              {form.superset && (
+                <Box sx={{ mt: 1.5 }}>
+                  <Autocomplete
+                    freeSolo
+                    options={supersetOptions}
+                    groupBy={(option) => option.group}
+                    getOptionLabel={(option) => typeof option === "string" ? option : option.label}
+                    value={form.supersetWith}
+                    onChange={(_, v) => setForm((f) => ({ ...f, supersetWith: typeof v === "string" ? v : v?.label || "" }))}
+                    onInputChange={(_, v, reason) => { if (reason === "input") setForm((f) => ({ ...f, supersetWith: v })) }}
+                    filterOptions={(opts, { inputValue }) => {
+                      const q = inputValue.toLowerCase()
+                      return q.length < 1 ? opts.slice(0, 40) : opts.filter((o) => o.label.toLowerCase().includes(q)).slice(0, 60)
+                    }}
+                    renderOption={(props, option) => (
+                      <li {...props} key={`${option.group}-${option.label}`}>
+                        <Typography variant="body2">{option.label}</Typography>
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Paired with" size="small" fullWidth
+                        placeholder="Search custom workouts or exercise library…"
+                        helperText={libraryNames.length === 0 ? "Loading exercise library…" : `${supersetOptions.length} exercises available`}
+                      />
+                    )}
+                  />
+                </Box>
               )}
-            />
+            </>
           )}
 
         </DialogContent>

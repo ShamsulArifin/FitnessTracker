@@ -2,10 +2,11 @@ import React, { useState, useEffect, useMemo } from "react"
 import {
   Box, Typography, FormControl, InputLabel, Select, MenuItem,
   Chip, Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, CircularProgress, TextField, InputAdornment, Divider,
+  Button, CircularProgress, TextField, InputAdornment, Divider, IconButton,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import SearchIcon from "@mui/icons-material/Search"
+import AddCircleIcon from "@mui/icons-material/AddCircle"
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 
 // Free, public-domain dataset with hosted images
@@ -299,8 +300,31 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                     },
                   }}
                 >
-                  {/* ① Image — 180px */}
-                  <CardImage id={ex.id} name={ex.name} />
+                  {/* ① Image with overlay add button */}
+                  <Box sx={{ position: "relative" }}>
+                    <CardImage id={ex.id} name={ex.name} />
+                    {onAddToPlan && (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => { e.stopPropagation(); onAddToPlan(ex) }}
+                        sx={{
+                          position: "absolute",
+                          top: 6,
+                          right: 6,
+                          backgroundColor: theme.palette.primary.main,
+                          color: theme.palette.primary.contrastText,
+                          width: 30,
+                          height: 30,
+                          "&:hover": {
+                            backgroundColor: theme.palette.primary.light,
+                          },
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                        }}
+                      >
+                        <AddCircleIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    )}
+                  </Box>
 
                   {/* ② Name — auto height, 2-line clamp */}
                   <Box sx={{ px: 1.5, pt: 1, pb: 0.5, display: "flex", alignItems: "flex-start" }}>
@@ -320,7 +344,7 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                     </Typography>
                   </Box>
 
-                  {/* ③ Tags + Add to Plan */}
+                  {/* ③ Tags only */}
                   <Box
                     sx={{
                       px: 1.5,
@@ -329,7 +353,6 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                       display: "flex",
                       alignItems: "center",
                       gap: 0.5,
-                      flexWrap: "nowrap",
                       overflow: "hidden",
                       borderTop: `1px solid ${
                         theme.palette.mode === "dark"
@@ -338,7 +361,6 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                       }`,
                     }}
                   >
-                    {/* Primary muscle */}
                     <Chip
                       label={titleCase(ex.primaryMuscles[0] || "")}
                       size="small"
@@ -346,11 +368,10 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                         backgroundColor: theme.palette.primary.main + "28",
                         color: theme.palette.primary.main,
                         fontWeight: 600, fontSize: "0.65rem", height: 22,
-                        maxWidth: "40%",
+                        maxWidth: "50%",
                         "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
                       }}
                     />
-                    {/* Difficulty level */}
                     <Chip
                       label={titleCase(ex.level || "")}
                       size="small"
@@ -358,35 +379,10 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                         backgroundColor: levelColor(ex.level) + "28",
                         color: levelColor(ex.level),
                         fontWeight: 600, fontSize: "0.65rem", height: 22,
-                        maxWidth: "40%",
+                        maxWidth: "50%",
                         "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
                       }}
                     />
-                    {/* Add to plan */}
-                    {onAddToPlan && (
-                      <Box
-                        component="button"
-                        onClick={(e) => { e.stopPropagation(); onAddToPlan(ex) }}
-                        sx={{
-                          ml: "auto",
-                          flexShrink: 0,
-                          border: "none",
-                          borderRadius: "4px",
-                          backgroundColor: theme.palette.primary.main,
-                          color: theme.palette.primary.contrastText,
-                          fontSize: "0.65rem",
-                          fontWeight: 700,
-                          px: 1,
-                          py: 0.5,
-                          cursor: "pointer",
-                          whiteSpace: "nowrap",
-                          lineHeight: 1.4,
-                          "&:hover": { opacity: 0.85 },
-                        }}
-                      >
-                        + Plan
-                      </Box>
-                    )}
                   </Box>
                 </Box>
               ))}

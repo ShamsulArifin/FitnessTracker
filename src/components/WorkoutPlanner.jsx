@@ -48,7 +48,7 @@ const savePlans = (plans) => localStorage.setItem(STORAGE_KEY, JSON.stringify(pl
 function ExercisePill({ ex, onRemove }) {
   const theme = useTheme()
 
-  const isCardioEx = ex.category === "cardio" && ex.cardioType !== "none"
+  const isCardioEx = ex.category === "cardio" && ex.cardioType && ex.cardioType !== "none"
 
   const setsRepsLabel = isCardioEx
     ? `${ex.rounds || "1"} round${(ex.rounds || 1) !== 1 ? "s" : ""}`
@@ -289,7 +289,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   // Confirm adding pending exercise to the selected plan+day
   const confirmAddExercise = () => {
     if (!pendingExercise || !addExTarget.planId || !addExTarget.day) return
-    const isCardioEx = pendingExercise.category === "cardio" && pendingExercise.cardioType !== "none"
+    const isCardioEx = pendingExercise.category === "cardio" && pendingExercise.cardioType && pendingExercise.cardioType !== "none"
     const entry = {
       name: pendingExercise.name,
       id: pendingExercise.id,
@@ -650,7 +650,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
               {/* Training params — cardio vs strength */}
               <Typography variant="subtitle2" fontWeight={700}>Training Parameters</Typography>
 
-              {pendingExercise?.category === "cardio" && pendingExercise?.cardioType !== "none" ? (
+              {pendingExercise?.category === "cardio" && pendingExercise?.cardioType && pendingExercise?.cardioType !== "none" ? (
                 /* ── Cardio: rounds only ── */
                 <TextField
                   label="Rounds" type="number" size="small"

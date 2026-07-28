@@ -276,8 +276,9 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                     cursor: "pointer",
                     borderRadius: "6px",
                     overflow: "hidden",
-                    // Fixed height: 180 image + 56 name + 46 tags = 282px
-                    height: 282,
+                    // min height — grows if name wraps
+                    minHeight: 282,
+                    height: "auto",
                     display: "flex",
                     flexDirection: "column",
                     backgroundColor:
@@ -301,8 +302,8 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                   {/* ① Image — 180px */}
                   <CardImage id={ex.id} name={ex.name} />
 
-                  {/* ② Name — 56px, 2-line clamp */}
-                  <Box sx={{ height: 56, px: 1.5, pt: 1, pb: 0.5, display: "flex", alignItems: "flex-start" }}>
+                  {/* ② Name — auto height, 2-line clamp */}
+                  <Box sx={{ px: 1.5, pt: 1, pb: 0.5, display: "flex", alignItems: "flex-start" }}>
                     <Typography
                       variant="body2"
                       fontWeight={700}
@@ -319,11 +320,12 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                     </Typography>
                   </Box>
 
-                  {/* ③ Tags + Add to Plan — 46px, pinned bottom */}
+                  {/* ③ Tags + Add to Plan */}
                   <Box
                     sx={{
-                      height: 46,
                       px: 1.5,
+                      py: 1,
+                      mt: "auto",
                       display: "flex",
                       alignItems: "center",
                       gap: 0.5,
@@ -343,8 +345,8 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                       sx={{
                         backgroundColor: theme.palette.primary.main + "28",
                         color: theme.palette.primary.main,
-                        fontWeight: 600, fontSize: "0.62rem", height: 20,
-                        maxWidth: "44%",
+                        fontWeight: 600, fontSize: "0.65rem", height: 22,
+                        maxWidth: "40%",
                         "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
                       }}
                     />
@@ -355,8 +357,8 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                       sx={{
                         backgroundColor: levelColor(ex.level) + "28",
                         color: levelColor(ex.level),
-                        fontWeight: 600, fontSize: "0.62rem", height: 20,
-                        maxWidth: "44%",
+                        fontWeight: 600, fontSize: "0.65rem", height: 22,
+                        maxWidth: "40%",
                         "& .MuiChip-label": { px: 0.8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
                       }}
                     />
@@ -372,12 +374,13 @@ export default function ExerciseLibrary({ onAddToPlan }) {
                           borderRadius: "4px",
                           backgroundColor: theme.palette.primary.main,
                           color: theme.palette.primary.contrastText,
-                          fontSize: "0.6rem",
+                          fontSize: "0.65rem",
                           fontWeight: 700,
-                          px: 0.8,
-                          py: 0.3,
+                          px: 1,
+                          py: 0.5,
                           cursor: "pointer",
                           whiteSpace: "nowrap",
+                          lineHeight: 1.4,
                           "&:hover": { opacity: 0.85 },
                         }}
                       >

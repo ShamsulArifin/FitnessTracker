@@ -48,9 +48,13 @@ const savePlans = (plans) => localStorage.setItem(STORAGE_KEY, JSON.stringify(pl
 function ExercisePill({ ex, onRemove }) {
   const theme = useTheme()
 
-  const setsRepsLabel = ex.amrap
-    ? `${ex.sets || "?"}s × AMRAP`
-    : `${ex.sets || "?"}×${ex.reps || "?"}`
+  const isCardioEx = ex.category === "cardio" && ex.cardioType !== "none"
+
+  const setsRepsLabel = isCardioEx
+    ? `${ex.rounds || "1"} round${(ex.rounds || 1) !== 1 ? "s" : ""}`
+    : ex.amrap
+      ? `${ex.sets || "?"}s × AMRAP`
+      : `${ex.sets || "?"}×${ex.reps || "?"}`
 
   return (
     <Box
@@ -204,6 +208,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   const [addAmrap, setAddAmrap] = useState(false)
   const [addSuperset, setAddSuperset] = useState(false)
   const [addSupersetWith, setAddSupersetWith] = useState("")
+  const [addRounds, setAddRounds] = useState("1")
   // Sets/reps edit dialog
   const [setsDialog, setSetsDialog] = useState(null) // { planId, day, exIndex }
   const [setsValue, setSetsValue] = useState("3")
@@ -226,6 +231,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
       setAddAmrap(pendingExercise.amrap || false)
       setAddSuperset(pendingExercise.superset || false)
       setAddSupersetWith(pendingExercise.supersetWith || "")
+      setAddRounds(pendingExercise.rounds || "1")
       // Pre-select first available plan if any
       if (plans.length > 0) {
         setAddExTarget({ planId: plans[0].id, day: plans[0].days[0].day })
@@ -283,15 +289,33 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   // Confirm adding pending exercise to the selected plan+day
   const confirmAddExercise = () => {
     if (!pendingExercise || !addExTarget.planId || !addExTarget.day) return
+    const isCardioEx = pendingExercise.category === "cardio" && pendingExercise.cardioType !== "none"
     const entry = {
       name: pendingExercise.name,
       id: pendingExercise.id,
       category: pendingExercise.category || pendingExercise.primaryMuscles?.[0] || "",
-      sets: addSets,
-      reps: addAmrap ? "" : addReps,
-      amrap: addAmrap,
-      superset: addSuperset,
-      supersetWith: addSuperset ? addSupersetWith : "",
+      // Cardio fields (pass through for display in pill)
+      cardioType: pendingExercise.cardioType,
+      cardioActivity: pendingExercise.cardioActivity,
+      cardioMachine: pendingExercise.cardioMachine,
+      distance: pendingExercise.distance,
+      distanceUnit: pendingExercise.distanceUnit,
+      duration: pendingExercise.duration,
+      speed: pendingExercise.speed,
+      speedUnit: pendingExercise.speedUnit,
+      incline: pendingExercise.incline,
+      resistance: pendingExercise.resistance,
+      // Training params — rounds for cardio, sets/reps for strength
+      ...(isCardioEx
+        ? { rounds: addRounds }
+        : {
+            sets: addSets,
+            reps: addAmrap ? "" : addReps,
+            amrap: addAmrap,
+            superset: addSuperset,
+            supersetWith: addSuperset ? addSupersetWith : "",
+          }
+      ),
     }
     setPlans((prev) =>
       prev.map((p) =>
@@ -623,58 +647,70 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
 
               <Divider />
 
-              {/* Training params */}
+              {/* Training params — cardio vs strength */}
               <Typography variant="subtitle2" fontWeight={700}>Training Parameters</Typography>
 
-              <Grid container spacing={1.5}>
-                <Grid item xs={6}>
-                  <TextField label="Sets" type="number" size="small" fullWidth
-                    value={addSets} onChange={(e) => setAddSets(e.target.value)}
-                    InputProps={{ inputProps: { min: 1 } }} />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField label={addAmrap ? "Reps (AMRAP)" : "Reps"} type="number" size="small" fullWidth
-                    value={addReps} onChange={(e) => setAddReps(e.target.value)}
-                    disabled={addAmrap}
-                    InputProps={{ inputProps: { min: 1 } }} />
-                </Grid>
-              </Grid>
-
-              {/* AMRAP */}
-              <Box sx={{
-                px: 2, py: 1, borderRadius: "6px",
-                backgroundColor: addAmrap ? theme.palette.primary.main + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
-                border: `1px solid ${addAmrap ? theme.palette.primary.main + "50" : "transparent"}`,
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-              }}>
-                <Box>
-                  <Typography variant="body2" fontWeight={600} sx={{ color: addAmrap ? theme.palette.primary.main : "text.primary" }}>AMRAP</Typography>
-                  <Typography variant="caption" sx={{ color: "text.disabled" }}>As Many Reps As Possible on last set</Typography>
-                </Box>
-                <Switch checked={addAmrap} onChange={() => setAddAmrap((v) => !v)} size="small" />
-              </Box>
-
-              {/* Superset */}
-              <Box sx={{
-                px: 2, py: 1, borderRadius: "6px",
-                backgroundColor: addSuperset ? (theme.palette.warning?.main || "#FFA726") + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
-                border: `1px solid ${addSuperset ? (theme.palette.warning?.main || "#FFA726") + "50" : "transparent"}`,
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-              }}>
-                <Box>
-                  <Typography variant="body2" fontWeight={600} sx={{ color: addSuperset ? (theme.palette.warning?.main || "#FFA726") : "text.primary" }}>Superset</Typography>
-                  <Typography variant="caption" sx={{ color: "text.disabled" }}>Pair back-to-back with another exercise</Typography>
-                </Box>
-                <Switch checked={addSuperset} onChange={() => setAddSuperset((v) => !v)} size="small" />
-              </Box>
-
-              {addSuperset && (
+              {pendingExercise?.category === "cardio" && pendingExercise?.cardioType !== "none" ? (
+                /* ── Cardio: rounds only ── */
                 <TextField
-                  label="Paired with" size="small" fullWidth
-                  value={addSupersetWith}
-                  onChange={(e) => setAddSupersetWith(e.target.value)}
-                  placeholder="Exercise name"
+                  label="Rounds" type="number" size="small"
+                  value={addRounds} onChange={(e) => setAddRounds(e.target.value)}
+                  InputProps={{ inputProps: { min: 1 } }}
+                  helperText="Number of rounds / laps to complete"
+                  sx={{ width: 160 }}
                 />
+              ) : (
+                /* ── Strength: sets, reps, AMRAP, superset ── */
+                <>
+                  <Grid container spacing={1.5}>
+                    <Grid item xs={6}>
+                      <TextField label="Sets" type="number" size="small" fullWidth
+                        value={addSets} onChange={(e) => setAddSets(e.target.value)}
+                        InputProps={{ inputProps: { min: 1 } }} />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField label={addAmrap ? "Reps (AMRAP)" : "Reps"} type="number" size="small" fullWidth
+                        value={addReps} onChange={(e) => setAddReps(e.target.value)}
+                        disabled={addAmrap}
+                        InputProps={{ inputProps: { min: 1 } }} />
+                    </Grid>
+                  </Grid>
+
+                  <Box sx={{
+                    px: 2, py: 1, borderRadius: "6px",
+                    backgroundColor: addAmrap ? theme.palette.primary.main + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
+                    border: `1px solid ${addAmrap ? theme.palette.primary.main + "50" : "transparent"}`,
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                  }}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: addAmrap ? theme.palette.primary.main : "text.primary" }}>AMRAP</Typography>
+                      <Typography variant="caption" sx={{ color: "text.disabled" }}>As Many Reps As Possible on last set</Typography>
+                    </Box>
+                    <Switch checked={addAmrap} onChange={() => setAddAmrap((v) => !v)} size="small" />
+                  </Box>
+
+                  <Box sx={{
+                    px: 2, py: 1, borderRadius: "6px",
+                    backgroundColor: addSuperset ? (theme.palette.warning?.main || "#FFA726") + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
+                    border: `1px solid ${addSuperset ? (theme.palette.warning?.main || "#FFA726") + "50" : "transparent"}`,
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                  }}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={600} sx={{ color: addSuperset ? (theme.palette.warning?.main || "#FFA726") : "text.primary" }}>Superset</Typography>
+                      <Typography variant="caption" sx={{ color: "text.disabled" }}>Pair back-to-back with another exercise</Typography>
+                    </Box>
+                    <Switch checked={addSuperset} onChange={() => setAddSuperset((v) => !v)} size="small" />
+                  </Box>
+
+                  {addSuperset && (
+                    <TextField
+                      label="Paired with" size="small" fullWidth
+                      value={addSupersetWith}
+                      onChange={(e) => setAddSupersetWith(e.target.value)}
+                      placeholder="Exercise name"
+                    />
+                  )}
+                </>
               )}
             </>
           )}

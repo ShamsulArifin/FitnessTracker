@@ -14,6 +14,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import ExpandLessIcon from "@mui/icons-material/ExpandLess"
 import DownloadIcon from "@mui/icons-material/Download"
 import UploadIcon from "@mui/icons-material/Upload"
+import HotelIcon from "@mui/icons-material/Hotel"
 
 const STORAGE_KEY = "workoutPlans"
 
@@ -92,37 +93,77 @@ function ExercisePill({ ex, onRemove }) {
 }
 
 // ── Day card ─────────────────────────────────────────────────────────────────
-function DayCard({ dayObj, onRemoveExercise, onEditExercise }) {
+function DayCard({ dayObj, onRemoveExercise, onEditExercise, onToggleRestDay }) {
   const theme = useTheme()
   const [expanded, setExpanded] = useState(true)
+
+  const isRest = dayObj.restDay === true
 
   return (
     <Paper
       elevation={0}
       sx={{
         p: 1.5,
-        backgroundColor:
-          theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
-        border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.08)"}`,
+        backgroundColor: isRest
+          ? theme.palette.mode === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)"
+          : theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+        border: `1px solid ${isRest
+          ? (theme.palette.mode === "dark" ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)")
+          : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.08)")}`,
+        opacity: isRest ? 0.75 : 1,
+        transition: "opacity 0.2s, background-color 0.2s",
       }}
     >
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={expanded ? 1 : 0}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={expanded && !isRest ? 1 : 0}>
         <Box display="flex" alignItems="center" gap={1}>
-          <Typography variant="body2" fontWeight={700} sx={{ color: "text.primary" }}>
+          {isRest && <HotelIcon sx={{ fontSize: 14, color: "text.disabled" }} />}
+          <Typography variant="body2" fontWeight={700} sx={{ color: isRest ? "text.disabled" : "text.primary" }}>
             {dayObj.day}
           </Typography>
-          <Chip
-            label={`${dayObj.exercises.length} exercise${dayObj.exercises.length !== 1 ? "s" : ""}`}
-            size="small"
-            sx={{ height: 18, fontSize: "0.62rem", "& .MuiChip-label": { px: 0.6 } }}
-          />
+          {isRest ? (
+            <Chip
+              label="Rest Day"
+              size="small"
+              sx={{
+                height: 18, fontSize: "0.62rem",
+                backgroundColor: theme.palette.text.disabled + "28",
+                color: "text.disabled",
+                "& .MuiChip-label": { px: 0.6 },
+              }}
+            />
+          ) : (
+            <Chip
+              label={`${dayObj.exercises.length} exercise${dayObj.exercises.length !== 1 ? "s" : ""}`}
+              size="small"
+              sx={{ height: 18, fontSize: "0.62rem", "& .MuiChip-label": { px: 0.6 } }}
+            />
+          )}
         </Box>
-        <IconButton size="small" onClick={() => setExpanded((e) => !e)} sx={{ p: 0.3 }}>
-          {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-        </IconButton>
+
+        <Box display="flex" alignItems="center" gap={0.5}>
+          {/* Rest Day toggle */}
+          <Tooltip title={isRest ? "Mark as training day" : "Mark as rest day"}>
+            <IconButton
+              size="small"
+              onClick={onToggleRestDay}
+              sx={{
+                p: 0.3,
+                color: isRest ? theme.palette.primary.main : "text.disabled",
+                "&:hover": { color: theme.palette.primary.main },
+              }}
+            >
+              <HotelIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+          {!isRest && (
+            <IconButton size="small" onClick={() => setExpanded((e) => !e)} sx={{ p: 0.3 }}>
+              {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+            </IconButton>
+          )}
+        </Box>
       </Box>
 
-      {expanded && (
+      {!isRest && expanded && (
         <Box>
           {dayObj.exercises.length === 0 ? (
             <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.75rem", fontStyle: "italic", pl: 0.5 }}>
@@ -220,6 +261,19 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
           ...p,
           days: p.days.map((d) =>
             d.day !== day ? d : { ...d, exercises: d.exercises.filter((_, i) => i !== exIndex) }
+          ),
+        }
+      )
+    )
+  }
+
+  const toggleRestDay = (planId, day) => {
+    setPlans((prev) =>
+      prev.map((p) =>
+        p.id !== planId ? p : {
+          ...p,
+          days: p.days.map((d) =>
+            d.day !== day ? d : { ...d, restDay: !d.restDay }
           ),
         }
       )
@@ -457,6 +511,7 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
                   onEditExercise={(day, i) =>
                     openSetsDialog(activePlan.id, day, i, activePlan.days.find((d) => d.day === day).exercises[i])
                   }
+                  onToggleRestDay={() => toggleRestDay(activePlan.id, dayObj.day)}
                 />
               </Grid>
             ))}

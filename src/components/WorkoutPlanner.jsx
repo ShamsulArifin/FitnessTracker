@@ -3,7 +3,7 @@ import {
   Box, Typography, Paper, Button, TextField, Select, MenuItem,
   FormControl, InputLabel, IconButton, Chip, Dialog, DialogTitle,
   DialogContent, DialogActions, List, ListItem, ListItemText,
-  ListItemSecondaryAction, Divider, Grid, Tooltip,
+  ListItemSecondaryAction, Divider, Grid, Tooltip, Switch,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import AddIcon from "@mui/icons-material/Add"
@@ -46,13 +46,15 @@ const savePlans = (plans) => localStorage.setItem(STORAGE_KEY, JSON.stringify(pl
 // ── Small exercise pill inside a day ─────────────────────────────────────────
 function ExercisePill({ ex, onRemove }) {
   const theme = useTheme()
+
+  const setsRepsLabel = ex.amrap
+    ? `${ex.sets || "?"}s × AMRAP`
+    : `${ex.sets || "?"}×${ex.reps || "?"}`
+
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-        p: "4px 10px",
+        p: "6px 10px",
         borderRadius: "6px",
         backgroundColor:
           theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
@@ -60,17 +62,31 @@ function ExercisePill({ ex, onRemove }) {
         mb: 0.5,
       }}
     >
-      <FitnessCenterIcon sx={{ fontSize: 14, color: "text.disabled" }} />
-      <Typography variant="body2" sx={{ flexGrow: 1, color: "text.primary", fontSize: "0.8rem" }}>
-        {ex.name}
-      </Typography>
-      {ex.sets && (
-        <Chip label={`${ex.sets}×${ex.reps || "?"}`} size="small"
-          sx={{ height: 18, fontSize: "0.62rem", "& .MuiChip-label": { px: 0.6 } }} />
+      {/* Row 1: icon + name + sets chip + delete */}
+      <Box display="flex" alignItems="center" gap={1}>
+        <FitnessCenterIcon sx={{ fontSize: 13, color: "text.disabled", flexShrink: 0 }} />
+        <Typography variant="body2" sx={{ flexGrow: 1, color: "text.primary", fontSize: "0.8rem", fontWeight: 600 }}>
+          {ex.name}
+        </Typography>
+        <Chip
+          label={setsRepsLabel}
+          size="small"
+          sx={{ height: 18, fontSize: "0.62rem", "& .MuiChip-label": { px: 0.6 } }}
+        />
+        {ex.amrap && (
+          <Chip label="AMRAP" size="small"
+            sx={{ height: 18, fontSize: "0.62rem", backgroundColor: theme.palette.primary.main + "28", color: theme.palette.primary.main, "& .MuiChip-label": { px: 0.6 } }} />
+        )}
+        <IconButton size="small" onClick={onRemove} sx={{ p: 0.2 }}>
+          <DeleteIcon sx={{ fontSize: 13, color: "text.disabled" }} />
+        </IconButton>
+      </Box>
+      {/* Row 2: superset info */}
+      {ex.superset && (
+        <Typography variant="caption" sx={{ color: "text.disabled", pl: 2.5, display: "block", mt: 0.25 }}>
+          Superset{ex.supersetWith ? ` + ${ex.supersetWith}` : ""}
+        </Typography>
       )}
-      <IconButton size="small" onClick={onRemove} sx={{ p: 0.2 }}>
-        <DeleteIcon sx={{ fontSize: 14, color: "text.disabled" }} />
-      </IconButton>
     </Box>
   )
 }
@@ -141,6 +157,12 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   const [addExOpen, setAddExOpen] = useState(false)
   const [addExTarget, setAddExTarget] = useState({ planId: null, day: "" })
 
+  // Sets/reps state for the add-exercise dialog
+  const [addSets, setAddSets] = useState("3")
+  const [addReps, setAddReps] = useState("10")
+  const [addAmrap, setAddAmrap] = useState(false)
+  const [addSuperset, setAddSuperset] = useState(false)
+  const [addSupersetWith, setAddSupersetWith] = useState("")
   // Sets/reps edit dialog
   const [setsDialog, setSetsDialog] = useState(null) // { planId, day, exIndex }
   const [setsValue, setSetsValue] = useState("3")
@@ -157,6 +179,12 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
   useEffect(() => {
     if (pendingExercise) {
       setAddExOpen(true)
+      // Pre-fill training params from custom workout if available, else defaults
+      setAddSets(pendingExercise.sets || "3")
+      setAddReps(pendingExercise.reps || "10")
+      setAddAmrap(pendingExercise.amrap || false)
+      setAddSuperset(pendingExercise.superset || false)
+      setAddSupersetWith(pendingExercise.supersetWith || "")
       // Pre-select first available plan if any
       if (plans.length > 0) {
         setAddExTarget({ planId: plans[0].id, day: plans[0].days[0].day })
@@ -205,8 +233,11 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
       name: pendingExercise.name,
       id: pendingExercise.id,
       category: pendingExercise.category || pendingExercise.primaryMuscles?.[0] || "",
-      sets: "3",
-      reps: "10",
+      sets: addSets,
+      reps: addAmrap ? "" : addReps,
+      amrap: addAmrap,
+      superset: addSuperset,
+      supersetWith: addSuperset ? addSupersetWith : "",
     }
     setPlans((prev) =>
       prev.map((p) =>
@@ -218,7 +249,6 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
         }
       )
     )
-    // Make that plan active so user sees the result
     setActivePlanId(addExTarget.planId)
     setAddExOpen(false)
     onPendingConsumed()
@@ -479,14 +509,16 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
       <Dialog open={addExOpen} onClose={() => { setAddExOpen(false); onPendingConsumed() }} maxWidth="xs" fullWidth>
         <DialogTitle>Add to Workout Plan</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+
+          {/* Exercise name preview */}
           {pendingExercise && (
             <Paper elevation={0} sx={{ p: 1.5, backgroundColor: theme.palette.primary.main + "18", borderRadius: "6px" }}>
               <Typography variant="body2" fontWeight={700} sx={{ color: "text.primary" }}>
                 {pendingExercise.name}
               </Typography>
-              {pendingExercise.primaryMuscles?.[0] && (
+              {(pendingExercise.primaryMuscles?.[0] || pendingExercise.category) && (
                 <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.78rem" }}>
-                  {pendingExercise.primaryMuscles[0]}
+                  {pendingExercise.primaryMuscles?.[0] || pendingExercise.category}
                 </Typography>
               )}
             </Paper>
@@ -497,37 +529,30 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
               <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>
                 You don't have any plans yet. Create one first.
               </Typography>
-              <Button
-                variant="contained" size="small" startIcon={<AddIcon />}
-                onClick={() => { setAddExOpen(false); onPendingConsumed(); setDraft(defaultPlan()); setIsCreateOpen(true) }}
-              >
+              <Button variant="contained" size="small" startIcon={<AddIcon />}
+                onClick={() => { setAddExOpen(false); onPendingConsumed(); setDraft(defaultPlan()); setIsCreateOpen(true) }}>
                 Create Plan
               </Button>
             </Box>
           ) : (
             <>
+              {/* Plan selector */}
               <FormControl size="small" fullWidth>
                 <InputLabel>Plan</InputLabel>
-                <Select
-                  value={addExTarget.planId || ""}
-                  label="Plan"
+                <Select value={addExTarget.planId || ""} label="Plan"
                   onChange={(e) => {
                     const p = plans.find((pl) => pl.id === e.target.value)
                     setAddExTarget({ planId: e.target.value, day: p ? p.days[0].day : "" })
-                  }}
-                >
-                  {plans.map((p) => (
-                    <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
-                  ))}
+                  }}>
+                  {plans.map((p) => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
                 </Select>
               </FormControl>
+
+              {/* Day selector */}
               <FormControl size="small" fullWidth>
                 <InputLabel>Day</InputLabel>
-                <Select
-                  value={addExTarget.day}
-                  label="Day"
-                  onChange={(e) => setAddExTarget((t) => ({ ...t, day: e.target.value }))}
-                >
+                <Select value={addExTarget.day} label="Day"
+                  onChange={(e) => setAddExTarget((t) => ({ ...t, day: e.target.value }))}>
                   {(plans.find((p) => p.id === addExTarget.planId)?.days || []).map((d) => (
                     <MenuItem key={d.day} value={d.day}>
                       {d.day}
@@ -540,17 +565,70 @@ export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
                   ))}
                 </Select>
               </FormControl>
+
+              <Divider />
+
+              {/* Training params */}
+              <Typography variant="subtitle2" fontWeight={700}>Training Parameters</Typography>
+
+              <Grid container spacing={1.5}>
+                <Grid item xs={6}>
+                  <TextField label="Sets" type="number" size="small" fullWidth
+                    value={addSets} onChange={(e) => setAddSets(e.target.value)}
+                    InputProps={{ inputProps: { min: 1 } }} />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField label={addAmrap ? "Reps (AMRAP)" : "Reps"} type="number" size="small" fullWidth
+                    value={addReps} onChange={(e) => setAddReps(e.target.value)}
+                    disabled={addAmrap}
+                    InputProps={{ inputProps: { min: 1 } }} />
+                </Grid>
+              </Grid>
+
+              {/* AMRAP */}
+              <Box sx={{
+                px: 2, py: 1, borderRadius: "6px",
+                backgroundColor: addAmrap ? theme.palette.primary.main + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
+                border: `1px solid ${addAmrap ? theme.palette.primary.main + "50" : "transparent"}`,
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <Box>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: addAmrap ? theme.palette.primary.main : "text.primary" }}>AMRAP</Typography>
+                  <Typography variant="caption" sx={{ color: "text.disabled" }}>As Many Reps As Possible on last set</Typography>
+                </Box>
+                <Switch checked={addAmrap} onChange={() => setAddAmrap((v) => !v)} size="small" />
+              </Box>
+
+              {/* Superset */}
+              <Box sx={{
+                px: 2, py: 1, borderRadius: "6px",
+                backgroundColor: addSuperset ? (theme.palette.warning?.main || "#FFA726") + "18" : (theme.palette.mode === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"),
+                border: `1px solid ${addSuperset ? (theme.palette.warning?.main || "#FFA726") + "50" : "transparent"}`,
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <Box>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: addSuperset ? (theme.palette.warning?.main || "#FFA726") : "text.primary" }}>Superset</Typography>
+                  <Typography variant="caption" sx={{ color: "text.disabled" }}>Pair back-to-back with another exercise</Typography>
+                </Box>
+                <Switch checked={addSuperset} onChange={() => setAddSuperset((v) => !v)} size="small" />
+              </Box>
+
+              {addSuperset && (
+                <TextField
+                  label="Paired with" size="small" fullWidth
+                  value={addSupersetWith}
+                  onChange={(e) => setAddSupersetWith(e.target.value)}
+                  placeholder="Exercise name"
+                />
+              )}
             </>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => { setAddExOpen(false); onPendingConsumed() }} color="secondary">Cancel</Button>
           {plans.length > 0 && (
-            <Button
-              onClick={confirmAddExercise}
-              variant="contained"
-              disabled={!addExTarget.planId || !addExTarget.day}
-            >
+            <Button onClick={confirmAddExercise} variant="contained"
+              disabled={!addExTarget.planId || !addExTarget.day}>
               Add
             </Button>
           )}

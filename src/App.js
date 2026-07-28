@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles"
 import BrushIcon from "@mui/icons-material/Brush"
 
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
-import { themes, themeBlobs } from "./themes"
+import { themes, themeBlobs, notebookBg } from "./themes"
 import {
   LOCAL_STORAGE_KEY, SYSTEM_UNIT_KEY, CUSTOM_SUPPLEMENTS_KEY,
 } from "./constants"
@@ -474,54 +474,31 @@ function AppContent() {
     <>
       <CssBaseline />
 
-      {/* Keyframe always injected regardless of active theme */}
-      <style>{`
-        @keyframes gradientMove {
-          0%   { background-position: 0% 50%; }
-          25%  { background-position: 100% 0%; }
-          50%  { background-position: 100% 100%; }
-          75%  { background-position: 0% 100%; }
-          100% { background-position: 0% 50%; }
-        }
-      `}</style>
-
-      {/* Animated gradient background */}
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: -1,
-          background: (() => {
-            const t = themeBlobs[currentThemeName] || themeBlobs.dark
-            return `radial-gradient(ellipse at 0% 0%, ${t.b1}dd 0%, transparent 50%),
-                    radial-gradient(ellipse at 100% 100%, ${t.b2}cc 0%, transparent 50%),
-                    radial-gradient(ellipse at 100% 0%, ${t.b3}aa 0%, transparent 40%),
-                    ${t.base}`
-          })(),
-          backgroundSize: "300% 300%",
-          animation: "gradientMove 12s ease infinite",
-          "&::after": {
-            content: '""',
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23grain)' opacity='0.32'/%3E%3C/svg%3E")`,
+      {/* ── Notebook dot-grid background ── */}
+      {(() => {
+        const nb = notebookBg[currentThemeName] || notebookBg.dark
+        const dotSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${nb.spacing}' height='${nb.spacing}'%3E%3Ccircle cx='${nb.spacing / 2}' cy='${nb.spacing / 2}' r='${nb.dotSize}' fill='${encodeURIComponent(nb.dot)}'/%3E%3C/svg%3E")`
+        return (
+          <Box sx={{
+            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+            zIndex: -1,
+            backgroundColor: nb.bg,
+            backgroundImage: dotSvg,
             backgroundRepeat: "repeat",
-            backgroundSize: "200px 200px",
-            pointerEvents: "none",
-          },
-        }}
-      />
+          }} />
+        )
+      })()}
 
       <Container
         maxWidth="md"
         sx={{
           my: { xs: 1, sm: 4 }, p: { xs: 1.5, sm: 4 }, borderRadius: "6px",
-          backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.06)" : "rgba(255, 255, 255, 0.55)",
-          backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
-          border: "1px solid rgba(255, 255, 255, 0.15)", boxShadow: "0 8px 40px rgba(0, 0, 0, 0.3)",
+          backgroundColor: theme.palette.mode === "dark"
+            ? "rgba(20, 20, 20, 0.88)"
+            : "rgba(255, 255, 255, 0.82)",
+          backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+          border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.09)"}`,
+          boxShadow: theme.palette.mode === "dark" ? "0 4px 24px rgba(0,0,0,0.5)" : "0 4px 24px rgba(0,0,0,0.1)",
           pb: "100px", ml: { md: "auto" }, mr: { md: "auto" },
         }}
         component={Paper}

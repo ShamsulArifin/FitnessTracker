@@ -6,6 +6,7 @@ import {
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { workoutSplits, painLevels } from "../constants"
+import { getContrastTextColor } from "../utils"
 
 export default function EntryForm({
   trackDate, setTrackDate,
@@ -90,7 +91,7 @@ export default function EntryForm({
                           <Chip key={value} label={value}
                             onDelete={() => setWorkoutSplit(workoutSplit.filter((item) => item !== value))}
                             onMouseDown={(e) => e.stopPropagation()}
-                            sx={{ backgroundColor: getWorkoutColor(value), color: theme.palette.mode === "dark" ? "white" : "black" }}
+                            sx={{ backgroundColor: getWorkoutColor(value), color: getContrastTextColor(getWorkoutColor(value)) }}
                           />
                         ))}
                       </Box>
@@ -118,7 +119,7 @@ export default function EntryForm({
                       selected ? (
                         <Chip label={selected} onDelete={() => setPainLevel("")}
                           onMouseDown={(e) => e.stopPropagation()}
-                          sx={{ backgroundColor: getPainLevelColor(selected), color: theme.palette.mode === "dark" ? "white" : "black" }}
+                          sx={{ backgroundColor: getPainLevelColor(selected), color: getContrastTextColor(getPainLevelColor(selected)) }}
                         />
                       ) : (
                         <Typography variant="body1" sx={{ color: "text.disabled" }}>Select Level</Typography>

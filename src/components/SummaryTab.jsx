@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from "recharts"
-import { convertWeight, calculateBMI } from "../utils"
+import { convertWeight, calculateBMI, getContrastTextColor } from "../utils"
 
 export default function SummaryTab({
   stats,
@@ -194,14 +194,14 @@ export default function SummaryTab({
                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                           {workouts.map((w) => (
                             <Chip key={w} label={w} size="small"
-                              sx={{ backgroundColor: getWorkoutColor(w), color: theme.palette.mode === "dark" ? "#fff" : "#000", fontWeight: 500 }}
+                              sx={{ backgroundColor: getWorkoutColor(w), color: getContrastTextColor(getWorkoutColor(w)), fontWeight: 500 }}
                             />
                           ))}
                         </Box>
                       </TableCell>
                       <TableCell sx={{ color: "text.primary", whiteSpace: "nowrap" }}>
                         <Chip label={entry.painLevel || "—"} size="small"
-                          sx={{ backgroundColor: entry.painLevel ? getPainLevelColor(entry.painLevel) : "transparent", color: "#fff", fontWeight: 500 }}
+                          sx={{ backgroundColor: entry.painLevel ? getPainLevelColor(entry.painLevel) : "transparent", color: entry.painLevel ? getContrastTextColor(getPainLevelColor(entry.painLevel)) : "inherit", fontWeight: 500 }}
                         />
                       </TableCell>
                       {customSupplements.length > 0 && (

@@ -15,6 +15,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle"
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun"
 import LinkIcon from "@mui/icons-material/Link"
+import { getContrastTextColor } from "../utils"
 
 const STORAGE_KEY = "customWorkouts"
 const DATASET_URL = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json"
@@ -140,9 +141,9 @@ function CustomCard({ workout, onEdit, onDelete, onAddToPlan }) {
             <DeleteIcon sx={{ fontSize: 13 }} />
           </IconButton>
         </Box>
-        <Chip label="Custom" size="small" sx={{ position: "absolute", bottom: 6, left: 6, height: 18, fontSize: "0.6rem", backgroundColor: theme.palette.secondary.main + "aa", color: "#fff", "& .MuiChip-label": { px: 0.6 } }} />
+        <Chip label="Custom" size="small" sx={{ position: "absolute", bottom: 6, left: 6, height: 18, fontSize: "0.6rem", backgroundColor: theme.palette.secondary.main + "aa", color: getContrastTextColor(theme.palette.secondary.main), "& .MuiChip-label": { px: 0.6 } }} />
         {workout.superset && <Chip icon={<LinkIcon sx={{ fontSize: "0.75rem !important" }} />} label="Superset" size="small"
-          sx={{ position: "absolute", bottom: 6, right: 6, height: 18, fontSize: "0.6rem", backgroundColor: (theme.palette.warning?.main || "#FFA726") + "aa", color: "#fff", "& .MuiChip-label": { px: 0.6 }, "& .MuiChip-icon": { ml: 0.5 } }} />}
+          sx={{ position: "absolute", bottom: 6, right: 6, height: 18, fontSize: "0.6rem", backgroundColor: (theme.palette.warning?.main || "#FFA726") + "aa", color: getContrastTextColor(theme.palette.warning?.main || "#FFA726"), "& .MuiChip-label": { px: 0.6 }, "& .MuiChip-icon": { ml: 0.5 } }} />}
       </Box>
 
       <Box sx={{ px: 1.5, pt: 1, pb: 0.25 }}>

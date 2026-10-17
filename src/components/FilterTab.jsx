@@ -5,6 +5,7 @@ import {
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { workoutSplits } from "../constants"
+import { getContrastTextColor } from "../utils"
 
 export default function FilterTab({
   filterStartDate, setFilterStartDate,
@@ -37,7 +38,7 @@ export default function FilterTab({
               onChange={(e) => setFilterWorkout(e.target.value)} label="Filter Workout"
               renderValue={(selected) =>
                 selected ? (
-                  <Chip label={selected} sx={{ backgroundColor: getWorkoutColor(selected), color: theme.palette.mode === "dark" ? "white" : "black" }} />
+                  <Chip label={selected} sx={{ backgroundColor: getWorkoutColor(selected), color: getContrastTextColor(getWorkoutColor(selected)) }} />
                 ) : (
                   <Typography variant="body1" sx={{ color: "text.disabled" }}>All Workouts</Typography>
                 )

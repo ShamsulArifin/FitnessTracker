@@ -159,11 +159,11 @@ function AppContent() {
   useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries)) }, [fitnessEntries])
   useEffect(() => { localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(customSupplements)) }, [customSupplements])
 
-  // Increment and fetch visitor count via CountAPI
+  // Increment and fetch visitor count via CountAPI (countapi.mileshilliard.com — drop-in replacement for countapi.xyz)
   useEffect(() => {
-    fetch("https://api.countapi.xyz/hit/gainss-fitness-tracker/visits")
+    fetch("https://countapi.mileshilliard.com/api/v1/hit/gainss-fitness-tracker-visits")
       .then((res) => res.json())
-      .then((data) => setVisitorCount(data.value))
+      .then((data) => setVisitorCount(Number(data.value)))
       .catch(() => setVisitorCount(null))
   }, [])
 

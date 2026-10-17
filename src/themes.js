@@ -270,11 +270,6 @@ function makeTheme({ bg, main, sub, text }) {
           root: { color: sub, "&.Mui-focused": { color: main } },
         },
       },
-      MuiSelect: {
-        styleOverrides: {
-          icon: { color: text },
-        },
-      },
       MuiCheckbox: {
         styleOverrides: { root: { color: sub, "&.Mui-checked": { color: main } } },
       },

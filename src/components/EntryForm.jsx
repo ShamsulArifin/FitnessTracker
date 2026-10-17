@@ -97,6 +97,7 @@ export default function EntryForm({
                       </Box>
                     )}
                     label="Workout Split (Select multiple)"
+                    sx={{ minHeight: "56px", ".MuiSelect-select": { paddingTop: "14px", paddingBottom: "14px" } }}
                   >
                     <MenuItem value="">Select Workout(s)</MenuItem>
                     {workoutSplits.map((option) => (
@@ -127,6 +128,7 @@ export default function EntryForm({
                       )
                     }
                     label="Pain Level (1-10)"
+                    sx={{ minHeight: "56px", ".MuiSelect-select": { paddingTop: "14px", paddingBottom: "14px" } }}
                   >
                     <MenuItem value="">Select Level</MenuItem>
                     {painLevels.map((level) => (

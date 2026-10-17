@@ -8,7 +8,7 @@ import { useTheme } from "@mui/material/styles"
 import BrushIcon from "@mui/icons-material/Brush"
 
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
-import { themes, themeBlobs, notebookBg } from "./themes"
+import { notebookBg } from "./themes"
 import {
   LOCAL_STORAGE_KEY, SYSTEM_UNIT_KEY, CUSTOM_SUPPLEMENTS_KEY,
 } from "./constants"
@@ -33,8 +33,8 @@ import {
   ConfirmDeleteSupplementDialog,
   EntryExistsDialog,
   SimpleAlertDialog,
-  SettingsDialog,
 } from "./components/Dialogs"
+import ThemePicker from "./components/ThemePicker"
 
 function AppContent() {
   const theme = useTheme()
@@ -688,10 +688,9 @@ function AppContent() {
           entryExistsDialogData={entryExistsDialogData}
         />
         <SimpleAlertDialog open={isSimpleAlertDialogOpen} onClose={closeSimpleAlertDialog} message={simpleAlertDialogMessage} />
-        <SettingsDialog
+        <ThemePicker
           open={isSettingsOpen} onClose={() => setIsSettingsOpen(false)}
           currentThemeName={currentThemeName} setCurrentThemeName={setCurrentThemeName}
-          themes={themes}
         />
 
         <Box sx={{

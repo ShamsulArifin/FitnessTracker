@@ -14,7 +14,7 @@ import {
 } from "./constants"
 import {
   convertWeight, convertHeightToCm, convertCmToDisplayHeight,
-  calculateBMI, getTodayDate,
+  calculateBMI, getTodayDate, deriveChipColor,
 } from "./utils"
 
 import EntryForm from "./components/EntryForm"
@@ -42,19 +42,22 @@ function AppContent() {
 
   const getWorkoutColor = useCallback(
     (workoutName) => {
+      const base = theme.palette.primary.main  // theme's accent color
+      // Each workout gets a distinct hue offset from the theme's main color,
+      // keeping saturation/lightness in a readable range.
       switch (workoutName) {
-        case "Chest": return theme.palette.primary.light
-        case "Biceps": return theme.palette.secondary.light
-        case "Back": return theme.palette.mode === "dark" ? "#D0BCFF" : "#424242"
-        case "Triceps": return theme.palette.mode === "dark" ? "#B3F0E6" : "#26A69A"
-        case "Shoulder": return theme.palette.mode === "dark" ? "#FFE082" : "#FFB300"
-        case "Traps": return theme.palette.error.light
-        case "Forearms": return theme.palette.mode === "dark" ? "#D7C7A2" : "#795548"
-        case "Abs": return theme.palette.success.light
-        case "Legs": return theme.palette.mode === "dark" ? "#FFEB99" : "#FBC02D"
-        case "Cardio": return theme.palette.mode === "dark" ? "#A6E4FF" : "#0288D1"
-        case "Rest Day": return theme.palette.text.disabled
-        default: return theme.palette.primary.main
+        case "Chest":    return deriveChipColor(base,   0,  10)   // same hue as theme
+        case "Biceps":   return deriveChipColor(base,  30,  10)   // +30°
+        case "Back":     return deriveChipColor(base,  60,   5)   // +60°
+        case "Triceps":  return deriveChipColor(base,  90,   5)   // +90°
+        case "Shoulder": return deriveChipColor(base, 120,   0)   // +120°
+        case "Traps":    return deriveChipColor(base, 150,   5)   // +150°
+        case "Forearms": return deriveChipColor(base, 180,   5)   // +180° (complement)
+        case "Abs":      return deriveChipColor(base, 210,   5)   // +210°
+        case "Legs":     return deriveChipColor(base, 240,   5)   // +240°
+        case "Cardio":   return deriveChipColor(base, 270,  10)   // +270°
+        case "Rest Day": return deriveChipColor(base,   0, -20, 50) // desaturated
+        default:         return base
       }
     },
     [theme],
@@ -64,10 +67,11 @@ function AppContent() {
     (painLevel) => {
       const level = Number.parseInt(painLevel.split(" ")[0])
       if (isNaN(level)) return theme.palette.text.disabled
-      if (level <= 3) return theme.palette.success.main
-      if (level <= 6) return theme.palette.mode === "dark" ? "#FFD180" : "#FFAB40"
-      if (level <= 8) return theme.palette.error.light
-      return theme.palette.error.main
+      // Fixed semantic hues (green→amber→red), lightness tuned for readability
+      if (level <= 3) return deriveChipColor("#22bb55", 0,  10, 42)  // green
+      if (level <= 6) return deriveChipColor("#e08a00", 0,  10, 46)  // amber
+      if (level <= 8) return deriveChipColor("#cc3a1a", 0,  10, 44)  // orange-red
+      return deriveChipColor("#bb1a2a", 0, 10, 40)                    // deep red
     },
     [theme],
   )

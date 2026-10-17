@@ -248,7 +248,6 @@ function makeTheme({ bg, main, sub, text }) {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            width: "100%",
             backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)",
             color: text,
             borderRadius: "6px",
@@ -266,7 +265,7 @@ function makeTheme({ bg, main, sub, text }) {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)", color: text, borderRadius: "6px" },
+          select: { width: "100%", color: text, borderRadius: "6px" },
           icon: { color: text },
         },
       },

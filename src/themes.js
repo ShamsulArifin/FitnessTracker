@@ -230,13 +230,7 @@ function makeTheme({ bg, main, sub, text }) {
     },
     components: {
       MuiCssBaseline: {
-        styleOverrides: `
-          ${FONT_IMPORT}
-          .MuiSelect-select {
-            width: 100% !important;
-            box-sizing: border-box !important;
-          }
-        `,
+        styleOverrides: FONT_IMPORT,
       },
       MuiPaper: {
         styleOverrides: {
@@ -254,25 +248,20 @@ function makeTheme({ bg, main, sub, text }) {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            color: text,
-            borderRadius: "6px",
-            "& .MuiOutlinedInput-notchedOutline": { borderColor: sub + "60" },
-            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: sub + "aa" },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: main },
             '& input[type="date"]': { colorScheme: light ? "light" : "dark" },
-            "& .MuiSelect-select": {
-              width: "100%",
-              boxSizing: "border-box",
-              color: text,
-            },
           },
         },
       },
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
+            width: "100%",
             backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)",
+            color: text,
             borderRadius: "6px",
+            "& .MuiOutlinedInput-notchedOutline": { borderColor: sub + "60" },
+            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: sub + "aa" },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: main },
           },
         },
       },

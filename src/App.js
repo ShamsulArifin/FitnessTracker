@@ -118,6 +118,7 @@ function AppContent() {
   const [pendingExercise, setPendingExercise] = useState(null) // exercise to add to a plan
   const [workoutsSubTab, setWorkoutsSubTab] = useState(0) // 0: Library, 1: Custom
   const importFileInputRef = useRef(null)
+  const [visitorCount, setVisitorCount] = useState(null)
 
   // Load from localStorage
   useEffect(() => {
@@ -157,6 +158,14 @@ function AppContent() {
 
   useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries)) }, [fitnessEntries])
   useEffect(() => { localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(customSupplements)) }, [customSupplements])
+
+  // Increment and fetch visitor count via CountAPI
+  useEffect(() => {
+    fetch("https://api.countapi.xyz/hit/gainss-fitness-tracker/visits")
+      .then((res) => res.json())
+      .then((data) => setVisitorCount(data.value))
+      .catch(() => setVisitorCount(null))
+  }, [])
 
   const showSimpleAlertDialog = useCallback((message) => {
     setSimpleAlertDialogMessage(message)
@@ -709,6 +718,11 @@ function AppContent() {
               Shamsul Arifin
             </a>
           </Typography>
+          {visitorCount !== null && (
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", mt: 0.5, display: "block" }}>
+              👁 {visitorCount.toLocaleString()} visits
+            </Typography>
+          )}
         </Container>
       </Box>
     </>

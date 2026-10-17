@@ -270,6 +270,21 @@ function makeTheme({ bg, main, sub, text }) {
           root: { color: sub, "&.Mui-focused": { color: main } },
         },
       },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)",
+            color: text,
+            borderRadius: "6px",
+            paddingTop: "14px",
+            paddingBottom: "14px",
+            minHeight: "unset",
+            width: "100%",
+            boxSizing: "border-box",
+          },
+          icon: { color: text },
+        },
+      },
       MuiCheckbox: {
         styleOverrides: { root: { color: sub, "&.Mui-checked": { color: main } } },
       },

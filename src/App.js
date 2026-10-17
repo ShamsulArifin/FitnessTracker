@@ -188,7 +188,8 @@ function AppContent() {
   }
 
   const resetForm = useCallback(() => {
-    setTrackDate(getTodayDate()); setWeight(""); setHeightCm(""); setHeightFeet(""); setHeightInches("")
+    setTrackDate(getTodayDate()); setWeight("")
+    // height fields are intentionally retained so the last entered value persists
     setWorkoutSplit([]); setPainLevel(""); setNotes("")
     setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
     setCurrentEditingIndex(-1)

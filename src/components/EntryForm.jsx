@@ -80,7 +80,7 @@ export default function EntryForm({
           <Paper elevation={3} sx={{ p: { xs: 1.5, sm: 3 }, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormControl fullWidth required sx={{ width: "100%" }}>
+                <FormControl fullWidth required>
                   <InputLabel id="workout-split-label">Workout Split (Select multiple)</InputLabel>
                   <Select
                     labelId="workout-split-label" multiple value={workoutSplit}
@@ -97,7 +97,6 @@ export default function EntryForm({
                       </Box>
                     )}
                     label="Workout Split (Select multiple)"
-                    sx={{ width: "100%", minHeight: "56px", ".MuiSelect-select": { paddingTop: "14px", paddingBottom: "14px", minHeight: "unset" } }}
                   >
                     <MenuItem value="">Select Workout(s)</MenuItem>
                     {workoutSplits.map((option) => (
@@ -110,7 +109,7 @@ export default function EntryForm({
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth required sx={{ width: "100%" }}>
+                <FormControl fullWidth required>
                   <InputLabel id="pain-level-label">Pain Level (1-10)</InputLabel>
                   <Select
                     labelId="pain-level-label" value={painLevel}
@@ -128,7 +127,6 @@ export default function EntryForm({
                       )
                     }
                     label="Pain Level (1-10)"
-                    sx={{ width: "100%", minHeight: "56px", ".MuiSelect-select": { paddingTop: "14px", paddingBottom: "14px", minHeight: "unset" } }}
                   >
                     <MenuItem value="">Select Level</MenuItem>
                     {painLevels.map((level) => (

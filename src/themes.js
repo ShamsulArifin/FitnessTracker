@@ -254,19 +254,25 @@ function makeTheme({ bg, main, sub, text }) {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)",
             color: text,
             borderRadius: "6px",
             "& .MuiOutlinedInput-notchedOutline": { borderColor: sub + "60" },
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: sub + "aa" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: main },
             '& input[type="date"]': { colorScheme: light ? "light" : "dark" },
-            // Make the Select inner content div fill the full width
             "& .MuiSelect-select": {
               width: "100%",
               boxSizing: "border-box",
               color: text,
             },
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            backgroundColor: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.07)",
+            borderRadius: "6px",
           },
         },
       },

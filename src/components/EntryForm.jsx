@@ -97,6 +97,7 @@ export default function EntryForm({
                       </Box>
                     )}
                     label="Workout Split (Select multiple)"
+                    sx={{ display: "block", width: "100%" }}
                   >
                     <MenuItem value="">Select Workout(s)</MenuItem>
                     {workoutSplits.map((option) => (
@@ -127,6 +128,7 @@ export default function EntryForm({
                       )
                     }
                     label="Pain Level (1-10)"
+                    sx={{ display: "block", width: "100%" }}
                   >
                     <MenuItem value="">Select Level</MenuItem>
                     {painLevels.map((level) => (

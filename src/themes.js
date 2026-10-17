@@ -230,7 +230,13 @@ function makeTheme({ bg, main, sub, text }) {
     },
     components: {
       MuiCssBaseline: {
-        styleOverrides: FONT_IMPORT,
+        styleOverrides: `
+          ${FONT_IMPORT}
+          .MuiSelect-select {
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+        `,
       },
       MuiPaper: {
         styleOverrides: {
@@ -255,6 +261,12 @@ function makeTheme({ bg, main, sub, text }) {
             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: sub + "aa" },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: main },
             '& input[type="date"]': { colorScheme: light ? "light" : "dark" },
+            // Make the Select inner content div fill the full width
+            "& .MuiSelect-select": {
+              width: "100%",
+              boxSizing: "border-box",
+              color: text,
+            },
           },
         },
       },
@@ -265,7 +277,6 @@ function makeTheme({ bg, main, sub, text }) {
       },
       MuiSelect: {
         styleOverrides: {
-          select: { width: "100%", color: text, borderRadius: "6px" },
           icon: { color: text },
         },
       },

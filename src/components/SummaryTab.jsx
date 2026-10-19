@@ -36,7 +36,10 @@ export default function SummaryTab({
             labelId="summary-year-label" label="Year" value={selectedMonth.split("-")[0]}
             onChange={(e) => { const month = selectedMonth.split("-")[1]; setSelectedMonth(`${e.target.value}-${month}`) }}
           >
-            {Array.from(new Set(fitnessEntries.map((entry) => new Date(entry.date).getFullYear())))
+            {Array.from(new Set([
+              new Date().getFullYear(),
+              ...fitnessEntries.map((entry) => new Date(entry.date).getFullYear()),
+            ]))
               .sort((a, b) => b - a)
               .map((year) => (
                 <MenuItem key={year} value={String(year)}>{year}</MenuItem>

@@ -3,7 +3,11 @@ import {
   CssBaseline, AppBar, Typography, Container, Box,
   Tab, Tabs, Paper, FormControl, RadioGroup,
   FormControlLabel, Radio, IconButton, Avatar, Tooltip,
+<<<<<<< HEAD
   CircularProgress, Snackbar, Alert,
+=======
+  CircularProgress,
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import BrushIcon from "@mui/icons-material/Brush"
@@ -12,6 +16,12 @@ import LogoutIcon from "@mui/icons-material/Logout"
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
 import { AuthProvider, useAuth } from "./AuthContext"
 import { notebookBg } from "./themes"
+import { AuthProvider, useAuth } from "./AuthContext"
+import {
+  signOutUser,
+  loadEntries, saveEntry, deleteEntry, replaceAllEntries,
+  loadProfile, saveProfile,
+} from "./firebase"
 import {
   signOutUser,
   loadEntries, saveEntry, deleteEntry, replaceAllEntries,
@@ -50,6 +60,7 @@ function AppContent() {
   const { currentThemeName, setCurrentThemeName } = useContext(ThemeContext)
   const { user, loading: authLoading } = useAuth()
 
+<<<<<<< HEAD
   // ── Colour helpers ─────────────────────────────────────────────────────────
   const getWorkoutColor = useCallback((workoutName) => {
     const base = theme.palette.primary.main
@@ -88,6 +99,52 @@ function AppContent() {
   })
   const [customSupplements, setCustomSupplements]   = useState([])
   const [unitSystem, setUnitSystem]                 = useState("metric")
+=======
+  // ── Colour helpers (theme-derived) ────────────────────────────────────────
+  const getWorkoutColor = useCallback(
+    (workoutName) => {
+      const base = theme.palette.primary.main
+      switch (workoutName) {
+        case "Chest":    return deriveChipColor(base,   0,  10)
+        case "Biceps":   return deriveChipColor(base,  30,  10)
+        case "Back":     return deriveChipColor(base,  60,   5)
+        case "Triceps":  return deriveChipColor(base,  90,   5)
+        case "Shoulder": return deriveChipColor(base, 120,   0)
+        case "Traps":    return deriveChipColor(base, 150,   5)
+        case "Forearms": return deriveChipColor(base, 180,   5)
+        case "Abs":      return deriveChipColor(base, 210,   5)
+        case "Legs":     return deriveChipColor(base, 240,   5)
+        case "Cardio":   return deriveChipColor(base, 270,  10)
+        case "Rest Day": return deriveChipColor(base,   0, -20, 50)
+        default:         return base
+      }
+    },
+    [theme],
+  )
+
+  const getPainLevelColor = useCallback(
+    (painLevel) => {
+      const level = Number.parseInt(painLevel.split(" ")[0])
+      if (isNaN(level)) return theme.palette.text.disabled
+      if (level <= 3) return deriveChipColor("#22bb55", 0,  10, 42)
+      if (level <= 6) return deriveChipColor("#e08a00", 0,  10, 46)
+      if (level <= 8) return deriveChipColor("#cc3a1a", 0,  10, 44)
+      return deriveChipColor("#bb1a2a", 0, 10, 40)
+    },
+    [theme],
+  )
+
+  // ── App state ──────────────────────────────────────────────────────────────
+  const [dataLoading, setDataLoading]           = useState(false)
+  const [currentTab, setCurrentTab]             = useState(0)
+  const [fitnessEntries, setFitnessEntries]     = useState([])
+  const [selectedMonth, setSelectedMonth]       = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  })
+  const [customSupplements, setCustomSupplements] = useState([])
+  const [unitSystem, setUnitSystem]             = useState("metric")
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   const [currentEditingIndex, setCurrentEditingIndex] = useState(-1)
   const [isFilteredViewActive, setIsFilteredViewActive] = useState(false)
 
@@ -95,7 +152,11 @@ function AppContent() {
   const [trackDate, setTrackDate]   = useState(getTodayDate())
   const [weight, setWeight]         = useState("")
   const [heightCm, setHeightCm]     = useState(() => {
+<<<<<<< HEAD
     try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm    || "" } catch { return "" }
+=======
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm || "" } catch { return "" }
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   })
   const [heightFeet, setHeightFeet] = useState(() => {
     try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").feet  || "" } catch { return "" }
@@ -114,6 +175,7 @@ function AppContent() {
   const [filterWorkout, setFilterWorkout]     = useState("")
   const [sortOrder, setSortOrder]             = useState("desc")
 
+<<<<<<< HEAD
   // Dialog / UI state
   const [isManageSupplementsOpen, setIsManageSupplementsOpen]             = useState(false)
   const [newSupplementName, setNewSupplementName]                         = useState("")
@@ -133,8 +195,28 @@ function AppContent() {
   const [workoutsSubTab, setWorkoutsSubTab]                               = useState(0)
   const [visitorCount, setVisitorCount]                                   = useState(null)
   const [successSnackbar, setSuccessSnackbar]                             = useState({ open: false, message: "" })
+=======
+  // Dialog state
+  const [isManageSupplementsOpen, setIsManageSupplementsOpen] = useState(false)
+  const [newSupplementName, setNewSupplementName]             = useState("")
+  const [isConfirmClearOpen, setIsConfirmClearOpen]           = useState(false)
+  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen] = useState(false)
+  const [entryToDeleteIndex, setEntryToDeleteIndex]           = useState(null)
+  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen] = useState(false)
+  const [entryExistsDialogData, setEntryExistsDialogData]     = useState(null)
+  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen] = useState(false)
+  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage] = useState("")
+  const [isConfirmDeleteCustomSupplementOpen, setIsConfirmDeleteCustomSupplementOpen] = useState(false)
+  const [supplementToDelete, setSupplementToDelete]           = useState("")
+  const [isImportConfirmOpen, setIsImportConfirmOpen]         = useState(false)
+  const [pendingImportData, setPendingImportData]             = useState(null)
+  const [isSettingsOpen, setIsSettingsOpen]                   = useState(false)
+  const [pendingExercise, setPendingExercise]                 = useState(null)
+  const [workoutsSubTab, setWorkoutsSubTab]                   = useState(0)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   const importFileInputRef = useRef(null)
 
+<<<<<<< HEAD
   // ── Load user data from Firestore when auth state resolves ─────────────────
   useEffect(() => {
     if (!user) {
@@ -195,25 +277,76 @@ function AppContent() {
             setFitnessEntries([])
           }
           await saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps })
+=======
+  // ── Load user data from Firestore when user signs in ──────────────────────
+  useEffect(() => {
+    if (!user) {
+      setFitnessEntries([])
+      setCustomSupplements([])
+      setUnitSystem("metric")
+      return
+    }
+    const loadUserData = async () => {
+      setDataLoading(true)
+      try {
+        const [entries, profile] = await Promise.all([
+          loadEntries(user.uid),
+          loadProfile(user.uid),
+        ])
+        setFitnessEntries(entries)
+        if (profile) {
+          if (profile.unitSystem)        setUnitSystem(profile.unitSystem)
+          if (profile.customSupplements) setCustomSupplements(profile.customSupplements)
+          // If profile exists but no cloud entries, still migrate local entries
+          if (entries.length === 0) {
+            const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+            const localEntries = stored ? JSON.parse(stored) : []
+            if (localEntries.length > 0) {
+              await replaceAllEntries(user.uid, localEntries)
+              setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
+            }
+          }
+        } else {
+          // First sign-in ever: migrate all localStorage data to Firestore
+          const stored      = localStorage.getItem(LOCAL_STORAGE_KEY)
+          const storedSupps = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
+          const storedSystem = localStorage.getItem(SYSTEM_UNIT_KEY)
+          const localEntries = stored      ? JSON.parse(stored)      : []
+          const localSupps   = storedSupps ? JSON.parse(storedSupps) : ["Protein", "Creatine", "EAA"]
+          const localSystem  = storedSystem || "metric"
+          if (localEntries.length > 0) await replaceAllEntries(user.uid, localEntries)
+          await saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps })
+          setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
           setCustomSupplements(localSupps)
           setUnitSystem(localSystem)
         }
       } catch (e) {
         console.error("Failed to load user data:", e)
+<<<<<<< HEAD
         // Fallback to localStorage on Firestore error
         try {
           const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
           if (raw) setFitnessEntries(JSON.parse(raw).sort((a, b) => new Date(b.date) - new Date(a.date)))
         } catch { /* ignore */ }
+=======
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
       } finally {
         setDataLoading(false)
       }
     }
+<<<<<<< HEAD
 
     loadUserData()
   }, [user])
 
   // Persist height locally
+=======
+    loadUserData()
+  }, [user])
+
+  // Persist height locally (stays local — no need to cloud-sync this)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   useEffect(() => {
     localStorage.setItem(HEIGHT_STORAGE_KEY, JSON.stringify({ cm: heightCm, feet: heightFeet, inches: heightInches }))
   }, [heightCm, heightFeet, heightInches])
@@ -221,8 +354,13 @@ function AppContent() {
   // Visitor counter
   useEffect(() => {
     fetch("https://countapi.mileshilliard.com/api/v1/hit/gainss-fitness-tracker-visits")
+<<<<<<< HEAD
       .then((r) => r.json())
       .then((d) => setVisitorCount(Number(d.value)))
+=======
+      .then((res) => res.json())
+      .then((data) => setVisitorCount(Number(data.value)))
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
       .catch(() => setVisitorCount(null))
   }, [])
 
@@ -263,17 +401,24 @@ function AppContent() {
     }
   }
 
-  const handleUnitSystemChange = (event) => {
+  const handleUnitSystemChange = async (event) => {
     const newSystem = event.target.value
     setUnitSystem(newSystem)
     setHeightCm(""); setHeightFeet(""); setHeightInches("")
+<<<<<<< HEAD
     if (user) saveProfile(user.uid, { unitSystem: newSystem }).catch((e) => console.error(e))
+=======
+    if (user) await saveProfile(user.uid, { unitSystem: newSystem })
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     else localStorage.setItem(SYSTEM_UNIT_KEY, newSystem)
   }
 
   const resetForm = useCallback(() => {
     setTrackDate(getTodayDate()); setWeight("")
+<<<<<<< HEAD
     // height retained intentionally
+=======
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     setWorkoutSplit([]); setPainLevel(""); setNotes("")
     setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
     setCurrentEditingIndex(-1)
@@ -317,6 +462,7 @@ function AppContent() {
 
     updatedEntries = updatedEntries.sort((a, b) => new Date(b.date) - new Date(a.date))
     setFitnessEntries(updatedEntries)
+<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedEntries))
 
     // Show snackbar FIRST before any other state changes
@@ -330,6 +476,10 @@ function AppContent() {
 
     // Fire-and-forget Firestore save
     try { if (user) saveEntry(user.uid, newEntryData) } catch (e) { console.error("Firestore save failed:", e) }
+=======
+    if (user) await saveEntry(user.uid, newEntryData)
+    resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   }
 
   const handleConfirmUpdateExistingEntry = async () => {
@@ -339,10 +489,14 @@ function AppContent() {
     else updated = [...updated, entryExistsDialogData]
     updated = updated.sort((a, b) => new Date(b.date) - new Date(a.date))
     setFitnessEntries(updated)
+<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
     // Close dialog immediately — don't wait for Firestore
     setIsEntryExistsDialogOpen(false)
     setEntryExistsDialogData(null)
+=======
+    if (user) await saveEntry(user.uid, entryExistsDialogData)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
     setSuccessSnackbar({ open: true, message: "✓ Entry updated successfully!" })
     try { if (user) saveEntry(user.uid, entryExistsDialogData) } catch (e) { console.error("Firestore save failed:", e) }
@@ -378,9 +532,14 @@ function AppContent() {
     const entryDate = fitnessEntries[entryToDeleteIndex]?.date
     const updated = fitnessEntries.filter((_, i) => i !== entryToDeleteIndex)
     setFitnessEntries(updated)
+<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
     setIsConfirmDeleteEntryOpen(false)
     setEntryToDeleteIndex(null)
+=======
+    if (user && entryDate) await deleteEntry(user.uid, entryDate)
+    setIsConfirmDeleteEntryOpen(false); setEntryToDeleteIndex(null)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     if (currentEditingIndex === entryToDeleteIndex) resetForm()
     else if (currentEditingIndex > entryToDeleteIndex) setCurrentEditingIndex((p) => p - 1)
     try { if (user && entryDate) deleteEntry(user.uid, entryDate) } catch (e) { console.error("Firestore delete failed:", e) }
@@ -390,7 +549,12 @@ function AppContent() {
 
   const confirmClearAllData = async () => {
     setFitnessEntries([])
+<<<<<<< HEAD
     localStorage.removeItem(LOCAL_STORAGE_KEY)
+=======
+    if (user) await replaceAllEntries(user.uid, [])
+    else localStorage.removeItem(LOCAL_STORAGE_KEY)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     resetForm()
     setFilterStartDate(""); setFilterEndDate(""); setFilterWorkout(""); setSortOrder("desc")
     setIsFilteredViewActive(false)
@@ -405,10 +569,22 @@ function AppContent() {
     if (user) saveProfile(user.uid, { customSupplements: newSupps }).catch((e) => console.error(e))
   }
 
+  // ── Supplements ────────────────────────────────────────────────────────────
+  const updateSupplements = async (newSupps) => {
+    setCustomSupplements(newSupps)
+    if (user) await saveProfile(user.uid, { customSupplements: newSupps })
+    else localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(newSupps))
+  }
+
   const handleAddSupplement = () => {
     const name = newSupplementName.trim()
     if (name && !customSupplements.includes(name)) {
+<<<<<<< HEAD
       updateSupplements([...customSupplements, name]); setNewSupplementName("")
+=======
+      updateSupplements([...customSupplements, name])
+      setNewSupplementName("")
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     } else if (name) showSimpleAlertDialog("This supplement name already exists!")
   }
 
@@ -530,10 +706,19 @@ function AppContent() {
     const mergedSupplements = [...new Set([...customSupplements, ...pendingImportData.supplements])]
     const importCount = pendingImportData.entries.length
     setFitnessEntries(mergedEntries)
+<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mergedEntries))
     setCustomSupplements(mergedSupplements)
     setIsImportConfirmOpen(false)
     setPendingImportData(null)
+=======
+    if (user) {
+      await replaceAllEntries(user.uid, mergedEntries)
+      await saveProfile(user.uid, { customSupplements: mergedSupplements })
+    }
+    setCustomSupplements(mergedSupplements)
+    setIsImportConfirmOpen(false); setPendingImportData(null)
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     showSimpleAlertDialog(`Import successful! ${importCount} entries imported (duplicates replaced).`)
     try {
       if (user) {
@@ -606,7 +791,11 @@ function AppContent() {
 
   const entriesToDisplay = filteredAndSortedEntries()
 
+<<<<<<< HEAD
   // ── Auth loading / gate ────────────────────────────────────────────────────
+=======
+  // ── Auth loading screen ────────────────────────────────────────────────────
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   if (authLoading) {
     return (
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -659,6 +848,11 @@ function AppContent() {
             <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}>
               <BrushIcon />
             </IconButton>
+<<<<<<< HEAD
+=======
+
+            {/* User avatar + sign-out */}
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
             <Tooltip title={user.displayName || user.email}>
               <Avatar
                 src={user.photoURL || ""}
@@ -674,6 +868,7 @@ function AppContent() {
           </Box>
         </Box>
 
+<<<<<<< HEAD
         {dataLoading && (
           <Box display="flex" justifyContent="center" alignItems="center" gap={1.5} py={2}>
             <CircularProgress size={20} />
@@ -682,13 +877,30 @@ function AppContent() {
         )}
 
         {/* Title */}
+=======
+        {/* Data loading spinner */}
+        {dataLoading && (
+          <Box display="flex" justifyContent="center" py={2}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
         <Box sx={{ textAlign: "center", mb: 1 }}>
           <Typography variant="h4" component="h1"
             sx={{
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
+<<<<<<< HEAD
               letterSpacing: "0.15em", fontWeight: 900, textTransform: "uppercase",
               color: theme.palette.text.primary, lineHeight: 1,
+=======
+              letterSpacing: "0.15em",
+              fontWeight: 900,
+              textTransform: "uppercase",
+              color: theme.palette.text.primary,
+              lineHeight: 1,
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
             }}
           >
             GAINSS
@@ -697,8 +909,18 @@ function AppContent() {
             display: "inline-block",
             backgroundColor: theme.palette.primary.main,
             color: theme.palette.primary.contrastText,
+<<<<<<< HEAD
             fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.12em",
             px: 1, py: 0.25, borderRadius: "4px", textTransform: "uppercase", mb: 1,
+=======
+            fontSize: "0.55rem",
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            px: 1, py: 0.25,
+            borderRadius: "4px",
+            textTransform: "uppercase",
+            mb: 1,
+>>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
           }}>
             Fitness Tracker
           </Box>

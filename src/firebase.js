@@ -16,7 +16,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
-<<<<<<< HEAD
 export const db   = getFirestore(app)
 const googleProvider = new GoogleAuthProvider()
 
@@ -24,100 +23,46 @@ const googleProvider = new GoogleAuthProvider()
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider)
 export const signOutUser      = () => signOut(auth)
 
-// ── Firestore helpers ────────────────────────────────────────────────────────
-const entriesCol      = (uid) => collection(db, "users", uid, "entries")
-const metaDoc         = (uid) => doc(db, "users", uid, "meta", "profile")
-const workoutPlansDoc = (uid) => doc(db, "users", uid, "meta", "workoutPlans")
+// ── Firestore path helpers ────────────────────────────────────────────────────
+const entriesCol        = (uid) => collection(db, "users", uid, "entries")
+const metaDoc           = (uid) => doc(db, "users", uid, "meta", "profile")
+const workoutPlansDoc   = (uid) => doc(db, "users", uid, "meta", "workoutPlans")
 const customWorkoutsDoc = (uid) => doc(db, "users", uid, "meta", "customWorkouts")
 
+// ── Entries ───────────────────────────────────────────────────────────────────
 export async function loadEntries(uid) {
   const snap = await getDocs(entriesCol(uid))
   return snap.docs.map((d) => d.data()).sort((a, b) => new Date(b.date) - new Date(a.date))
 }
 
-=======
-export const db = getFirestore(app)
-const googleProvider = new GoogleAuthProvider()
-
-// ── Auth ─────────────────────────────────────────────────────────────────────
-
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider)
-export const signOutUser = () => signOut(auth)
-
-// ── Firestore helpers ────────────────────────────────────────────────────────
-// Data layout:
-//   users/{uid}/entries/{date}   → one document per fitness entry (keyed by date)
-//   users/{uid}/meta/profile     → { unitSystem, customSupplements }
-
-const entriesCol = (uid) => collection(db, "users", uid, "entries")
-const metaDoc    = (uid) => doc(db, "users", uid, "meta", "profile")
-
-/** Load all entries for a user, sorted descending by date. */
-export async function loadEntries(uid) {
-  const snap = await getDocs(entriesCol(uid))
-  const entries = snap.docs.map((d) => d.data())
-  return entries.sort((a, b) => new Date(b.date) - new Date(a.date))
-}
-
-/** Save (upsert) a single entry. The date string is the document ID. */
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
 export async function saveEntry(uid, entry) {
   await setDoc(doc(db, "users", uid, "entries", entry.date), entry)
 }
 
-<<<<<<< HEAD
-=======
-/** Delete a single entry by date. */
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
 export async function deleteEntry(uid, date) {
   await deleteDoc(doc(db, "users", uid, "entries", date))
 }
 
-<<<<<<< HEAD
 export async function replaceAllEntries(uid, entries) {
   const col   = entriesCol(uid)
   const snap  = await getDocs(col)
   const batch = writeBatch(db)
   snap.docs.forEach((d) => batch.delete(d.ref))
-=======
-/** Replace ALL entries at once (used for import / clear). */
-export async function replaceAllEntries(uid, entries) {
-  const col = entriesCol(uid)
-  // Delete existing
-  const snap = await getDocs(col)
-  const batch = writeBatch(db)
-  snap.docs.forEach((d) => batch.delete(d.ref))
-  // Write new
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   entries.forEach((e) => batch.set(doc(col, e.date), e))
   await batch.commit()
 }
 
-<<<<<<< HEAD
-=======
-/** Load user profile (unitSystem, customSupplements). */
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+// ── Profile ───────────────────────────────────────────────────────────────────
 export async function loadProfile(uid) {
   const snap = await getDoc(metaDoc(uid))
   return snap.exists() ? snap.data() : null
 }
 
-<<<<<<< HEAD
-=======
-/** Save user profile. */
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
 export async function saveProfile(uid, profile) {
   await setDoc(metaDoc(uid), profile, { merge: true })
 }
 
-<<<<<<< HEAD
-=======
-// ── Workout plans & custom workouts ─────────────────────────────────────────
-
-const workoutPlansDoc  = (uid) => doc(db, "users", uid, "meta", "workoutPlans")
-const customWorkoutsDoc = (uid) => doc(db, "users", uid, "meta", "customWorkouts")
-
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+// ── Workout plans ─────────────────────────────────────────────────────────────
 export async function loadWorkoutPlans(uid) {
   const snap = await getDoc(workoutPlansDoc(uid))
   return snap.exists() ? (snap.data().plans || []) : null
@@ -127,6 +72,7 @@ export async function saveWorkoutPlans(uid, plans) {
   await setDoc(workoutPlansDoc(uid), { plans })
 }
 
+// ── Custom workouts ───────────────────────────────────────────────────────────
 export async function loadCustomWorkouts(uid) {
   const snap = await getDoc(customWorkoutsDoc(uid))
   return snap.exists() ? (snap.data().workouts || []) : null

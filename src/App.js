@@ -3,11 +3,7 @@ import {
   CssBaseline, AppBar, Typography, Container, Box,
   Tab, Tabs, Paper, FormControl, RadioGroup,
   FormControlLabel, Radio, IconButton, Avatar, Tooltip,
-<<<<<<< HEAD
   CircularProgress, Snackbar, Alert,
-=======
-  CircularProgress,
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import BrushIcon from "@mui/icons-material/Brush"
@@ -16,12 +12,6 @@ import LogoutIcon from "@mui/icons-material/Logout"
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
 import { AuthProvider, useAuth } from "./AuthContext"
 import { notebookBg } from "./themes"
-import { AuthProvider, useAuth } from "./AuthContext"
-import {
-  signOutUser,
-  loadEntries, saveEntry, deleteEntry, replaceAllEntries,
-  loadProfile, saveProfile,
-} from "./firebase"
 import {
   signOutUser,
   loadEntries, saveEntry, deleteEntry, replaceAllEntries,
@@ -60,7 +50,6 @@ function AppContent() {
   const { currentThemeName, setCurrentThemeName } = useContext(ThemeContext)
   const { user, loading: authLoading } = useAuth()
 
-<<<<<<< HEAD
   // ── Colour helpers ─────────────────────────────────────────────────────────
   const getWorkoutColor = useCallback((workoutName) => {
     const base = theme.palette.primary.main
@@ -89,74 +78,24 @@ function AppContent() {
     return deriveChipColor("#bb1a2a", 0, 10, 40)
   }, [theme])
 
-  // ── App state ──────────────────────────────────────────────────────────────
-  const [dataLoading, setDataLoading]               = useState(false)
-  const [currentTab, setCurrentTab]                 = useState(0)
-  const [fitnessEntries, setFitnessEntries]         = useState([])
-  const [selectedMonth, setSelectedMonth]           = useState(() => {
-    const now = new Date()
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
-  })
-  const [customSupplements, setCustomSupplements]   = useState([])
-  const [unitSystem, setUnitSystem]                 = useState("metric")
-=======
-  // ── Colour helpers (theme-derived) ────────────────────────────────────────
-  const getWorkoutColor = useCallback(
-    (workoutName) => {
-      const base = theme.palette.primary.main
-      switch (workoutName) {
-        case "Chest":    return deriveChipColor(base,   0,  10)
-        case "Biceps":   return deriveChipColor(base,  30,  10)
-        case "Back":     return deriveChipColor(base,  60,   5)
-        case "Triceps":  return deriveChipColor(base,  90,   5)
-        case "Shoulder": return deriveChipColor(base, 120,   0)
-        case "Traps":    return deriveChipColor(base, 150,   5)
-        case "Forearms": return deriveChipColor(base, 180,   5)
-        case "Abs":      return deriveChipColor(base, 210,   5)
-        case "Legs":     return deriveChipColor(base, 240,   5)
-        case "Cardio":   return deriveChipColor(base, 270,  10)
-        case "Rest Day": return deriveChipColor(base,   0, -20, 50)
-        default:         return base
-      }
-    },
-    [theme],
-  )
-
-  const getPainLevelColor = useCallback(
-    (painLevel) => {
-      const level = Number.parseInt(painLevel.split(" ")[0])
-      if (isNaN(level)) return theme.palette.text.disabled
-      if (level <= 3) return deriveChipColor("#22bb55", 0,  10, 42)
-      if (level <= 6) return deriveChipColor("#e08a00", 0,  10, 46)
-      if (level <= 8) return deriveChipColor("#cc3a1a", 0,  10, 44)
-      return deriveChipColor("#bb1a2a", 0, 10, 40)
-    },
-    [theme],
-  )
-
-  // ── App state ──────────────────────────────────────────────────────────────
-  const [dataLoading, setDataLoading]           = useState(false)
-  const [currentTab, setCurrentTab]             = useState(0)
-  const [fitnessEntries, setFitnessEntries]     = useState([])
-  const [selectedMonth, setSelectedMonth]       = useState(() => {
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [dataLoading, setDataLoading]             = useState(false)
+  const [currentTab, setCurrentTab]               = useState(0)
+  const [fitnessEntries, setFitnessEntries]       = useState([])
+  const [selectedMonth, setSelectedMonth]         = useState(() => {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   })
   const [customSupplements, setCustomSupplements] = useState([])
-  const [unitSystem, setUnitSystem]             = useState("metric")
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-  const [currentEditingIndex, setCurrentEditingIndex] = useState(-1)
+  const [unitSystem, setUnitSystem]               = useState("metric")
+  const [currentEditingDate, setCurrentEditingDate] = useState(null) // null = not editing
   const [isFilteredViewActive, setIsFilteredViewActive] = useState(false)
 
   // Form state
   const [trackDate, setTrackDate]   = useState(getTodayDate())
   const [weight, setWeight]         = useState("")
   const [heightCm, setHeightCm]     = useState(() => {
-<<<<<<< HEAD
     try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm    || "" } catch { return "" }
-=======
-    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm || "" } catch { return "" }
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   })
   const [heightFeet, setHeightFeet] = useState(() => {
     try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").feet  || "" } catch { return "" }
@@ -175,66 +114,39 @@ function AppContent() {
   const [filterWorkout, setFilterWorkout]     = useState("")
   const [sortOrder, setSortOrder]             = useState("desc")
 
-<<<<<<< HEAD
-  // Dialog / UI state
-  const [isManageSupplementsOpen, setIsManageSupplementsOpen]             = useState(false)
-  const [newSupplementName, setNewSupplementName]                         = useState("")
-  const [isConfirmClearOpen, setIsConfirmClearOpen]                       = useState(false)
-  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen]           = useState(false)
-  const [entryToDeleteIndex, setEntryToDeleteIndex]                       = useState(null)
-  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen]             = useState(false)
-  const [entryExistsDialogData, setEntryExistsDialogData]                 = useState(null)
-  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen]             = useState(false)
-  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage]           = useState("")
-  const [isConfirmDeleteCustomSupplementOpen, setIsConfirmDeleteCustomSupplementOpen] = useState(false)
-  const [supplementToDelete, setSupplementToDelete]                       = useState("")
-  const [isImportConfirmOpen, setIsImportConfirmOpen]                     = useState(false)
-  const [pendingImportData, setPendingImportData]                         = useState(null)
-  const [isSettingsOpen, setIsSettingsOpen]                               = useState(false)
-  const [pendingExercise, setPendingExercise]                             = useState(null)
-  const [workoutsSubTab, setWorkoutsSubTab]                               = useState(0)
-  const [visitorCount, setVisitorCount]                                   = useState(null)
-  const [successSnackbar, setSuccessSnackbar]                             = useState({ open: false, message: "" })
-=======
   // Dialog state
-  const [isManageSupplementsOpen, setIsManageSupplementsOpen] = useState(false)
-  const [newSupplementName, setNewSupplementName]             = useState("")
-  const [isConfirmClearOpen, setIsConfirmClearOpen]           = useState(false)
-  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen] = useState(false)
-  const [entryToDeleteIndex, setEntryToDeleteIndex]           = useState(null)
-  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen] = useState(false)
-  const [entryExistsDialogData, setEntryExistsDialogData]     = useState(null)
-  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen] = useState(false)
-  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage] = useState("")
+  const [isManageSupplementsOpen, setIsManageSupplementsOpen]           = useState(false)
+  const [newSupplementName, setNewSupplementName]                       = useState("")
+  const [isConfirmClearOpen, setIsConfirmClearOpen]                     = useState(false)
+  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen]         = useState(false)
+  const [entryToDeleteDate, setEntryToDeleteDate]                       = useState(null)
+  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen]           = useState(false)
+  const [entryExistsDialogData, setEntryExistsDialogData]               = useState(null)
+  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen]           = useState(false)
+  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage]         = useState("")
   const [isConfirmDeleteCustomSupplementOpen, setIsConfirmDeleteCustomSupplementOpen] = useState(false)
-  const [supplementToDelete, setSupplementToDelete]           = useState("")
-  const [isImportConfirmOpen, setIsImportConfirmOpen]         = useState(false)
-  const [pendingImportData, setPendingImportData]             = useState(null)
-  const [isSettingsOpen, setIsSettingsOpen]                   = useState(false)
-  const [pendingExercise, setPendingExercise]                 = useState(null)
-  const [workoutsSubTab, setWorkoutsSubTab]                   = useState(0)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+  const [supplementToDelete, setSupplementToDelete]                     = useState("")
+  const [isImportConfirmOpen, setIsImportConfirmOpen]                   = useState(false)
+  const [pendingImportData, setPendingImportData]                       = useState(null)
+  const [isSettingsOpen, setIsSettingsOpen]                             = useState(false)
+  const [pendingExercise, setPendingExercise]                           = useState(null)
+  const [workoutsSubTab, setWorkoutsSubTab]                             = useState(0)
+  const [visitorCount, setVisitorCount]                                 = useState(null)
+  const [successSnackbar, setSuccessSnackbar]                           = useState({ open: false, message: "" })
   const importFileInputRef = useRef(null)
 
-<<<<<<< HEAD
-  // ── Load user data from Firestore when auth state resolves ─────────────────
+  // ── Load data on sign-in ───────────────────────────────────────────────────
   useEffect(() => {
     if (!user) {
-      // Signed out — load from localStorage as fallback
-      const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY)
-      if (storedEntries) {
-        try {
-          const parsed = JSON.parse(storedEntries)
-          setFitnessEntries(parsed.sort((a, b) => new Date(b.date) - new Date(a.date)))
-        } catch { setFitnessEntries([]) }
-      }
-      const storedSupps = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
-      if (storedSupps) {
-        try { setCustomSupplements(JSON.parse(storedSupps)) }
-        catch { setCustomSupplements(["Protein", "Creatine", "EAA"]) }
-      } else {
-        setCustomSupplements(["Protein", "Creatine", "EAA"])
-      }
+      // Not signed in — use localStorage
+      try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
+        if (raw) setFitnessEntries(JSON.parse(raw).sort((a, b) => new Date(b.date) - new Date(a.date)))
+      } catch { /* ignore */ }
+      try {
+        const raw = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
+        setCustomSupplements(raw ? JSON.parse(raw) : ["Protein", "Creatine", "EAA"])
+      } catch { setCustomSupplements(["Protein", "Creatine", "EAA"]) }
       setUnitSystem(localStorage.getItem(SYSTEM_UNIT_KEY) || "metric")
       return
     }
@@ -242,111 +154,44 @@ function AppContent() {
     const loadUserData = async () => {
       setDataLoading(true)
       try {
-        const [cloudEntries, profile] = await Promise.all([
-          loadEntries(user.uid),
-          loadProfile(user.uid),
-        ])
+        const [cloudEntries, profile] = await Promise.all([loadEntries(user.uid), loadProfile(user.uid)])
 
-        // --- Read localStorage data (always available for migration) ---
-        let localEntries = []
-        let localSupps   = ["Protein", "Creatine", "EAA"]
-        let localSystem  = "metric"
-        try {
-          const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
-          if (raw) localEntries = JSON.parse(raw)
-        } catch { /* ignore */ }
-        try {
-          const raw = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
-          if (raw) localSupps = JSON.parse(raw)
-        } catch { /* ignore */ }
+        // Read localStorage for potential migration
+        let localEntries = [], localSupps = ["Protein", "Creatine", "EAA"], localSystem = "metric"
+        try { const r = localStorage.getItem(LOCAL_STORAGE_KEY);         if (r) localEntries = JSON.parse(r) } catch { /* ignore */ }
+        try { const r = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY);    if (r) localSupps   = JSON.parse(r) } catch { /* ignore */ }
         localSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || "metric"
 
         if (cloudEntries.length > 0) {
-          // Cloud has data — use it, ignore localStorage
+          // Cloud has data — use it
           setFitnessEntries(cloudEntries)
           if (profile) {
             if (profile.unitSystem)        setUnitSystem(profile.unitSystem)
             if (profile.customSupplements) setCustomSupplements(profile.customSupplements)
           }
         } else {
-          // Cloud is empty — migrate from localStorage (first sign-in or cleared cloud)
-          if (localEntries.length > 0) {
-            await replaceAllEntries(user.uid, localEntries)
-            setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
-          } else {
-            setFitnessEntries([])
-          }
-          await saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps })
-=======
-  // ── Load user data from Firestore when user signs in ──────────────────────
-  useEffect(() => {
-    if (!user) {
-      setFitnessEntries([])
-      setCustomSupplements([])
-      setUnitSystem("metric")
-      return
-    }
-    const loadUserData = async () => {
-      setDataLoading(true)
-      try {
-        const [entries, profile] = await Promise.all([
-          loadEntries(user.uid),
-          loadProfile(user.uid),
-        ])
-        setFitnessEntries(entries)
-        if (profile) {
-          if (profile.unitSystem)        setUnitSystem(profile.unitSystem)
-          if (profile.customSupplements) setCustomSupplements(profile.customSupplements)
-          // If profile exists but no cloud entries, still migrate local entries
-          if (entries.length === 0) {
-            const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
-            const localEntries = stored ? JSON.parse(stored) : []
-            if (localEntries.length > 0) {
-              await replaceAllEntries(user.uid, localEntries)
-              setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
-            }
-          }
-        } else {
-          // First sign-in ever: migrate all localStorage data to Firestore
-          const stored      = localStorage.getItem(LOCAL_STORAGE_KEY)
-          const storedSupps = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
-          const storedSystem = localStorage.getItem(SYSTEM_UNIT_KEY)
-          const localEntries = stored      ? JSON.parse(stored)      : []
-          const localSupps   = storedSupps ? JSON.parse(storedSupps) : ["Protein", "Creatine", "EAA"]
-          const localSystem  = storedSystem || "metric"
-          if (localEntries.length > 0) await replaceAllEntries(user.uid, localEntries)
-          await saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps })
+          // Cloud is empty — migrate from localStorage
+          if (localEntries.length > 0) replaceAllEntries(user.uid, localEntries).catch(console.error)
+          saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps }).catch(console.error)
           setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
           setCustomSupplements(localSupps)
           setUnitSystem(localSystem)
         }
       } catch (e) {
         console.error("Failed to load user data:", e)
-<<<<<<< HEAD
-        // Fallback to localStorage on Firestore error
+        // Fallback to localStorage
         try {
           const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
           if (raw) setFitnessEntries(JSON.parse(raw).sort((a, b) => new Date(b.date) - new Date(a.date)))
         } catch { /* ignore */ }
-=======
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
       } finally {
         setDataLoading(false)
       }
     }
-<<<<<<< HEAD
-
     loadUserData()
   }, [user])
 
   // Persist height locally
-=======
-    loadUserData()
-  }, [user])
-
-  // Persist height locally (stays local — no need to cloud-sync this)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   useEffect(() => {
     localStorage.setItem(HEIGHT_STORAGE_KEY, JSON.stringify({ cm: heightCm, feet: heightFeet, inches: heightInches }))
   }, [heightCm, heightFeet, heightInches])
@@ -354,42 +199,34 @@ function AppContent() {
   // Visitor counter
   useEffect(() => {
     fetch("https://countapi.mileshilliard.com/api/v1/hit/gainss-fitness-tracker-visits")
-<<<<<<< HEAD
-      .then((r) => r.json())
-      .then((d) => setVisitorCount(Number(d.value)))
-=======
-      .then((res) => res.json())
-      .then((data) => setVisitorCount(Number(data.value)))
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-      .catch(() => setVisitorCount(null))
+      .then((r) => r.json()).then((d) => setVisitorCount(Number(d.value))).catch(() => setVisitorCount(null))
   }, [])
 
-  // Keep formSupplements in sync
+  // Sync formSupplements when supplements list or editing state changes
   useEffect(() => {
-    if (currentEditingIndex === -1) {
+    if (!currentEditingDate) {
       setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
     } else {
-      const entry = fitnessEntries[currentEditingIndex]
-      const updated = customSupplements.map((supName) => {
-        const existing = (entry.supplements || []).find((s) => s.name === supName)
-        return existing || { name: supName, taken: false, quantity: "" }
-      })
-      setFormSupplements(updated)
+      const entry = fitnessEntries.find((e) => e.date === currentEditingDate)
+      if (entry) {
+        const updated = customSupplements.map((supName) => {
+          const existing = (entry.supplements || []).find((s) => s.name === supName)
+          return existing || { name: supName, taken: false, quantity: "" }
+        })
+        setFormSupplements(updated)
+      }
     }
-  }, [customSupplements, unitSystem, currentEditingIndex, fitnessEntries])
+  }, [customSupplements, unitSystem, currentEditingDate, fitnessEntries])
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  const showSimpleAlertDialog = useCallback((message) => {
-    setSimpleAlertDialogMessage(message)
-    setIsSimpleAlertDialogOpen(true)
+  const showSimpleAlertDialog = useCallback((msg) => {
+    setSimpleAlertDialogMessage(msg); setIsSimpleAlertDialogOpen(true)
   }, [])
-
   const closeSimpleAlertDialog = useCallback(() => {
-    setIsSimpleAlertDialogOpen(false)
-    setSimpleAlertDialogMessage("")
+    setIsSimpleAlertDialogOpen(false); setSimpleAlertDialogMessage("")
   }, [])
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (_, newValue) => {
     setCurrentTab(newValue)
     if (newValue === 1) {
       const now = new Date()
@@ -401,31 +238,24 @@ function AppContent() {
     }
   }
 
-  const handleUnitSystemChange = async (event) => {
+  const handleUnitSystemChange = (event) => {
     const newSystem = event.target.value
     setUnitSystem(newSystem)
     setHeightCm(""); setHeightFeet(""); setHeightInches("")
-<<<<<<< HEAD
-    if (user) saveProfile(user.uid, { unitSystem: newSystem }).catch((e) => console.error(e))
-=======
-    if (user) await saveProfile(user.uid, { unitSystem: newSystem })
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+    if (user) saveProfile(user.uid, { unitSystem: newSystem }).catch(console.error)
     else localStorage.setItem(SYSTEM_UNIT_KEY, newSystem)
   }
 
   const resetForm = useCallback(() => {
     setTrackDate(getTodayDate()); setWeight("")
-<<<<<<< HEAD
     // height retained intentionally
-=======
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     setWorkoutSplit([]); setPainLevel(""); setNotes("")
     setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
-    setCurrentEditingIndex(-1)
+    setCurrentEditingDate(null)
   }, [customSupplements])
 
   // ── Entry CRUD ─────────────────────────────────────────────────────────────
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
     let weightValue = Number.parseFloat(weight)
     if (isNaN(weightValue)) { showSimpleAlertDialog("Please enter a valid weight."); return }
@@ -443,71 +273,72 @@ function AppContent() {
       heightValue = convertHeightToCm(feet, "ft/in", inches)
     }
 
+    if (!workoutSplit || workoutSplit.length === 0) { showSimpleAlertDialog("Please select at least one workout split."); return }
+    if (!painLevel) { showSimpleAlertDialog("Please select a pain level."); return }
+
     const newEntryData = {
       date: trackDate, weight: weightValue, height: heightValue,
       workoutSplit, painLevel, notes, supplements: formSupplements.filter((s) => s.taken),
     }
 
+    const isEdit = currentEditingDate !== null
     let updatedEntries
-    const isEdit = currentEditingIndex > -1
+
     if (isEdit) {
-      updatedEntries = [...fitnessEntries]
-      updatedEntries[currentEditingIndex] = newEntryData
-      setCurrentEditingIndex(-1)
+      // Replace the entry with the matching date; if date changed, remove old + insert new
+      updatedEntries = fitnessEntries.filter((e) => e.date !== currentEditingDate)
+      // If the new date conflicts with a different existing entry
+      if (newEntryData.date !== currentEditingDate) {
+        const conflict = updatedEntries.find((e) => e.date === newEntryData.date)
+        if (conflict) { setEntryExistsDialogData(newEntryData); setIsEntryExistsDialogOpen(true); return }
+      }
+      updatedEntries = [...updatedEntries, newEntryData]
+      // Delete the old entry from Firestore if date changed
+      if (newEntryData.date !== currentEditingDate && user) {
+        deleteEntry(user.uid, currentEditingDate).catch(console.error)
+      }
     } else {
-      const existingIdx = fitnessEntries.findIndex((e) => e.date === newEntryData.date)
-      if (existingIdx !== -1) { setEntryExistsDialogData(newEntryData); setIsEntryExistsDialogOpen(true); return }
-      else updatedEntries = [...fitnessEntries, newEntryData]
+      const conflict = fitnessEntries.find((e) => e.date === newEntryData.date)
+      if (conflict) { setEntryExistsDialogData(newEntryData); setIsEntryExistsDialogOpen(true); return }
+      updatedEntries = [...fitnessEntries, newEntryData]
     }
 
     updatedEntries = updatedEntries.sort((a, b) => new Date(b.date) - new Date(a.date))
     setFitnessEntries(updatedEntries)
-<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedEntries))
+    if (user) saveEntry(user.uid, newEntryData).catch(console.error)
 
-    // Show snackbar FIRST before any other state changes
-    setSuccessSnackbar({
-      open: true,
-      message: isEdit ? "✓ Entry updated successfully!" : "✓ Entry saved successfully!",
-    })
-
+    setSuccessSnackbar({ open: true, message: isEdit ? "✓ Entry updated successfully!" : "✓ Entry saved successfully!" })
     resetForm()
     if (isEdit) { setCurrentTab(3); setIsFilteredViewActive(false) }
-
-    // Fire-and-forget Firestore save
-    try { if (user) saveEntry(user.uid, newEntryData) } catch (e) { console.error("Firestore save failed:", e) }
-=======
-    if (user) await saveEntry(user.uid, newEntryData)
-    resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
   }
 
-  const handleConfirmUpdateExistingEntry = async () => {
-    const idx = fitnessEntries.findIndex((e) => e.date === entryExistsDialogData.date)
-    let updated = [...fitnessEntries]
-    if (idx !== -1) updated[idx] = entryExistsDialogData
-    else updated = [...updated, entryExistsDialogData]
-    updated = updated.sort((a, b) => new Date(b.date) - new Date(a.date))
-    setFitnessEntries(updated)
-<<<<<<< HEAD
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
-    // Close dialog immediately — don't wait for Firestore
-    setIsEntryExistsDialogOpen(false)
-    setEntryExistsDialogData(null)
-=======
-    if (user) await saveEntry(user.uid, entryExistsDialogData)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-    resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
+  const handleConfirmUpdateExistingEntry = () => {
+    const newEntry = entryExistsDialogData
+    const updatedEntries = fitnessEntries
+      .filter((e) => e.date !== newEntry.date && e.date !== currentEditingDate)
+    const final = [...updatedEntries, newEntry].sort((a, b) => new Date(b.date) - new Date(a.date))
+    setFitnessEntries(final)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(final))
+    if (user) {
+      saveEntry(user.uid, newEntry).catch(console.error)
+      if (currentEditingDate && currentEditingDate !== newEntry.date) {
+        deleteEntry(user.uid, currentEditingDate).catch(console.error)
+      }
+    }
+    setIsEntryExistsDialogOpen(false); setEntryExistsDialogData(null)
     setSuccessSnackbar({ open: true, message: "✓ Entry updated successfully!" })
-    try { if (user) saveEntry(user.uid, entryExistsDialogData) } catch (e) { console.error("Firestore save failed:", e) }
+    resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
   }
 
   const handleCancelUpdateExistingEntry = () => {
     setIsEntryExistsDialogOpen(false); setEntryExistsDialogData(null)
   }
 
-  const handleEditEntry = useCallback((index) => {
-    const entry = fitnessEntries[index]
+  // Now takes a date string instead of index — safe with filtered/sorted views
+  const handleEditEntry = useCallback((date) => {
+    const entry = fitnessEntries.find((e) => e.date === date)
+    if (!entry) return
     setTrackDate(entry.date)
     setWeight(convertWeight(entry.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1))
     if (unitSystem === "metric") {
@@ -521,71 +352,46 @@ function AppContent() {
       const ex = (entry.supplements || []).find((s) => s.name === supName)
       return ex || { name: supName, taken: false, quantity: "" }
     })
-    setFormSupplements(updatedSupps); setCurrentEditingIndex(index); setCurrentTab(0)
+    setFormSupplements(updatedSupps); setCurrentEditingDate(date); setCurrentTab(0)
   }, [fitnessEntries, unitSystem, customSupplements])
 
-  const handleDeleteEntry = useCallback((index) => {
-    setEntryToDeleteIndex(index); setIsConfirmDeleteEntryOpen(true)
+  // Now takes a date string instead of index
+  const handleDeleteEntry = useCallback((date) => {
+    setEntryToDeleteDate(date); setIsConfirmDeleteEntryOpen(true)
   }, [])
 
-  const confirmDeleteEntry = async () => {
-    const entryDate = fitnessEntries[entryToDeleteIndex]?.date
-    const updated = fitnessEntries.filter((_, i) => i !== entryToDeleteIndex)
+  const confirmDeleteEntry = () => {
+    const updated = fitnessEntries.filter((e) => e.date !== entryToDeleteDate)
     setFitnessEntries(updated)
-<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
     setIsConfirmDeleteEntryOpen(false)
-    setEntryToDeleteIndex(null)
-=======
-    if (user && entryDate) await deleteEntry(user.uid, entryDate)
-    setIsConfirmDeleteEntryOpen(false); setEntryToDeleteIndex(null)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-    if (currentEditingIndex === entryToDeleteIndex) resetForm()
-    else if (currentEditingIndex > entryToDeleteIndex) setCurrentEditingIndex((p) => p - 1)
-    try { if (user && entryDate) deleteEntry(user.uid, entryDate) } catch (e) { console.error("Firestore delete failed:", e) }
+    setEntryToDeleteDate(null)
+    if (currentEditingDate === entryToDeleteDate) resetForm()
+    if (user && entryToDeleteDate) deleteEntry(user.uid, entryToDeleteDate).catch(console.error)
   }
 
-  const cancelDeleteEntry = () => { setIsConfirmDeleteEntryOpen(false); setEntryToDeleteIndex(null) }
+  const cancelDeleteEntry = () => { setIsConfirmDeleteEntryOpen(false); setEntryToDeleteDate(null) }
 
-  const confirmClearAllData = async () => {
+  const confirmClearAllData = () => {
     setFitnessEntries([])
-<<<<<<< HEAD
     localStorage.removeItem(LOCAL_STORAGE_KEY)
-=======
-    if (user) await replaceAllEntries(user.uid, [])
-    else localStorage.removeItem(LOCAL_STORAGE_KEY)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+    if (user) replaceAllEntries(user.uid, []).catch(console.error)
     resetForm()
     setFilterStartDate(""); setFilterEndDate(""); setFilterWorkout(""); setSortOrder("desc")
-    setIsFilteredViewActive(false)
-    setIsConfirmClearOpen(false)
-    try { if (user) replaceAllEntries(user.uid, []) } catch (e) { console.error("Firestore clear failed:", e) }
+    setIsFilteredViewActive(false); setIsConfirmClearOpen(false)
   }
 
   // ── Supplements ────────────────────────────────────────────────────────────
   const updateSupplements = (newSupps) => {
     setCustomSupplements(newSupps)
     localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(newSupps))
-    if (user) saveProfile(user.uid, { customSupplements: newSupps }).catch((e) => console.error(e))
-  }
-
-  // ── Supplements ────────────────────────────────────────────────────────────
-  const updateSupplements = async (newSupps) => {
-    setCustomSupplements(newSupps)
-    if (user) await saveProfile(user.uid, { customSupplements: newSupps })
-    else localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(newSupps))
+    if (user) saveProfile(user.uid, { customSupplements: newSupps }).catch(console.error)
   }
 
   const handleAddSupplement = () => {
     const name = newSupplementName.trim()
-    if (name && !customSupplements.includes(name)) {
-<<<<<<< HEAD
-      updateSupplements([...customSupplements, name]); setNewSupplementName("")
-=======
-      updateSupplements([...customSupplements, name])
-      setNewSupplementName("")
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-    } else if (name) showSimpleAlertDialog("This supplement name already exists!")
+    if (name && !customSupplements.includes(name)) { updateSupplements([...customSupplements, name]); setNewSupplementName("") }
+    else if (name) showSimpleAlertDialog("This supplement name already exists!")
   }
 
   const handleDeleteCustomSupplement = (nameToDelete) => {
@@ -618,14 +424,14 @@ function AppContent() {
     fitnessEntries.forEach((entry) => {
       const row = [
         entry.date, entry.weight.toFixed(1), entry.height ? entry.height.toFixed(1) : "",
-        calculateBMI(entry.weight, entry.height) !== null ? calculateBMI(entry.weight, entry.height) : "",
+        calculateBMI(entry.weight, entry.height) ?? "",
         `"${(Array.isArray(entry.workoutSplit) ? entry.workoutSplit : [entry.workoutSplit]).map((s) => s.replace(/"/g, '""')).join(", ")}"`,
         `"${entry.painLevel.replace(/"/g, '""')}"`,
         entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : "",
       ]
       const supplementValues = customSupplements.flatMap((supName) => {
         const sup = (entry.supplements || []).find((s) => s.name === supName)
-        return [sup && sup.taken ? "Yes" : "No", sup && sup.taken && sup.quantity ? `"${sup.quantity.replace(/"/g, '""')}"` : ""]
+        return [sup?.taken ? "Yes" : "No", sup?.taken && sup.quantity ? `"${sup.quantity.replace(/"/g, '""')}"` : ""]
       })
       csvContent += [...row, ...supplementValues].join(",") + "\n"
     })
@@ -635,9 +441,7 @@ function AppContent() {
       const url = URL.createObjectURL(blob)
       link.setAttribute("href", url); link.setAttribute("download", "fitness_tracker.csv")
       link.style.visibility = "hidden"; document.body.appendChild(link); link.click(); document.body.removeChild(link)
-    } else {
-      showSimpleAlertDialog("Your browser does not support downloading files directly.")
-    }
+    } else showSimpleAlertDialog("Your browser does not support downloading files directly.")
   }
 
   const parseCsvLine = (line) => {
@@ -690,14 +494,12 @@ function AppContent() {
         if (parsedEntries.length === 0) { showSimpleAlertDialog("No valid entries found in the CSV."); return }
         setPendingImportData({ entries: parsedEntries, supplements: detectedSupplements })
         setIsImportConfirmOpen(true)
-      } catch (err) {
-        showSimpleAlertDialog("Failed to parse the CSV file. Make sure it was exported from this app.")
-      }
+      } catch { showSimpleAlertDialog("Failed to parse the CSV file. Make sure it was exported from this app.") }
     }
     reader.readAsText(file)
   }
 
-  const confirmImport = async () => {
+  const confirmImport = () => {
     if (!pendingImportData) return
     const mergedMap = {}
     fitnessEntries.forEach((e) => { mergedMap[e.date] = e })
@@ -706,26 +508,14 @@ function AppContent() {
     const mergedSupplements = [...new Set([...customSupplements, ...pendingImportData.supplements])]
     const importCount = pendingImportData.entries.length
     setFitnessEntries(mergedEntries)
-<<<<<<< HEAD
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mergedEntries))
     setCustomSupplements(mergedSupplements)
-    setIsImportConfirmOpen(false)
-    setPendingImportData(null)
-=======
-    if (user) {
-      await replaceAllEntries(user.uid, mergedEntries)
-      await saveProfile(user.uid, { customSupplements: mergedSupplements })
-    }
-    setCustomSupplements(mergedSupplements)
     setIsImportConfirmOpen(false); setPendingImportData(null)
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
     showSimpleAlertDialog(`Import successful! ${importCount} entries imported (duplicates replaced).`)
-    try {
-      if (user) {
-        replaceAllEntries(user.uid, mergedEntries)
-        saveProfile(user.uid, { customSupplements: mergedSupplements })
-      }
-    } catch (e) { console.error("Firestore import failed:", e) }
+    if (user) {
+      replaceAllEntries(user.uid, mergedEntries).catch(console.error)
+      saveProfile(user.uid, { customSupplements: mergedSupplements }).catch(console.error)
+    }
   }
 
   const cancelImport = () => { setIsImportConfirmOpen(false); setPendingImportData(null) }
@@ -747,7 +537,7 @@ function AppContent() {
     filtered.forEach((e) => { (Array.isArray(e.workoutSplit) ? e.workoutSplit : [e.workoutSplit]).forEach((s) => { wCounts[s] = (wCounts[s] || 0) + 1 }) })
     let mostFrequentWorkout = "N/A"; let maxC = 0
     for (const s in wCounts) { if (wCounts[s] > maxC) { maxC = wCounts[s]; mostFrequentWorkout = s } }
-    const totalPain = filtered.reduce((s, e) => { const v = parseInt(e.painLevel.split(" ")[0]); return s + (isNaN(v) ? 0 : v) }, 0)
+    const totalPain = filtered.reduce((s, e) => { const v = parseInt((e.painLevel || "").split(" ")[0]); return s + (isNaN(v) ? 0 : v) }, 0)
     const avgPainLevel = `${(totalPain / filtered.length).toFixed(1)}`
     const sCounts = {}
     customSupplements.forEach((n) => (sCounts[n] = 0))
@@ -765,11 +555,14 @@ function AppContent() {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}` === selectedMonth
     })
     if (filtered.length === 0) return []
-    return filtered.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).map((e) => ({
-      date: `Day ${new Date(e.date).getDate()}`,
-      weight: parseFloat(convertWeight(e.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1)),
-      bmi: parseFloat(calculateBMI(e.weight, e.height)),
-    }))
+    return filtered.slice().sort((a, b) => new Date(a.date) - new Date(b.date)).map((e) => {
+      const bmiRaw = calculateBMI(e.weight, e.height)
+      return {
+        date: `Day ${new Date(e.date).getDate()}`,
+        weight: parseFloat(convertWeight(e.weight, "kg", unitSystem === "metric" ? "kg" : "lbs").toFixed(1)),
+        bmi: bmiRaw !== null ? parseFloat(bmiRaw) : undefined,
+      }
+    })
   }, [fitnessEntries, unitSystem, selectedMonth])
 
   const chartData = getChartData()
@@ -781,7 +574,7 @@ function AppContent() {
         const ed = new Date(entry.date); ed.setHours(0, 0, 0, 0)
         let dateMatch = true
         if (filterStartDate) { const sd = new Date(filterStartDate); sd.setHours(0, 0, 0, 0); if (ed < sd) dateMatch = false }
-        if (filterEndDate) { const ed2 = new Date(filterEndDate); ed2.setHours(0, 0, 0, 0); ed2.setDate(ed2.getDate() + 1); if (ed >= ed2) dateMatch = false }
+        if (filterEndDate)   { const ed2 = new Date(filterEndDate); ed2.setHours(0, 0, 0, 0); ed2.setDate(ed2.getDate() + 1); if (ed >= ed2) dateMatch = false }
         const workoutMatch = !filterWorkout || entry.workoutSplit.includes(filterWorkout)
         return dateMatch && workoutMatch
       })
@@ -791,11 +584,7 @@ function AppContent() {
 
   const entriesToDisplay = filteredAndSortedEntries()
 
-<<<<<<< HEAD
-  // ── Auth loading / gate ────────────────────────────────────────────────────
-=======
-  // ── Auth loading screen ────────────────────────────────────────────────────
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+  // ── Auth gate ──────────────────────────────────────────────────────────────
   if (authLoading) {
     return (
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -806,20 +595,19 @@ function AppContent() {
 
   if (!user) return <AuthScreen />
 
-  // ── Main render ────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────────
+  const isEditing = currentEditingDate !== null
+
   return (
     <>
       <CssBaseline />
 
-      {/* Notebook dot-grid background */}
+      {/* Background dot grid */}
       {(() => {
         const nb = notebookBg[currentThemeName] || notebookBg.serika_dark
         const dotSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${nb.spacing}' height='${nb.spacing}'%3E%3Ccircle cx='${nb.spacing / 2}' cy='${nb.spacing / 2}' r='${nb.dotSize}' fill='${encodeURIComponent(nb.dot)}'/%3E%3C/svg%3E")`
         return (
-          <Box sx={{
-            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-            zIndex: -1, backgroundColor: nb.bg, backgroundImage: dotSvg, backgroundRepeat: "repeat",
-          }} />
+          <Box sx={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1, backgroundColor: nb.bg, backgroundImage: dotSvg, backgroundRepeat: "repeat" }} />
         )
       })()}
 
@@ -839,26 +627,15 @@ function AppContent() {
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
           <FormControl component="fieldset">
             <RadioGroup row value={unitSystem} onChange={handleUnitSystemChange}>
-              <FormControlLabel value="metric" control={<Radio size="small" />} label="Metric" />
+              <FormControlLabel value="metric"   control={<Radio size="small" />} label="Metric" />
               <FormControlLabel value="imperial" control={<Radio size="small" />} label="Imperial" />
             </RadioGroup>
           </FormControl>
-
           <Box display="flex" alignItems="center" gap={1}>
-            <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}>
-              <BrushIcon />
-            </IconButton>
-<<<<<<< HEAD
-=======
-
-            {/* User avatar + sign-out */}
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
+            <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}><BrushIcon /></IconButton>
             <Tooltip title={user.displayName || user.email}>
-              <Avatar
-                src={user.photoURL || ""}
-                alt={user.displayName || "User"}
-                sx={{ width: 32, height: 32, cursor: "default", border: `2px solid ${theme.palette.primary.main}` }}
-              />
+              <Avatar src={user.photoURL || ""} alt={user.displayName || "User"}
+                sx={{ width: 32, height: 32, cursor: "default", border: `2px solid ${theme.palette.primary.main}` }} />
             </Tooltip>
             <Tooltip title="Sign out">
               <IconButton size="small" onClick={signOutUser} sx={{ color: "text.secondary" }}>
@@ -868,7 +645,6 @@ function AppContent() {
           </Box>
         </Box>
 
-<<<<<<< HEAD
         {dataLoading && (
           <Box display="flex" justifyContent="center" alignItems="center" gap={1.5} py={2}>
             <CircularProgress size={20} />
@@ -877,64 +653,20 @@ function AppContent() {
         )}
 
         {/* Title */}
-=======
-        {/* Data loading spinner */}
-        {dataLoading && (
-          <Box display="flex" justifyContent="center" py={2}>
-            <CircularProgress size={24} />
-          </Box>
-        )}
-
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
         <Box sx={{ textAlign: "center", mb: 1 }}>
           <Typography variant="h4" component="h1"
-            sx={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
-<<<<<<< HEAD
-              letterSpacing: "0.15em", fontWeight: 900, textTransform: "uppercase",
-              color: theme.palette.text.primary, lineHeight: 1,
-=======
-              letterSpacing: "0.15em",
-              fontWeight: 900,
-              textTransform: "uppercase",
-              color: theme.palette.text.primary,
-              lineHeight: 1,
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-            }}
-          >
+            sx={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: { xs: "3rem", sm: "4rem", md: "5rem" }, letterSpacing: "0.15em", fontWeight: 900, textTransform: "uppercase", color: theme.palette.text.primary, lineHeight: 1 }}>
             GAINSS
           </Typography>
-          <Box sx={{
-            display: "inline-block",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-<<<<<<< HEAD
-            fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.12em",
-            px: 1, py: 0.25, borderRadius: "4px", textTransform: "uppercase", mb: 1,
-=======
-            fontSize: "0.55rem",
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            px: 1, py: 0.25,
-            borderRadius: "4px",
-            textTransform: "uppercase",
-            mb: 1,
->>>>>>> 597334a677ef07ef70a93389dd2fd7ea5a84af01
-          }}>
+          <Box sx={{ display: "inline-block", backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText, fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.12em", px: 1, py: 0.25, borderRadius: "4px", textTransform: "uppercase", mb: 1 }}>
             Fitness Tracker
           </Box>
         </Box>
 
-        <AppBar position="static" color="transparent" elevation={0}
-          sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", mb: 3 }}
-        >
-          <Tabs
-            value={currentTab} onChange={handleTabChange}
-            aria-label="fitness tracker tabs"
+        <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", mb: 3 }}>
+          <Tabs value={currentTab} onChange={handleTabChange} aria-label="fitness tracker tabs"
             variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile
-            TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
-          >
+            TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}>
             <Tab label="Entry Form" />
             <Tab label="Summary" />
             <Tab label="Filter & Sort" />
@@ -957,7 +689,7 @@ function AppContent() {
             notes={notes} setNotes={setNotes}
             formSupplements={formSupplements}
             unitSystem={unitSystem}
-            currentEditingIndex={currentEditingIndex}
+            currentEditingIndex={isEditing ? 1 : -1} // -1 = not editing, ≥0 = editing
             handleSubmit={handleSubmit}
             resetForm={resetForm}
             handleSupplementCheckboxChange={handleSupplementCheckboxChange}
@@ -972,11 +704,8 @@ function AppContent() {
           <SummaryTab
             stats={stats} chartData={chartData}
             selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth}
-            fitnessEntries={fitnessEntries}
-            customSupplements={customSupplements}
-            unitSystem={unitSystem}
-            getWorkoutColor={getWorkoutColor}
-            getPainLevelColor={getPainLevelColor}
+            fitnessEntries={fitnessEntries} customSupplements={customSupplements}
+            unitSystem={unitSystem} getWorkoutColor={getWorkoutColor} getPainLevelColor={getPainLevelColor}
           />
         )}
 
@@ -1011,30 +740,19 @@ function AppContent() {
         {currentTab === 4 && (
           <Box sx={{ mt: 2 }}>
             <Box sx={{ borderBottom: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, mb: 3 }}>
-              <Tabs
-                value={workoutsSubTab} onChange={(_, v) => setWorkoutsSubTab(v)}
-                TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
-                sx={{ minHeight: 40 }}
-              >
-                <Tab label="Exercise Library" sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
-                <Tab label="Custom Workouts"  sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
+              <Tabs value={workoutsSubTab} onChange={(_, v) => setWorkoutsSubTab(v)}
+                TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }} sx={{ minHeight: 40 }}>
+                <Tab label="Exercise Library"  sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
+                <Tab label="Custom Workouts"   sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
               </Tabs>
             </Box>
-            {workoutsSubTab === 0 && (
-              <ExerciseLibrary onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} />
-            )}
-            {workoutsSubTab === 1 && (
-              <CustomWorkouts onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} user={user} />
-            )}
+            {workoutsSubTab === 0 && <ExerciseLibrary onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} />}
+            {workoutsSubTab === 1 && <CustomWorkouts  onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} user={user} />}
           </Box>
         )}
 
         {currentTab === 5 && (
-          <WorkoutPlanner
-            pendingExercise={pendingExercise}
-            onPendingConsumed={() => setPendingExercise(null)}
-            user={user}
-          />
+          <WorkoutPlanner pendingExercise={pendingExercise} onPendingConsumed={() => setPendingExercise(null)} user={user} />
         )}
 
         {currentTab === 6 && <MacroCalculator unitSystem={unitSystem} />}
@@ -1066,27 +784,18 @@ function AppContent() {
           currentThemeName={currentThemeName} setCurrentThemeName={setCurrentThemeName}
         />
 
-        <Box sx={{
-          mt: 4, textAlign: "center", color: theme.palette.text.secondary, fontSize: "0.9rem",
-          p: 2, borderRadius: "6px",
-          backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
-        }}>
+        <Box sx={{ mt: 4, textAlign: "center", color: theme.palette.text.secondary, fontSize: "0.9rem", p: 2, borderRadius: "6px", backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)" }}>
           For posting your ad here, contact developer.
         </Box>
       </Container>
 
       {/* Footer */}
-      <Box sx={{
-        position: "fixed", bottom: 0, left: 0, width: "100%", py: 2,
-        backgroundColor: "rgba(26, 32, 44, 0.9)", textAlign: "center",
-        color: "text.secondary", zIndex: 1200,
-      }}>
+      <Box sx={{ position: "fixed", bottom: 0, left: 0, width: "100%", py: 2, backgroundColor: "rgba(26, 32, 44, 0.9)", textAlign: "center", color: "text.secondary", zIndex: 1200 }}>
         <Container maxWidth="md">
           <Typography variant="body2">
             Made with ❤️ by{" "}
             <a href="https://portfolio-eta-seven-57.vercel.app/" target="_blank" rel="noopener noreferrer"
-              style={{ color: theme.palette.primary.main, textDecoration: "none", fontWeight: "bold" }}
-            >
+              style={{ color: theme.palette.primary.main, textDecoration: "none", fontWeight: "bold" }}>
               Shamsul Arifin
             </a>
           </Typography>
@@ -1108,14 +817,12 @@ function AppContent() {
       >
         <Alert
           onClose={() => setSuccessSnackbar({ open: false, message: "" })}
-          severity="success"
-          variant="filled"
+          severity="success" variant="filled"
           sx={{ borderRadius: "8px", fontWeight: 600, fontSize: "0.9rem", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", minWidth: 260 }}
         >
           {successSnackbar.message}
         </Alert>
       </Snackbar>
-
     </>
   )
 }

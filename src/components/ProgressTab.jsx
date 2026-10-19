@@ -97,10 +97,10 @@ export default function ProgressTab({
                     }
                   />
                   <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="edit" onClick={() => handleEditEntry(index)}>
+                    <IconButton edge="end" aria-label="edit" onClick={() => handleEditEntry(entry.date)}>
                       <EditIcon sx={{ color: theme.palette.secondary.main }} />
                     </IconButton>
-                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteEntry(index)}>
+                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteEntry(entry.date)}>
                       <DeleteIcon sx={{ color: theme.palette.error.main }} />
                     </IconButton>
                   </ListItemSecondaryAction>

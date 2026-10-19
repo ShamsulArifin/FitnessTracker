@@ -80,13 +80,13 @@ export default function EntryForm({
           <Paper elevation={3} sx={{ p: { xs: 1.5, sm: 3 }, mb: 3, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)", borderRadius: "6px" }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormControl fullWidth required>
+                <FormControl fullWidth required sx={{ minWidth: { xs: 0, sm: 250 } }}>
                   <InputLabel id="workout-split-label">Workout Split (Select multiple)</InputLabel>
                   <Select
                     labelId="workout-split-label" multiple value={workoutSplit}
                     onChange={(e) => setWorkoutSplit(e.target.value)}
                     renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, py: 0.5 }}>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((value) => (
                           <Chip key={value} label={value}
                             onDelete={() => setWorkoutSplit(workoutSplit.filter((item) => item !== value))}
@@ -97,7 +97,7 @@ export default function EntryForm({
                       </Box>
                     )}
                     label="Workout Split (Select multiple)"
-                    sx={{ minHeight: "56px" }}
+                    sx={{ minHeight: "56px", ".MuiSelect-select": { paddingTop: "16.5px", paddingBottom: "16.5px" } }}
                   >
                     <MenuItem value="">Select Workout(s)</MenuItem>
                     {workoutSplits.map((option) => (
@@ -110,25 +110,23 @@ export default function EntryForm({
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth required>
+                <FormControl fullWidth required sx={{ minWidth: { xs: 0, sm: 250 } }}>
                   <InputLabel id="pain-level-label">Pain Level (1-10)</InputLabel>
                   <Select
                     labelId="pain-level-label" value={painLevel}
                     onChange={(e) => setPainLevel(e.target.value)}
                     renderValue={(selected) =>
                       selected ? (
-                        <Box sx={{ py: 0.5 }}>
-                          <Chip label={selected} onDelete={() => setPainLevel("")}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            sx={{ backgroundColor: getPainLevelColor(selected), color: getContrastTextColor(getPainLevelColor(selected)) }}
-                          />
-                        </Box>
+                        <Chip label={selected} onDelete={() => setPainLevel("")}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          sx={{ backgroundColor: getPainLevelColor(selected), color: getContrastTextColor(getPainLevelColor(selected)) }}
+                        />
                       ) : (
                         <Typography variant="body1" sx={{ color: "text.disabled" }}>Select Level</Typography>
                       )
                     }
                     label="Pain Level (1-10)"
-                    sx={{ minHeight: "56px" }}
+                    sx={{ minHeight: "56px", ".MuiSelect-select": { paddingTop: "16.5px", paddingBottom: "16.5px" } }}
                   >
                     <MenuItem value="">Select Level</MenuItem>
                     {painLevels.map((level) => (

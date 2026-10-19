@@ -10,7 +10,7 @@ import BrushIcon from "@mui/icons-material/Brush"
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
 import { notebookBg } from "./themes"
 import {
-  LOCAL_STORAGE_KEY, SYSTEM_UNIT_KEY, CUSTOM_SUPPLEMENTS_KEY,
+  LOCAL_STORAGE_KEY, SYSTEM_UNIT_KEY, CUSTOM_SUPPLEMENTS_KEY, HEIGHT_STORAGE_KEY,
 } from "./constants"
 import {
   convertWeight, convertHeightToCm, convertCmToDisplayHeight,
@@ -90,9 +90,15 @@ function AppContent() {
   // Form state
   const [trackDate, setTrackDate] = useState(getTodayDate())
   const [weight, setWeight] = useState("")
-  const [heightCm, setHeightCm] = useState("")
-  const [heightFeet, setHeightFeet] = useState("")
-  const [heightInches, setHeightInches] = useState("")
+  const [heightCm, setHeightCm] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm || "" } catch { return "" }
+  })
+  const [heightFeet, setHeightFeet] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").feet || "" } catch { return "" }
+  })
+  const [heightInches, setHeightInches] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").inches || "" } catch { return "" }
+  })
   const [workoutSplit, setWorkoutSplit] = useState([])
   const [painLevel, setPainLevel] = useState("")
   const [notes, setNotes] = useState("")
@@ -162,6 +168,9 @@ function AppContent() {
 
   useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries)) }, [fitnessEntries])
   useEffect(() => { localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(customSupplements)) }, [customSupplements])
+  useEffect(() => {
+    localStorage.setItem(HEIGHT_STORAGE_KEY, JSON.stringify({ cm: heightCm, feet: heightFeet, inches: heightInches }))
+  }, [heightCm, heightFeet, heightInches])
 
   // Increment and fetch visitor count via CountAPI (countapi.mileshilliard.com — drop-in replacement for countapi.xyz)
   useEffect(() => {

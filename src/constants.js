@@ -8,6 +8,7 @@ export const FEET_TO_CM_FACTOR = 30.48
 export const LOCAL_STORAGE_KEY = "dailyFitnessTrackerData"
 export const SYSTEM_UNIT_KEY = "unitSystem"
 export const CUSTOM_SUPPLEMENTS_KEY = "customSupplements"
+export const HEIGHT_STORAGE_KEY = "lastEnteredHeight"
 
 export const workoutSplits = [
   "Chest",

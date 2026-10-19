@@ -157,14 +157,23 @@ function AppContent() {
         ])
         setFitnessEntries(entries)
         if (profile) {
-          if (profile.unitSystem)       setUnitSystem(profile.unitSystem)
+          if (profile.unitSystem)        setUnitSystem(profile.unitSystem)
           if (profile.customSupplements) setCustomSupplements(profile.customSupplements)
+          // If profile exists but no cloud entries, still migrate local entries
+          if (entries.length === 0) {
+            const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+            const localEntries = stored ? JSON.parse(stored) : []
+            if (localEntries.length > 0) {
+              await replaceAllEntries(user.uid, localEntries)
+              setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
+            }
+          }
         } else {
-          // First sign-in: migrate any existing localStorage data to Firestore
-          const stored = localStorage.getItem(LOCAL_STORAGE_KEY)
+          // First sign-in ever: migrate all localStorage data to Firestore
+          const stored      = localStorage.getItem(LOCAL_STORAGE_KEY)
           const storedSupps = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
           const storedSystem = localStorage.getItem(SYSTEM_UNIT_KEY)
-          const localEntries = stored ? JSON.parse(stored) : []
+          const localEntries = stored      ? JSON.parse(stored)      : []
           const localSupps   = storedSupps ? JSON.parse(storedSupps) : ["Protein", "Creatine", "EAA"]
           const localSystem  = storedSystem || "metric"
           if (localEntries.length > 0) await replaceAllEntries(user.uid, localEntries)

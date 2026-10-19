@@ -2,13 +2,21 @@ import React, { useState, useEffect, useCallback, useContext, useRef } from "rea
 import {
   CssBaseline, AppBar, Typography, Container, Box,
   Tab, Tabs, Paper, FormControl, RadioGroup,
-  FormControlLabel, Radio, IconButton,
+  FormControlLabel, Radio, IconButton, Avatar, Tooltip,
+  CircularProgress, Snackbar, Alert,
 } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import BrushIcon from "@mui/icons-material/Brush"
+import LogoutIcon from "@mui/icons-material/Logout"
 
 import { ThemeContext, ThemeProviderWrapper } from "./ThemeContext"
+import { AuthProvider, useAuth } from "./AuthContext"
 import { notebookBg } from "./themes"
+import {
+  signOutUser,
+  loadEntries, saveEntry, deleteEntry, replaceAllEntries,
+  loadProfile, saveProfile,
+} from "./firebase"
 import {
   LOCAL_STORAGE_KEY, SYSTEM_UNIT_KEY, CUSTOM_SUPPLEMENTS_KEY, HEIGHT_STORAGE_KEY,
 } from "./constants"
@@ -25,6 +33,7 @@ import ExerciseLibrary from "./components/ExerciseLibrary"
 import WorkoutPlanner from "./components/WorkoutPlanner"
 import MacroCalculator from "./components/MacroCalculator"
 import CustomWorkouts from "./components/CustomWorkouts"
+import AuthScreen from "./components/AuthScreen"
 import {
   ManageSupplementsDialog,
   ConfirmClearDialog,
@@ -39,120 +48,185 @@ import ThemePicker from "./components/ThemePicker"
 function AppContent() {
   const theme = useTheme()
   const { currentThemeName, setCurrentThemeName } = useContext(ThemeContext)
+  const { user, loading: authLoading } = useAuth()
 
-  const getWorkoutColor = useCallback(
-    (workoutName) => {
-      const base = theme.palette.primary.main  // theme's accent color
-      // Each workout gets a distinct hue offset from the theme's main color,
-      // keeping saturation/lightness in a readable range.
-      switch (workoutName) {
-        case "Chest":    return deriveChipColor(base,   0,  10)   // same hue as theme
-        case "Biceps":   return deriveChipColor(base,  30,  10)   // +30°
-        case "Back":     return deriveChipColor(base,  60,   5)   // +60°
-        case "Triceps":  return deriveChipColor(base,  90,   5)   // +90°
-        case "Shoulder": return deriveChipColor(base, 120,   0)   // +120°
-        case "Traps":    return deriveChipColor(base, 150,   5)   // +150°
-        case "Forearms": return deriveChipColor(base, 180,   5)   // +180° (complement)
-        case "Abs":      return deriveChipColor(base, 210,   5)   // +210°
-        case "Legs":     return deriveChipColor(base, 240,   5)   // +240°
-        case "Cardio":   return deriveChipColor(base, 270,  10)   // +270°
-        case "Rest Day": return deriveChipColor(base,   0, -20, 50) // desaturated
-        default:         return base
-      }
-    },
-    [theme],
-  )
+  // ── Colour helpers ─────────────────────────────────────────────────────────
+  const getWorkoutColor = useCallback((workoutName) => {
+    const base = theme.palette.primary.main
+    switch (workoutName) {
+      case "Chest":    return deriveChipColor(base,   0,  10)
+      case "Biceps":   return deriveChipColor(base,  30,  10)
+      case "Back":     return deriveChipColor(base,  60,   5)
+      case "Triceps":  return deriveChipColor(base,  90,   5)
+      case "Shoulder": return deriveChipColor(base, 120,   0)
+      case "Traps":    return deriveChipColor(base, 150,   5)
+      case "Forearms": return deriveChipColor(base, 180,   5)
+      case "Abs":      return deriveChipColor(base, 210,   5)
+      case "Legs":     return deriveChipColor(base, 240,   5)
+      case "Cardio":   return deriveChipColor(base, 270,  10)
+      case "Rest Day": return deriveChipColor(base,   0, -20, 50)
+      default:         return base
+    }
+  }, [theme])
 
-  const getPainLevelColor = useCallback(
-    (painLevel) => {
-      const level = Number.parseInt(painLevel.split(" ")[0])
-      if (isNaN(level)) return theme.palette.text.disabled
-      // Fixed semantic hues (green→amber→red), lightness tuned for readability
-      if (level <= 3) return deriveChipColor("#22bb55", 0,  10, 42)  // green
-      if (level <= 6) return deriveChipColor("#e08a00", 0,  10, 46)  // amber
-      if (level <= 8) return deriveChipColor("#cc3a1a", 0,  10, 44)  // orange-red
-      return deriveChipColor("#bb1a2a", 0, 10, 40)                    // deep red
-    },
-    [theme],
-  )
+  const getPainLevelColor = useCallback((painLevel) => {
+    const level = Number.parseInt(painLevel.split(" ")[0])
+    if (isNaN(level)) return theme.palette.text.disabled
+    if (level <= 3) return deriveChipColor("#22bb55", 0,  10, 42)
+    if (level <= 6) return deriveChipColor("#e08a00", 0,  10, 46)
+    if (level <= 8) return deriveChipColor("#cc3a1a", 0,  10, 44)
+    return deriveChipColor("#bb1a2a", 0, 10, 40)
+  }, [theme])
 
-  const [currentTab, setCurrentTab] = useState(0)
-  const [fitnessEntries, setFitnessEntries] = useState([])
-  const [selectedMonth, setSelectedMonth] = useState(() => {
+  // ── App state ──────────────────────────────────────────────────────────────
+  const [dataLoading, setDataLoading]               = useState(false)
+  const [currentTab, setCurrentTab]                 = useState(0)
+  const [fitnessEntries, setFitnessEntries]         = useState([])
+  const [selectedMonth, setSelectedMonth]           = useState(() => {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   })
-  const [customSupplements, setCustomSupplements] = useState([])
-  const [unitSystem, setUnitSystem] = useState("metric")
+  const [customSupplements, setCustomSupplements]   = useState([])
+  const [unitSystem, setUnitSystem]                 = useState("metric")
   const [currentEditingIndex, setCurrentEditingIndex] = useState(-1)
   const [isFilteredViewActive, setIsFilteredViewActive] = useState(false)
 
   // Form state
-  const [trackDate, setTrackDate] = useState(getTodayDate())
-  const [weight, setWeight] = useState("")
-  const [heightCm, setHeightCm] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm || "" } catch { return "" }
+  const [trackDate, setTrackDate]   = useState(getTodayDate())
+  const [weight, setWeight]         = useState("")
+  const [heightCm, setHeightCm]     = useState(() => {
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").cm    || "" } catch { return "" }
   })
   const [heightFeet, setHeightFeet] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").feet || "" } catch { return "" }
+    try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").feet  || "" } catch { return "" }
   })
   const [heightInches, setHeightInches] = useState(() => {
     try { return JSON.parse(localStorage.getItem(HEIGHT_STORAGE_KEY) || "{}").inches || "" } catch { return "" }
   })
   const [workoutSplit, setWorkoutSplit] = useState([])
-  const [painLevel, setPainLevel] = useState("")
-  const [notes, setNotes] = useState("")
+  const [painLevel, setPainLevel]   = useState("")
+  const [notes, setNotes]           = useState("")
   const [formSupplements, setFormSupplements] = useState([])
 
   // Filter state
   const [filterStartDate, setFilterStartDate] = useState("")
-  const [filterEndDate, setFilterEndDate] = useState("")
-  const [filterWorkout, setFilterWorkout] = useState("")
-  const [sortOrder, setSortOrder] = useState("desc")
+  const [filterEndDate, setFilterEndDate]     = useState("")
+  const [filterWorkout, setFilterWorkout]     = useState("")
+  const [sortOrder, setSortOrder]             = useState("desc")
 
-  // Dialog state
-  const [isManageSupplementsOpen, setIsManageSupplementsOpen] = useState(false)
-  const [newSupplementName, setNewSupplementName] = useState("")
-  const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false)
-  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen] = useState(false)
-  const [entryToDeleteIndex, setEntryToDeleteIndex] = useState(null)
-  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen] = useState(false)
-  const [entryExistsDialogData, setEntryExistsDialogData] = useState(null)
-  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen] = useState(false)
-  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage] = useState("")
+  // Dialog / UI state
+  const [isManageSupplementsOpen, setIsManageSupplementsOpen]             = useState(false)
+  const [newSupplementName, setNewSupplementName]                         = useState("")
+  const [isConfirmClearOpen, setIsConfirmClearOpen]                       = useState(false)
+  const [isConfirmDeleteEntryOpen, setIsConfirmDeleteEntryOpen]           = useState(false)
+  const [entryToDeleteIndex, setEntryToDeleteIndex]                       = useState(null)
+  const [isEntryExistsDialogOpen, setIsEntryExistsDialogOpen]             = useState(false)
+  const [entryExistsDialogData, setEntryExistsDialogData]                 = useState(null)
+  const [isSimpleAlertDialogOpen, setIsSimpleAlertDialogOpen]             = useState(false)
+  const [simpleAlertDialogMessage, setSimpleAlertDialogMessage]           = useState("")
   const [isConfirmDeleteCustomSupplementOpen, setIsConfirmDeleteCustomSupplementOpen] = useState(false)
-  const [supplementToDelete, setSupplementToDelete] = useState("")
-  const [isImportConfirmOpen, setIsImportConfirmOpen] = useState(false)
-  const [pendingImportData, setPendingImportData] = useState(null)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [pendingExercise, setPendingExercise] = useState(null) // exercise to add to a plan
-  const [workoutsSubTab, setWorkoutsSubTab] = useState(0) // 0: Library, 1: Custom
+  const [supplementToDelete, setSupplementToDelete]                       = useState("")
+  const [isImportConfirmOpen, setIsImportConfirmOpen]                     = useState(false)
+  const [pendingImportData, setPendingImportData]                         = useState(null)
+  const [isSettingsOpen, setIsSettingsOpen]                               = useState(false)
+  const [pendingExercise, setPendingExercise]                             = useState(null)
+  const [workoutsSubTab, setWorkoutsSubTab]                               = useState(0)
+  const [visitorCount, setVisitorCount]                                   = useState(null)
+  const [successSnackbar, setSuccessSnackbar]                             = useState({ open: false, message: "" })
   const importFileInputRef = useRef(null)
-  const [visitorCount, setVisitorCount] = useState(null)
 
-  // Load from localStorage
+  // ── Load user data from Firestore when auth state resolves ─────────────────
   useEffect(() => {
-    const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY)
-    if (storedEntries) {
+    if (!user) {
+      // Signed out — load from localStorage as fallback
+      const storedEntries = localStorage.getItem(LOCAL_STORAGE_KEY)
+      if (storedEntries) {
+        try {
+          const parsed = JSON.parse(storedEntries)
+          setFitnessEntries(parsed.sort((a, b) => new Date(b.date) - new Date(a.date)))
+        } catch { setFitnessEntries([]) }
+      }
+      const storedSupps = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
+      if (storedSupps) {
+        try { setCustomSupplements(JSON.parse(storedSupps)) }
+        catch { setCustomSupplements(["Protein", "Creatine", "EAA"]) }
+      } else {
+        setCustomSupplements(["Protein", "Creatine", "EAA"])
+      }
+      setUnitSystem(localStorage.getItem(SYSTEM_UNIT_KEY) || "metric")
+      return
+    }
+
+    const loadUserData = async () => {
+      setDataLoading(true)
       try {
-        const parsed = JSON.parse(storedEntries)
-        setFitnessEntries(parsed.sort((a, b) => new Date(b.date) - new Date(a.date)))
+        const [cloudEntries, profile] = await Promise.all([
+          loadEntries(user.uid),
+          loadProfile(user.uid),
+        ])
+
+        // --- Read localStorage data (always available for migration) ---
+        let localEntries = []
+        let localSupps   = ["Protein", "Creatine", "EAA"]
+        let localSystem  = "metric"
+        try {
+          const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
+          if (raw) localEntries = JSON.parse(raw)
+        } catch { /* ignore */ }
+        try {
+          const raw = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
+          if (raw) localSupps = JSON.parse(raw)
+        } catch { /* ignore */ }
+        localSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || "metric"
+
+        if (cloudEntries.length > 0) {
+          // Cloud has data — use it, ignore localStorage
+          setFitnessEntries(cloudEntries)
+          if (profile) {
+            if (profile.unitSystem)        setUnitSystem(profile.unitSystem)
+            if (profile.customSupplements) setCustomSupplements(profile.customSupplements)
+          }
+        } else {
+          // Cloud is empty — migrate from localStorage (first sign-in or cleared cloud)
+          if (localEntries.length > 0) {
+            await replaceAllEntries(user.uid, localEntries)
+            setFitnessEntries(localEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
+          } else {
+            setFitnessEntries([])
+          }
+          await saveProfile(user.uid, { unitSystem: localSystem, customSupplements: localSupps })
+          setCustomSupplements(localSupps)
+          setUnitSystem(localSystem)
+        }
       } catch (e) {
-        console.error("Error parsing stored data:", e)
-        setFitnessEntries([])
+        console.error("Failed to load user data:", e)
+        // Fallback to localStorage on Firestore error
+        try {
+          const raw = localStorage.getItem(LOCAL_STORAGE_KEY)
+          if (raw) setFitnessEntries(JSON.parse(raw).sort((a, b) => new Date(b.date) - new Date(a.date)))
+        } catch { /* ignore */ }
+      } finally {
+        setDataLoading(false)
       }
     }
-    const storedSupplements = localStorage.getItem(CUSTOM_SUPPLEMENTS_KEY)
-    if (storedSupplements) {
-      try { setCustomSupplements(JSON.parse(storedSupplements)) }
-      catch (e) { setCustomSupplements(["Protein", "Creatine", "EAA"]) }
-    } else {
-      setCustomSupplements(["Protein", "Creatine", "EAA"])
-    }
-    const savedSystem = localStorage.getItem(SYSTEM_UNIT_KEY) || "metric"
-    setUnitSystem(savedSystem)
+
+    loadUserData()
+  }, [user])
+
+  // Persist height locally
+  useEffect(() => {
+    localStorage.setItem(HEIGHT_STORAGE_KEY, JSON.stringify({ cm: heightCm, feet: heightFeet, inches: heightInches }))
+  }, [heightCm, heightFeet, heightInches])
+
+  // Visitor counter
+  useEffect(() => {
+    fetch("https://countapi.mileshilliard.com/api/v1/hit/gainss-fitness-tracker-visits")
+      .then((r) => r.json())
+      .then((d) => setVisitorCount(Number(d.value)))
+      .catch(() => setVisitorCount(null))
   }, [])
 
+  // Keep formSupplements in sync
   useEffect(() => {
     if (currentEditingIndex === -1) {
       setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
@@ -166,20 +240,7 @@ function AppContent() {
     }
   }, [customSupplements, unitSystem, currentEditingIndex, fitnessEntries])
 
-  useEffect(() => { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fitnessEntries)) }, [fitnessEntries])
-  useEffect(() => { localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(customSupplements)) }, [customSupplements])
-  useEffect(() => {
-    localStorage.setItem(HEIGHT_STORAGE_KEY, JSON.stringify({ cm: heightCm, feet: heightFeet, inches: heightInches }))
-  }, [heightCm, heightFeet, heightInches])
-
-  // Increment and fetch visitor count via CountAPI (countapi.mileshilliard.com — drop-in replacement for countapi.xyz)
-  useEffect(() => {
-    fetch("https://countapi.mileshilliard.com/api/v1/hit/gainss-fitness-tracker-visits")
-      .then((res) => res.json())
-      .then((data) => setVisitorCount(Number(data.value)))
-      .catch(() => setVisitorCount(null))
-  }, [])
-
+  // ── Helpers ────────────────────────────────────────────────────────────────
   const showSimpleAlertDialog = useCallback((message) => {
     setSimpleAlertDialogMessage(message)
     setIsSimpleAlertDialogOpen(true)
@@ -205,19 +266,21 @@ function AppContent() {
   const handleUnitSystemChange = (event) => {
     const newSystem = event.target.value
     setUnitSystem(newSystem)
-    localStorage.setItem(SYSTEM_UNIT_KEY, newSystem)
     setHeightCm(""); setHeightFeet(""); setHeightInches("")
+    if (user) saveProfile(user.uid, { unitSystem: newSystem }).catch((e) => console.error(e))
+    else localStorage.setItem(SYSTEM_UNIT_KEY, newSystem)
   }
 
   const resetForm = useCallback(() => {
     setTrackDate(getTodayDate()); setWeight("")
-    // height fields are intentionally retained so the last entered value persists
+    // height retained intentionally
     setWorkoutSplit([]); setPainLevel(""); setNotes("")
     setFormSupplements(customSupplements.map((name) => ({ name, taken: false, quantity: "" })))
     setCurrentEditingIndex(-1)
   }, [customSupplements])
 
-  const handleSubmit = (event) => {
+  // ── Entry CRUD ─────────────────────────────────────────────────────────────
+  const handleSubmit = async (event) => {
     event.preventDefault()
     let weightValue = Number.parseFloat(weight)
     if (isNaN(weightValue)) { showSimpleAlertDialog("Please enter a valid weight."); return }
@@ -241,7 +304,8 @@ function AppContent() {
     }
 
     let updatedEntries
-    if (currentEditingIndex > -1) {
+    const isEdit = currentEditingIndex > -1
+    if (isEdit) {
       updatedEntries = [...fitnessEntries]
       updatedEntries[currentEditingIndex] = newEntryData
       setCurrentEditingIndex(-1)
@@ -250,18 +314,38 @@ function AppContent() {
       if (existingIdx !== -1) { setEntryExistsDialogData(newEntryData); setIsEntryExistsDialogOpen(true); return }
       else updatedEntries = [...fitnessEntries, newEntryData]
     }
-    setFitnessEntries(updatedEntries.sort((a, b) => new Date(b.date) - new Date(a.date)))
-    resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
+
+    updatedEntries = updatedEntries.sort((a, b) => new Date(b.date) - new Date(a.date))
+    setFitnessEntries(updatedEntries)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedEntries))
+
+    // Show snackbar FIRST before any other state changes
+    setSuccessSnackbar({
+      open: true,
+      message: isEdit ? "✓ Entry updated successfully!" : "✓ Entry saved successfully!",
+    })
+
+    resetForm()
+    if (isEdit) { setCurrentTab(3); setIsFilteredViewActive(false) }
+
+    // Fire-and-forget Firestore save
+    try { if (user) saveEntry(user.uid, newEntryData) } catch (e) { console.error("Firestore save failed:", e) }
   }
 
-  const handleConfirmUpdateExistingEntry = () => {
+  const handleConfirmUpdateExistingEntry = async () => {
     const idx = fitnessEntries.findIndex((e) => e.date === entryExistsDialogData.date)
-    if (idx !== -1) {
-      const updated = [...fitnessEntries]; updated[idx] = entryExistsDialogData
-      setFitnessEntries(updated.sort((a, b) => new Date(b.date) - new Date(a.date)))
-    }
+    let updated = [...fitnessEntries]
+    if (idx !== -1) updated[idx] = entryExistsDialogData
+    else updated = [...updated, entryExistsDialogData]
+    updated = updated.sort((a, b) => new Date(b.date) - new Date(a.date))
+    setFitnessEntries(updated)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
+    // Close dialog immediately — don't wait for Firestore
+    setIsEntryExistsDialogOpen(false)
+    setEntryExistsDialogData(null)
     resetForm(); setCurrentTab(3); setIsFilteredViewActive(false)
-    setIsEntryExistsDialogOpen(false); setEntryExistsDialogData(null)
+    setSuccessSnackbar({ open: true, message: "✓ Entry updated successfully!" })
+    try { if (user) saveEntry(user.uid, entryExistsDialogData) } catch (e) { console.error("Firestore save failed:", e) }
   }
 
   const handleCancelUpdateExistingEntry = () => {
@@ -290,25 +374,42 @@ function AppContent() {
     setEntryToDeleteIndex(index); setIsConfirmDeleteEntryOpen(true)
   }, [])
 
-  const confirmDeleteEntry = () => {
+  const confirmDeleteEntry = async () => {
+    const entryDate = fitnessEntries[entryToDeleteIndex]?.date
     const updated = fitnessEntries.filter((_, i) => i !== entryToDeleteIndex)
-    setFitnessEntries(updated); setIsConfirmDeleteEntryOpen(false); setEntryToDeleteIndex(null)
+    setFitnessEntries(updated)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
+    setIsConfirmDeleteEntryOpen(false)
+    setEntryToDeleteIndex(null)
     if (currentEditingIndex === entryToDeleteIndex) resetForm()
     else if (currentEditingIndex > entryToDeleteIndex) setCurrentEditingIndex((p) => p - 1)
+    try { if (user && entryDate) deleteEntry(user.uid, entryDate) } catch (e) { console.error("Firestore delete failed:", e) }
   }
 
   const cancelDeleteEntry = () => { setIsConfirmDeleteEntryOpen(false); setEntryToDeleteIndex(null) }
 
-  const confirmClearAllData = () => {
-    setFitnessEntries([]); localStorage.removeItem(LOCAL_STORAGE_KEY); resetForm()
+  const confirmClearAllData = async () => {
+    setFitnessEntries([])
+    localStorage.removeItem(LOCAL_STORAGE_KEY)
+    resetForm()
     setFilterStartDate(""); setFilterEndDate(""); setFilterWorkout(""); setSortOrder("desc")
-    setIsFilteredViewActive(false); setIsConfirmClearOpen(false)
+    setIsFilteredViewActive(false)
+    setIsConfirmClearOpen(false)
+    try { if (user) replaceAllEntries(user.uid, []) } catch (e) { console.error("Firestore clear failed:", e) }
+  }
+
+  // ── Supplements ────────────────────────────────────────────────────────────
+  const updateSupplements = (newSupps) => {
+    setCustomSupplements(newSupps)
+    localStorage.setItem(CUSTOM_SUPPLEMENTS_KEY, JSON.stringify(newSupps))
+    if (user) saveProfile(user.uid, { customSupplements: newSupps }).catch((e) => console.error(e))
   }
 
   const handleAddSupplement = () => {
     const name = newSupplementName.trim()
-    if (name && !customSupplements.includes(name)) { setCustomSupplements((p) => [...p, name]); setNewSupplementName("") }
-    else if (name) showSimpleAlertDialog("This supplement name already exists!")
+    if (name && !customSupplements.includes(name)) {
+      updateSupplements([...customSupplements, name]); setNewSupplementName("")
+    } else if (name) showSimpleAlertDialog("This supplement name already exists!")
   }
 
   const handleDeleteCustomSupplement = (nameToDelete) => {
@@ -316,11 +417,13 @@ function AppContent() {
   }
 
   const confirmDeleteCustomSupplement = () => {
-    setCustomSupplements((p) => p.filter((n) => n !== supplementToDelete))
+    updateSupplements(customSupplements.filter((n) => n !== supplementToDelete))
     setIsConfirmDeleteCustomSupplementOpen(false); setSupplementToDelete("")
   }
 
-  const cancelDeleteCustomSupplement = () => { setIsConfirmDeleteCustomSupplementOpen(false); setSupplementToDelete("") }
+  const cancelDeleteCustomSupplement = () => {
+    setIsConfirmDeleteCustomSupplementOpen(false); setSupplementToDelete("")
+  }
 
   const handleSupplementCheckboxChange = (name, checked) => {
     setFormSupplements((p) => p.map((s) => s.name === name ? { ...s, taken: checked } : s))
@@ -330,6 +433,7 @@ function AppContent() {
     setFormSupplements((p) => p.map((s) => s.name === name ? { ...s, quantity } : s))
   }
 
+  // ── CSV export / import ────────────────────────────────────────────────────
   const handleDownloadCsv = () => {
     if (fitnessEntries.length === 0) { showSimpleAlertDialog("No data to download!"); return }
     const baseHeaders = ["Date", "Weight (kg)", "Height (cm)", "BMI", "Workout Split", "Pain Level", "Notes"]
@@ -417,7 +521,7 @@ function AppContent() {
     reader.readAsText(file)
   }
 
-  const confirmImport = () => {
+  const confirmImport = async () => {
     if (!pendingImportData) return
     const mergedMap = {}
     fitnessEntries.forEach((e) => { mergedMap[e.date] = e })
@@ -425,14 +529,23 @@ function AppContent() {
     const mergedEntries = Object.values(mergedMap).sort((a, b) => new Date(b.date) - new Date(a.date))
     const mergedSupplements = [...new Set([...customSupplements, ...pendingImportData.supplements])]
     const importCount = pendingImportData.entries.length
-    setFitnessEntries(mergedEntries); setCustomSupplements(mergedSupplements)
-    setIsImportConfirmOpen(false); setPendingImportData(null)
+    setFitnessEntries(mergedEntries)
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mergedEntries))
+    setCustomSupplements(mergedSupplements)
+    setIsImportConfirmOpen(false)
+    setPendingImportData(null)
     showSimpleAlertDialog(`Import successful! ${importCount} entries imported (duplicates replaced).`)
+    try {
+      if (user) {
+        replaceAllEntries(user.uid, mergedEntries)
+        saveProfile(user.uid, { customSupplements: mergedSupplements })
+      }
+    } catch (e) { console.error("Firestore import failed:", e) }
   }
 
   const cancelImport = () => { setIsImportConfirmOpen(false); setPendingImportData(null) }
 
-  // Statistics
+  // ── Statistics ─────────────────────────────────────────────────────────────
   const calculateStatistics = useCallback(() => {
     const filtered = fitnessEntries.filter((entry) => {
       const d = new Date(entry.date)
@@ -493,21 +606,30 @@ function AppContent() {
 
   const entriesToDisplay = filteredAndSortedEntries()
 
+  // ── Auth loading / gate ────────────────────────────────────────────────────
+  if (authLoading) {
+    return (
+      <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (!user) return <AuthScreen />
+
+  // ── Main render ────────────────────────────────────────────────────────────
   return (
     <>
       <CssBaseline />
 
-      {/* ── Notebook dot-grid background ── */}
+      {/* Notebook dot-grid background */}
       {(() => {
-        const nb = notebookBg[currentThemeName] || notebookBg.dark
+        const nb = notebookBg[currentThemeName] || notebookBg.serika_dark
         const dotSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${nb.spacing}' height='${nb.spacing}'%3E%3Ccircle cx='${nb.spacing / 2}' cy='${nb.spacing / 2}' r='${nb.dotSize}' fill='${encodeURIComponent(nb.dot)}'/%3E%3C/svg%3E")`
         return (
           <Box sx={{
             position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-            zIndex: -1,
-            backgroundColor: nb.bg,
-            backgroundImage: dotSvg,
-            backgroundRepeat: "repeat",
+            zIndex: -1, backgroundColor: nb.bg, backgroundImage: dotSvg, backgroundRepeat: "repeat",
           }} />
         )
       })()}
@@ -516,16 +638,15 @@ function AppContent() {
         maxWidth="md"
         sx={{
           my: { xs: 1, sm: 4 }, p: { xs: 1.5, sm: 4 }, borderRadius: "6px",
-          backgroundColor: theme.palette.mode === "dark"
-            ? "rgba(20, 20, 20, 0.88)"
-            : "rgba(255, 255, 255, 0.82)",
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(20, 20, 20, 0.88)" : "rgba(255, 255, 255, 0.82)",
           backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
           border: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.09)"}`,
           boxShadow: theme.palette.mode === "dark" ? "0 4px 24px rgba(0,0,0,0.5)" : "0 4px 24px rgba(0,0,0,0.1)",
-          pb: "100px", ml: { md: "auto" }, mr: { md: "auto" },
+          pb: "100px",
         }}
         component={Paper}
       >
+        {/* Top bar */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
           <FormControl component="fieldset">
             <RadioGroup row value={unitSystem} onChange={handleUnitSystemChange}>
@@ -533,33 +654,63 @@ function AppContent() {
               <FormControlLabel value="imperial" control={<Radio size="small" />} label="Imperial" />
             </RadioGroup>
           </FormControl>
-          <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}>
-            <BrushIcon />
-          </IconButton>
+
+          <Box display="flex" alignItems="center" gap={1}>
+            <IconButton color="primary" onClick={() => setIsSettingsOpen(true)}>
+              <BrushIcon />
+            </IconButton>
+            <Tooltip title={user.displayName || user.email}>
+              <Avatar
+                src={user.photoURL || ""}
+                alt={user.displayName || "User"}
+                sx={{ width: 32, height: 32, cursor: "default", border: `2px solid ${theme.palette.primary.main}` }}
+              />
+            </Tooltip>
+            <Tooltip title="Sign out">
+              <IconButton size="small" onClick={signOutUser} sx={{ color: "text.secondary" }}>
+                <LogoutIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
 
-        <Typography variant="h4" component="h1" align="center" gutterBottom
-          sx={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
-            letterSpacing: "0.2em", fontWeight: "bold", textTransform: "uppercase",
-            textShadow: `2px 2px 4px ${theme.palette.text.secondary}`, lineHeight: 1,
-          }}
-        >
-          Gainss
-        </Typography>
+        {dataLoading && (
+          <Box display="flex" justifyContent="center" alignItems="center" gap={1.5} py={2}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>Loading your data…</Typography>
+          </Box>
+        )}
+
+        {/* Title */}
+        <Box sx={{ textAlign: "center", mb: 1 }}>
+          <Typography variant="h4" component="h1"
+            sx={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: { xs: "3rem", sm: "4rem", md: "5rem" },
+              letterSpacing: "0.15em", fontWeight: 900, textTransform: "uppercase",
+              color: theme.palette.text.primary, lineHeight: 1,
+            }}
+          >
+            GAINSS
+          </Typography>
+          <Box sx={{
+            display: "inline-block",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            fontSize: "0.55rem", fontWeight: 700, letterSpacing: "0.12em",
+            px: 1, py: 0.25, borderRadius: "4px", textTransform: "uppercase", mb: 1,
+          }}>
+            Fitness Tracker
+          </Box>
+        </Box>
 
         <AppBar position="static" color="transparent" elevation={0}
           sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", mb: 3 }}
         >
           <Tabs
-            value={currentTab}
-            onChange={handleTabChange}
+            value={currentTab} onChange={handleTabChange}
             aria-label="fitness tracker tabs"
-            centered={false}
-            variant="scrollable"
-            scrollButtons="auto"
-            allowScrollButtonsMobile
+            variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile
             TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
           >
             <Tab label="Entry Form" />
@@ -637,35 +788,21 @@ function AppContent() {
 
         {currentTab === 4 && (
           <Box sx={{ mt: 2 }}>
-            {/* Sub-tabs: Library | Custom */}
             <Box sx={{ borderBottom: `1px solid ${theme.palette.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, mb: 3 }}>
               <Tabs
-                value={workoutsSubTab}
-                onChange={(_, v) => setWorkoutsSubTab(v)}
+                value={workoutsSubTab} onChange={(_, v) => setWorkoutsSubTab(v)}
                 TabIndicatorProps={{ style: { backgroundColor: theme.palette.primary.main } }}
                 sx={{ minHeight: 40 }}
               >
                 <Tab label="Exercise Library" sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
-                <Tab label="Custom Workouts" sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
+                <Tab label="Custom Workouts"  sx={{ textTransform: "none", minHeight: 40, py: 1 }} />
               </Tabs>
             </Box>
-
             {workoutsSubTab === 0 && (
-              <ExerciseLibrary
-                onAddToPlan={(ex) => {
-                  setPendingExercise(ex)
-                  setCurrentTab(5)
-                }}
-              />
+              <ExerciseLibrary onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} />
             )}
-
             {workoutsSubTab === 1 && (
-              <CustomWorkouts
-                onAddToPlan={(ex) => {
-                  setPendingExercise(ex)
-                  setCurrentTab(5)
-                }}
-              />
+              <CustomWorkouts onAddToPlan={(ex) => { setPendingExercise(ex); setCurrentTab(5) }} user={user} />
             )}
           </Box>
         )}
@@ -674,6 +811,7 @@ function AppContent() {
           <WorkoutPlanner
             pendingExercise={pendingExercise}
             onPendingConsumed={() => setPendingExercise(null)}
+            user={user}
           />
         )}
 
@@ -737,6 +875,25 @@ function AppContent() {
           )}
         </Container>
       </Box>
+
+      {/* Success snackbar */}
+      <Snackbar
+        open={successSnackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSuccessSnackbar({ open: false, message: "" })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        sx={{ bottom: { xs: 80, sm: 80 }, zIndex: 1500 }}
+      >
+        <Alert
+          onClose={() => setSuccessSnackbar({ open: false, message: "" })}
+          severity="success"
+          variant="filled"
+          sx={{ borderRadius: "8px", fontWeight: 600, fontSize: "0.9rem", boxShadow: "0 4px 20px rgba(0,0,0,0.3)", minWidth: 260 }}
+        >
+          {successSnackbar.message}
+        </Alert>
+      </Snackbar>
+
     </>
   )
 }
@@ -744,7 +901,9 @@ function AppContent() {
 function App() {
   return (
     <ThemeProviderWrapper>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ThemeProviderWrapper>
   )
 }

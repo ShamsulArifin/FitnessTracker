@@ -15,6 +15,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess"
 import DownloadIcon from "@mui/icons-material/Download"
 import UploadIcon from "@mui/icons-material/Upload"
 import HotelIcon from "@mui/icons-material/Hotel"
+import { loadWorkoutPlans, saveWorkoutPlans } from "../firebase"
 
 const STORAGE_KEY = "workoutPlans"
 
@@ -189,37 +190,44 @@ function DayCard({ dayObj, onRemoveExercise, onEditExercise, onToggleRestDay }) 
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function WorkoutPlanner({ pendingExercise, onPendingConsumed }) {
+export default function WorkoutPlanner({ pendingExercise, onPendingConsumed, user }) {
   const theme = useTheme()
 
   const [plans, setPlans] = useState(loadPlans)
   const [activePlanId, setActivePlanId] = useState(null)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [editingPlan, setEditingPlan] = useState(null) // plan being edited
+  const [editingPlan, setEditingPlan] = useState(null)
   const [draft, setDraft] = useState(defaultPlan())
 
-  // Dialog: pick which plan + day to add a pending exercise to
   const [addExOpen, setAddExOpen] = useState(false)
   const [addExTarget, setAddExTarget] = useState({ planId: null, day: "" })
 
-  // Sets/reps state for the add-exercise dialog
   const [addSets, setAddSets] = useState("3")
   const [addReps, setAddReps] = useState("10")
   const [addAmrap, setAddAmrap] = useState(false)
   const [addSuperset, setAddSuperset] = useState(false)
   const [addSupersetWith, setAddSupersetWith] = useState("")
   const [addRounds, setAddRounds] = useState("1")
-  // Sets/reps edit dialog
-  const [setsDialog, setSetsDialog] = useState(null) // { planId, day, exIndex }
+  const [setsDialog, setSetsDialog] = useState(null)
   const [setsValue, setSetsValue] = useState("3")
   const [repsValue, setRepsValue] = useState("10")
 
-  // Import / export
   const importRef = useRef(null)
   const [importError, setImportError] = useState("")
 
-  // Persist
-  useEffect(() => { savePlans(plans) }, [plans])
+  // Load from Firestore on sign-in, fall back to localStorage
+  useEffect(() => {
+    if (!user) return
+    loadWorkoutPlans(user.uid).then((cloud) => {
+      if (cloud !== null) setPlans(cloud)
+    }).catch(() => {})
+  }, [user])
+
+  // Persist — Firestore if signed in, localStorage always
+  useEffect(() => {
+    savePlans(plans)
+    if (user) saveWorkoutPlans(user.uid, plans).catch(() => {})
+  }, [plans, user])
 
   // When a pending exercise arrives from the Workouts tab
   useEffect(() => {

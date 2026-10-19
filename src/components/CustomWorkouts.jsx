@@ -16,6 +16,7 @@ import FitnessCenterIcon from "@mui/icons-material/FitnessCenter"
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun"
 import LinkIcon from "@mui/icons-material/Link"
 import { getContrastTextColor } from "../utils"
+import { loadCustomWorkouts, saveCustomWorkouts } from "../firebase"
 
 const STORAGE_KEY = "customWorkouts"
 const DATASET_URL = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json"
@@ -188,7 +189,7 @@ function ToggleRow({ label, desc, checked, onToggle, color }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function CustomWorkouts({ onAddToPlan }) {
+export default function CustomWorkouts({ onAddToPlan, user }) {
   const theme = useTheme()
   const [workouts, setWorkouts] = useState(loadWorkouts)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -205,7 +206,19 @@ export default function CustomWorkouts({ onAddToPlan }) {
       .catch(() => {})
   }, [])
 
-  useEffect(() => { saveWorkouts(workouts) }, [workouts])
+  // Load from Firestore on sign-in, fall back to localStorage
+  useEffect(() => {
+    if (!user) return
+    loadCustomWorkouts(user.uid).then((cloud) => {
+      if (cloud !== null) setWorkouts(cloud)
+    }).catch(() => {})
+  }, [user])
+
+  // Persist — Firestore if signed in, localStorage always
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(workouts))
+    if (user) saveCustomWorkouts(user.uid, workouts).catch(() => {})
+  }, [workouts, user])
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
   const toggle = (key) => () => setForm((f) => ({ ...f, [key]: !f[key] }))
